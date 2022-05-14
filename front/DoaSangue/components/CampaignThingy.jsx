@@ -35,7 +35,8 @@ export default function CampaignThingy(props) {
       <Text style={styles.campaignText}>A 6Km de você</Text>
 
       <View style={styles.rowInverse}>
-        <Button mode="text" color={colors.lightRed} onPress={() => console.log("Mousse")}>Detalhes</Button>
+        <Button mode="text" icon="arrow-right" contentStyle={{flexDirection: 'row-reverse'}} color={colors.lightRed} onPress={() => console.log("Mousse")}>Detalhes</Button>
+        <Button mode="text" icon="star" color={colors.lightBlue} disabled={true}>{data.campaign_rating}</Button>
       </View>
     </View>
   );
@@ -95,5 +96,6 @@ const styles = StyleSheet.create({
   },
   rowInverse: {
     flexDirection: 'row-reverse',
+    // justifyContent: 'space-between',
   },
 });
