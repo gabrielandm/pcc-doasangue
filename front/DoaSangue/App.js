@@ -8,6 +8,7 @@ import HomeScreen from './pages/HomeScreen';
 import LoginScreen from './pages/LoginScreen';
 import RegistrationScreen from './pages/RegistrationScreen';
 import PasswordSendEmail from './pages/PasswordSendEmail';
+import {colors} from './style/colors';
 
 const Stack = createNativeStackNavigator();
 
@@ -34,8 +35,12 @@ function App() {
             name="HomeScreen"
             component={HomeScreen}
             options={{
-              title: 'Welcome',
-              headerShown: false,
+              title: 'DoaSangue',
+              headerShown: true,
+              headerStyle: {
+                backgroundColor: colors.red,
+              },
+              headerTintColor: colors.white,
             }}
           />
           <Stack.Screen

@@ -97,7 +97,7 @@ function UpdateCorp(corp, cnpj, pass, name, country, city, address, phone, email
   return corp;
 }
 
-function UpdateCampaign(foundDoc, cnpj, start_date, end_date, country, state, city, address, phone, creation_date, num_doners, campaign_rating, observation, header_color, banner_link) {
+function UpdateCampaign(foundDoc, cnpj, start_date, end_date, open_time, close_time, country, state, city, address, phone, creation_date, num_doners, campaign_rating, observation, blood_types, header_color, banner_link) {
   if (cnpj !== undefined) {
     foundDoc.cnpj = cnpj;
   }
@@ -108,6 +108,14 @@ function UpdateCampaign(foundDoc, cnpj, start_date, end_date, country, state, ci
 
   if (end_date !== undefined) {
     foundDoc.end_date = end_date;
+  }
+
+  if (open_time !== undefined) {
+    foundDoc.open_time = open_time;
+  }
+
+  if (close_time !== undefined) {
+    foundDoc.close_time = close_time;
   }
 
   if (country !== undefined) {
@@ -144,6 +152,10 @@ function UpdateCampaign(foundDoc, cnpj, start_date, end_date, country, state, ci
 
   if (observation !== undefined) {
     foundDoc.observation = observation;
+  }
+
+  if (blood_types !== undefined) {
+    foundDoc.blood_types = blood_types;
   }
 
   if (header_color !== undefined) {
