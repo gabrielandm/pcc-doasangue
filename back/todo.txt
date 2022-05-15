@@ -1,0 +1,54 @@
+√ Done
+    - Post √
+    - Get √
+    - Put √
+    - Delete √
+    - Options √√√
+√ Corp
+    - Post √
+    - Get √
+    - Put √
+    - Delete √
+    - Options √√√
+√ Campaign
+    - Post √
+    - Get √
+    - Put √
+    - Delete √
+    - Options √√√
+√ Donation_Date
+    - Post √
+    - Get √
+    - Put √
+    - Delete √
+    - Options √√√
+Achievement
+    - Post
+    - Get
+    - Put
+    - Delete
+    - Options
+Medal
+    - Post
+    - Get
+    - Put
+    - Delete
+    - Options
+Achievement_Level
+    - Post
+    - Get
+    - Put
+    - Delete
+    - Options
+Doner_Achievement
+    - Post
+    - Get
+    - Put
+    - Delete
+    - Options
+Date_Obtained
+    - Post
+    - Get
+    - Put
+    - Delete
+    - Options

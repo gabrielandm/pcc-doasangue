@@ -1,3 +1,4 @@
+import { StackActions } from '@react-navigation/native';
 import React, { useState } from 'react';
 import { StyleSheet, View, Text } from 'react-native';
 import { Button, Snackbar } from 'react-native-paper';
@@ -37,7 +38,12 @@ export default function LoginScreen({ navigation, route }) {
 
 	function validateUser() {
 		if (nameMain == user.email && passMain == user.pass) {
-			navigation.navigate('HomeScreen', { name: 'Mousse' });
+			navigation.dispatch(
+				StackActions.replace('HomeScreen',{
+					name: 'mousse',
+				})
+			)
+			// navigation.navigate('HomeScreen', { name: 'Mousse' });
 		} else { // Login invalidated
 			setPassWrong(true);
 		}
