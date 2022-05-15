@@ -7,7 +7,7 @@ import { colors } from '../style/colors';
 
 export default function CampaignScreen({ navigation, route }) {
   const data = route.params.data
-  data.observation.replaceAll("\n", "\n\t")
+  // data.observation.replaceAll("\n", "\n\t")
   const options = { year: '2-digit', month: '2-digit', day: '2-digit' };
   const mapsURL = `http://www.google.com/maps/place/${data.coordinates.latitude},${data.coordinates.longitude}`
 
