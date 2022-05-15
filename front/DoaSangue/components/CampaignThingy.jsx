@@ -8,7 +8,7 @@ export default function CampaignThingy(props) {
   const data = props.data;
   data.start_date = new Date(data.start_date);
   data.end_date = new Date(data.end_date);
-  var options = { year: '2-digit', month: '2-digit', day: '2-digit' };
+  const options = { year: '2-digit', month: '2-digit', day: '2-digit' };
 
   return (
     <View style={styles.outerBox}>
@@ -35,7 +35,7 @@ export default function CampaignThingy(props) {
       <Text style={styles.campaignText}>A 6Km de você</Text>
 
       <View style={styles.rowInverse}>
-        <Button mode="text" icon="arrow-right" contentStyle={{flexDirection: 'row-reverse'}} color={colors.lightRed} onPress={() => console.log("Mousse")}>Detalhes</Button>
+        <Button mode="text" icon="arrow-right" contentStyle={{flexDirection: 'row-reverse'}} color={colors.lightRed} onPress={() => props.navigateTo('CampaignScreen', data)}>Detalhes</Button>
         <Button mode="text" icon="star" color={colors.lightBlue} disabled={true}>{data.campaign_rating}</Button>
       </View>
     </View>

@@ -3,7 +3,7 @@ const { connectDB, header } = require("../functions/apiFunctions");
 module.exports = async function (context, req) {
     const collections = await connectDB(['Campaign', 'Corp']);
     const campaignCollection = collections[0];
-    const corpCollection = collections[1]; // Needed for authentication of cnpj
+    // const corpCollection = collections[1]; // Needed for authentication of cnpj
 
     const cnpj = req.body.cnpj;
     const start_date = req.body.start_date;
@@ -14,6 +14,7 @@ module.exports = async function (context, req) {
     const state = req.body.state;
     const city = req.body.city;
     const address = req.body.address;
+    const coordinates = req.body.coordinates;
     const phone = req.body.phone;
     const creation_date = new Date();
     const num_doners = req.body.num_doners;
@@ -33,6 +34,7 @@ module.exports = async function (context, req) {
         "state": state,
         "city": city,
         "address": address,
+        "coordinates": coordinates,
         "phone": phone,
         "creation_date": creation_date.toISOString(),
         "num_doners": num_doners,
