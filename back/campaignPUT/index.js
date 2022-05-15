@@ -17,6 +17,7 @@ module.exports = async function (context, req) {
     const state = req.body.state;
     const city = req.body.city;
     const address = req.body.address;
+    const coordinates = req.body.coordinates;
     const phone = req.body.phone;
     const creation_date = new Date();
     const num_doners = req.body.num_doners;
@@ -29,7 +30,7 @@ module.exports = async function (context, req) {
     let foundDoc = await campaignCollection.findOne({
         '_id': ObjectId(id)
     });
-    foundDoc = UpdateCampaign(foundDoc, cnpj, start_date, end_date, open_time, close_time, country, state, city, address, phone, creation_date, num_doners, campaign_rating, observation, blood_types, header_color, banner_link);
+    foundDoc = UpdateCampaign(foundDoc, cnpj, start_date, end_date, open_time, close_time, country, state, city, address, coordinates, phone, creation_date, num_doners, campaign_rating, observation, blood_types, header_color, banner_link);
 
     campaignCollection.updateOne(
         {'_id': ObjectId(id)},

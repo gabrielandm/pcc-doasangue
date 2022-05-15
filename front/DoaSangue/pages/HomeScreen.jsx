@@ -17,6 +17,10 @@ const m_campaigns = [
 		"state": 'PE',
 		"city": 'Xvs',
 		"address": 'R. do Alfinetes, 33',
+		"coordinates": {
+			"latitude": -7.033889,
+			"longitude": -39.408889,
+		},
 		"phone": '(33) 3333-3333',
 		"creation_date": '2022-12-06 15:33:33.000-03:00',
 		"num_doners": 12,
@@ -37,6 +41,10 @@ const m_campaigns = [
 		"state": 'PE',
 		"city": 'Xvs',
 		"address": 'R. do Alfinetes, 33',
+		"coordinates": {
+			"latitude": -8.05,
+			"longitude": -34.05
+		},
 		"phone": '(33) 3333-3333',
 		"creation_date": '2022-12-06 15:33:33.000-03:00',
 		"num_doners": 12,
@@ -49,21 +57,24 @@ const m_campaigns = [
 ]
 
 export default function HomeScreen({ navigation, route }) {
+	function navigateTo(pageName, props) {
+		navigation.navigate(pageName, {data: props});
+	}
+
 	const CampaignsView = () => <SafeAreaView style={styles.screen} >
-		{/* <Text >{route.params.name}</Text> */}
 		<ScrollView style={styles.scrollView}>
-			{m_campaigns.map((campaign, index) => <CampaignThingy key={index} data={campaign} />)}
-			{/* <CampaignThingy />
-			<CampaignThingy />
-			<CampaignThingy />
-			<CampaignThingy />
-			<CampaignThingy />
-			<CampaignThingy /> */}
+			{m_campaigns.map(
+				(campaign, index) => <CampaignThingy
+					key={index}
+					data={campaign}
+					navigateTo={(pageName, props) => navigateTo(pageName, props)} 
+				/>)
+			}
 		</ScrollView>
 
 	</SafeAreaView>;
-	const AchievementView = () => <Text>Albums</Text>;
-	const ProfileView = () => <Text>Recents</Text>;
+	const AchievementView = () => <Text>Achievements</Text>;
+	const ProfileView = () => <Text>Profile page</Text>;
 
 	const [index, setIndex] = React.useState(0);
 	const [routes] = React.useState([
