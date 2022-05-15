@@ -6,8 +6,10 @@ import MapView, { Marker } from 'react-native-maps';
 import { colors } from '../style/colors';
 
 export default function CampaignScreen({ navigation, route }) {
-  const data = route.params.data
-  // data.observation.replaceAll("\n", "\n\t")
+  const data = JSON.parse(JSON.stringify(route.params.data))
+  data.start_date = new Date(data.start_date)
+  data.end_date = new Date(data.end_date)
+  data.observation = `\t${data.observation.replace("\n", "\n\t")}`
   const options = { year: '2-digit', month: '2-digit', day: '2-digit' };
   const mapsURL = `http://www.google.com/maps/place/${data.coordinates.latitude},${data.coordinates.longitude}`
 
@@ -24,12 +26,12 @@ export default function CampaignScreen({ navigation, route }) {
             <View style={styles.column} >
               <Text style={styles.title}>{data.name}</Text>
             </View>
+
             <View style={styles.column} >
-              
               <Text style={styles.dataText}>Duração da campanha</Text>
               <Text style={styles.text}>{data.start_date.toLocaleDateString("pt-BR", options)} - {data.end_date.toLocaleDateString("pt-BR", options)}</Text>
               <Text style={styles.dataText}>Horário de funcionamento</Text>
-              <Text style={styles.text}>({data.open_time} - {data.close_time})</Text>
+              <Text style={styles.text}>{data.open_time} - {data.close_time}</Text>
             </View>
           </View>
 
@@ -55,6 +57,7 @@ export default function CampaignScreen({ navigation, route }) {
           </View>
 
           <View style={styles.row} >
+          <Text style={styles.dataText}>Observações</Text>
             <Text style={styles.text}>{data.observation}</Text>
           </View>
 
@@ -74,10 +77,15 @@ const styles = StyleSheet.create({
     backgroundColor: colors.white,
     width: Dimensions.get('window').width,
     height: Dimensions.get('window').height,
-    // justifyContent: 'center',
   },
   column: {
     flexDirection: 'column',
+    flexWrap: 'wrap',
+  },
+  columnCenter: {
+    flexDirection: 'column',
+    justifyContent: 'center',
+    alignItems: 'center',
     flexWrap: 'wrap',
   },
   row: {
@@ -86,6 +94,7 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
   },
   rowCenter: {
+    width: Dimensions.get('window').width * 1,
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
@@ -98,6 +107,7 @@ const styles = StyleSheet.create({
     marginBottom: 3,
   },
   map: {
+    borderWidth: 1,
     margin: 'auto',
     marginTop: 10,
     width: Dimensions.get('window').width * 0.9,
