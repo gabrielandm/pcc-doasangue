@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { StyleSheet, View, Text, ScrollView, SafeAreaView, Dimensions, Linking } from 'react-native';
-import { Button, Chip, Avatar } from 'react-native-paper';
+import { StyleSheet, View, Text, ScrollView, SafeAreaView, Dimensions, Linking, TouchableOpacity } from 'react-native';
+import * as Clipboard from 'expo-clipboard';
+import { Button, Chip, IconButton } from 'react-native-paper';
 import MapView, { Marker } from 'react-native-maps';
 
 import { colors } from '../style/colors';
@@ -15,6 +16,10 @@ export default function CampaignScreen({ navigation, route }) {
 
   function VisitMaps(url) {
     Linking.openURL(url)
+  }
+
+  function copyToClipboard() {
+    Clipboard.setString(data.address);
   }
 
   return (
@@ -36,13 +41,14 @@ export default function CampaignScreen({ navigation, route }) {
           </View>
 
           <View style={styles.rowCenter} >
-            <View style={styles.column} >
+            <View style={styles.columnCenter} >
+              
               <MapView style={styles.map}
                 initialRegion={{
                   latitude: data.coordinates.latitude,
                   longitude: data.coordinates.longitude,
-                  latitudeDelta: 0.0922,
-                  longitudeDelta: 0.0421,
+                  latitudeDelta: 0.04,
+                  longitudeDelta: 0.04,
                 }}
               >
                 <Marker
@@ -52,12 +58,17 @@ export default function CampaignScreen({ navigation, route }) {
                   description={data.address}
                 />
               </MapView>
+              <View style={styles.rowCenter} >
+                <Text style={styles.dataText}>Endereço: </Text>
+                <Text style={{ textAlign: 'center', color: colors.gray }}>{data.address}</Text>
+                <IconButton style={styles.iconButton} icon="content-copy" size={16} onPress={() => copyToClipboard()} />
+              </View>
               <Button mode="text" icon="google-maps" color={colors.lightRed} onPress={() => VisitMaps(mapsURL)} >Abrir no Google Maps</Button>
             </View>
           </View>
 
           <View style={styles.row} >
-          <Text style={styles.dataText}>Observações</Text>
+            <Text style={styles.dataText}>Observações</Text>
             <Text style={styles.text}>{data.observation}</Text>
           </View>
 
@@ -67,8 +78,8 @@ export default function CampaignScreen({ navigation, route }) {
           </View>
 
         </View>
-      </ScrollView>
-    </SafeAreaView>
+      </ScrollView >
+    </SafeAreaView >
   );
 }
 
@@ -126,5 +137,8 @@ const styles = StyleSheet.create({
     fontSize: 14,
     marginTop: 2,
     lineHeight: 20,
+  },
+  iconButton: {
+    margin: 0,
   },
 });
