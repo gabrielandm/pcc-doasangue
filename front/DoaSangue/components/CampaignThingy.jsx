@@ -32,7 +32,7 @@ export default function CampaignThingy(props) {
       </View>
 
       {/* Code to calculate the distance */}
-      <Text style={styles.campaignText}>A 6Km de você</Text>
+      <Text style={styles.campaignText}>A 3Km de você</Text>
 
       <View style={styles.rowInverse}>
         <Button mode="text" icon="arrow-right" contentStyle={{flexDirection: 'row-reverse'}} color={colors.lightRed} onPress={() => props.navigateTo('CampaignScreen', data)}>Detalhes</Button>
