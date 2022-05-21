@@ -43,9 +43,9 @@ export default function LoginScreen({ navigation, route }) {
 	async function validateUser() {
 		// email and password validation
 		try {
-		var response = await fetch(`https://doasangue.azurewebsites.net/api/user?email=${nameMain}&pass=${passMain}&type=login`)
-		var json = await response.json();
-		console.log(json);
+			var response = await fetch(`https://doasangue.azurewebsites.net/api/user?email=${nameMain}&pass=${passMain}&type=login`)
+			var json = await response.json();
+			console.log(json);
 		} catch (error) {
 			console.log(error);
 			return null;

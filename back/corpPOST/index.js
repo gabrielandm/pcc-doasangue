@@ -12,6 +12,7 @@ module.exports = async function (context, req) {
   const country = req.body.country;
   const city = req.body.city;
   const address = req.body.address;
+  const coordinates = req.body.coordinates;
   const phone = req.body.phone;
   const email = req.body.email;
   const state = req.body.state;
@@ -27,6 +28,7 @@ module.exports = async function (context, req) {
     "country": country,
     "city": city,
     "address": address,
+    "coordinates": coordinates,
     "phone": phone,
     "email": email,
     "state": state,

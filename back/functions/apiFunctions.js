@@ -69,7 +69,7 @@ function UpdateUser(list, email, pass, validated, name, last_name, phone, blood_
   return list;
 }
 
-function UpdateCorp(corp, cnpj, pass, name, country, city, address, phone, email, state, entry_date, subscription_type, subscription_start, subscription_end) {
+function UpdateCorp(corp, cnpj, pass, name, country, city, address, coordinates, phone, email, state, entry_date, subscription_type, subscription_start, subscription_end) {
   if (cnpj !== undefined) {
     corp.cnpj = cnpj;
   }
@@ -92,6 +92,10 @@ function UpdateCorp(corp, cnpj, pass, name, country, city, address, phone, email
 
   if (address !== undefined) {
     corp.address = address;
+  }
+
+  if (coordinates !== undefined) {
+    corp.coordinates = coordinates;
   }
 
   if (phone !== undefined) {
