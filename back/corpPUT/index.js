@@ -11,6 +11,7 @@ module.exports = async function (context, req) {
     const country = req.body.country;
     const city = req.body.city;
     const address = req.body.address;
+    const coordinates = req.body.coordinates;
     const phone = req.body.phone;
     const email = req.body.email;
     const state = req.body.state;
@@ -22,7 +23,7 @@ module.exports = async function (context, req) {
     const res = await corpCollection.find({"cnpj": cnpj});
     let corp = await res.toArray();
     corp = corp[0];
-    corp = UpdateCorp(corp, cnpj, pass, name, country, city, address, phone, email, state, entry_date, subscription_type, subscription_start, subscription_end);
+    corp = UpdateCorp(corp, cnpj, pass, name, country, city, address, coordinates, phone, email, state, entry_date, subscription_type, subscription_start, subscription_end);
     // 6277c41632b4f7308bb02d55
     corpCollection.updateOne(
         {"cnpj": cnpj},

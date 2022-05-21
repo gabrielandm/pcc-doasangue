@@ -32,20 +32,44 @@ export default function LoginScreen({ navigation, route }) {
 				setSnackbarText('Verifique seu e-mail, troque a senha e tente novamente');
 				setVisible(true);
 			}
+			else if (route.params.reason == 'userCreated') {
+				setSnackbarText('Conta criada com sucesso, tente fazer o log-in :)');
+				setVisible(true);
+			}
 		}
 		return null;
 	}
 
-	function validateUser() {
-		if (nameMain == user.email && passMain == user.pass) {
+	async function validateUser() {
+		// email and password validation
+		try {
+			var response = await fetch(`https://doasangue.azurewebsites.net/api/user?email=${nameMain}&pass=${passMain}&type=login`)
+			var json = await response.json();
+			console.log(json);
+		} catch (error) {
+			console.log(error);
+			return null;
+		}
+		// If value exists
+		if (json.status === 'success') {
 			navigation.dispatch(
-				StackActions.replace('HomeScreen',{
-					name: 'mousse',
+				StackActions.replace('HomeScreen', {
+					name: `${nameMain}`,
 				})
 			)
-			// navigation.navigate('HomeScreen', { name: 'Mousse' });
-		} else { // Login invalidated
+		} else if (json.status === 'fail') {
+			setSnackbarText(json.message);
+			setVisible(true);
 			setPassWrong(true);
+		}
+		// Else Doesn't exist
+		else if (json.exist == false) {
+			setSnackbarText('Usuário não existe');
+			setVisible(true);
+			setNameWrong(true);
+		} else {
+			setSnackbarText('Erro desconhecido O_O');
+			setVisible(true);
 		}
 	}
 
@@ -61,7 +85,7 @@ export default function LoginScreen({ navigation, route }) {
 			<View style={styles.secView}>
 				{!passWrong ? null : <Text>Email ou senha incorretos</Text>}
 
-				<Button mode="text" color={colors.lightRed} onPress={() => navigation.navigate('PasswordSendEmail', {name: nameMain, updateCheckedReason: () => setCheckedReaseon()})} style={styles.buttonBig}>Esqueci a senha</Button>
+				<Button mode="text" color={colors.lightRed} onPress={() => navigation.navigate('PasswordSendEmail', { name: nameMain, updateCheckedReason: () => setCheckedReaseon() })} style={styles.buttonBig}>Esqueci a senha</Button>
 
 				<Button mode="text" color={colors.lightRed} onPress={() => navigation.navigate('RegistrationScreen')} style={styles.buttonBig}>Registrar</Button>
 

@@ -25,23 +25,51 @@ const header = {
   "Access-Control-Max-Age": "86400"
 }
 
-function UpdateUser(list, email, pass, validated) {
-  if (email !== undefined && email.length < 64) {
+function UpdateUser(list, email, pass, validated, name, last_name, phone, blood_type, last_donation, city, state, country, gender, birth_date) {
+  if (email !== undefined) {
     list.email = email;
   }
-
-  if (pass !== undefined && pass.length < 32) {
+  if (pass !== undefined) {
     list.pass = pass;
   }
-
   if (validated !== undefined) {
     list.validated = validated;
+  }
+  if (name !== undefined) {
+    list.name = name;
+  }
+  if (last_name !== undefined) {
+    list.last_name = last_name;
+  }
+  if (phone !== undefined) {
+    list.phone = phone;
+  }
+  if (blood_type !== undefined) {
+    list.blood_type = blood_type;
+  }
+  if (last_donation !== undefined) {
+    list.last_donation = last_donation;
+  }
+  if (city !== undefined) {
+    list.city = city;
+  }
+  if (state !== undefined) {
+    list.state = state;
+  }
+  if (country !== undefined) {
+    list.country = country;
+  }
+  if (gender !== undefined) {
+    list.gender = gender;
+  }
+  if (birth_date !== undefined) {
+    list.birth_date = birth_date;
   }
 
   return list;
 }
 
-function UpdateCorp(corp, cnpj, pass, name, country, city, address, phone, email, state, entry_date, subscription_type, subscription_start, subscription_end) {
+function UpdateCorp(corp, cnpj, pass, name, country, city, address, coordinates, phone, email, state, entry_date, subscription_type, subscription_start, subscription_end) {
   if (cnpj !== undefined) {
     corp.cnpj = cnpj;
   }
@@ -64,6 +92,10 @@ function UpdateCorp(corp, cnpj, pass, name, country, city, address, phone, email
 
   if (address !== undefined) {
     corp.address = address;
+  }
+
+  if (coordinates !== undefined) {
+    corp.coordinates = coordinates;
   }
 
   if (phone !== undefined) {

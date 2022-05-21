@@ -31,6 +31,22 @@ function App() {
               headerShown: false,
             }}
             initialParams={{ checkedReaseon: false }}
+          />
+          <Stack.Screen
+            name="RegistrationScreen"
+            component={RegistrationScreen}
+            options={{
+              title: 'Criar conta',
+              headerShown: false,
+            }}
+          />
+          <Stack.Screen
+            name="PasswordSendEmail"
+            component={PasswordSendEmail}
+            options={{
+              title: 'Criar conta',
+              headerShown: false,
+            }}
           /> */}
           <Stack.Screen
             name="HomeScreen"
@@ -56,22 +72,6 @@ function App() {
               headerTintColor: colors.white,
             }}
           />
-          {/* <Stack.Screen
-            name="RegistrationScreen"
-            component={RegistrationScreen}
-            options={{
-              title: 'Criar conta',
-              headerShown: false,
-            }}
-          />
-          <Stack.Screen
-            name="PasswordSendEmail"
-            component={PasswordSendEmail}
-            options={{
-              title: 'Criar conta',
-              headerShown: false,
-            }}
-          /> */}
         </Stack.Navigator>
       </NavigationContainer>
 

@@ -12,6 +12,7 @@ module.exports = async function (context, req) {
 	const donerCollection = database.collection("Doner");
 
     const email = req.query.email;
+    const pass = req.query.pass;
     const type = req.query.type;
 
     const foundDoc = await donerCollection.findOne({
@@ -23,7 +24,7 @@ module.exports = async function (context, req) {
             context.res = {
                 // status: 200, /* Defaults to 200 */
                 body: {
-                    "status": "success",
+                    "status": "found",
                     "exist": true
                 },
                 headers: header
@@ -32,17 +33,37 @@ module.exports = async function (context, req) {
             context.res = {
                 // status: 200, /* Defaults to 200 */
                 body: {
-                    "status": "success",
+                    "status": "found",
                     "id": foundDoc["_id"]
                 },
                 headers: header
             };
+        } else if (type === 'login') {
+            if (foundDoc["pass"] === pass) {
+                context.res = {
+                    // status: 200, /* Defaults to 200 */
+                    body: {
+                        "status": "success",
+                        "id": foundDoc["_id"]
+                    },
+                    headers: header
+                };
+            } else {
+                context.res = {
+                    // status: 200, /* Defaults to 200 */
+                    body: {
+                        "status": "fail",
+                        "message": "Wrong password"
+                    },
+                    headers: header
+                };
+            }
         }
     } else {
         context.res = {
             // status: 200, /* Defaults to 200 */
             body: {
-                "status": "success",
+                "status": "not found",
                 "exist": false
             },
             headers: header
