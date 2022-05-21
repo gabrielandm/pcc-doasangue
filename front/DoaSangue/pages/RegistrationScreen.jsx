@@ -17,24 +17,26 @@ export default function RegistrationScreen({ navigation }) {
   const onToggleSnackBar = () => setVisible(!visible);
   const onDismissSnackBar = () => setVisible(false);
 
-
-  user = {
-    email: 'email@mousse.com',
-    pass: 'pass123',
-  }
-
-  function validateRegistration() {
-    let valid = true;
-    const errorMessages = ['Não foi possível registrar a conta :('];
+  async function createAccount() {
+    // Check email availability and password validation
+    const validateRegistrationValues = {
+      valid: true,
+      errorMessages: ['Não foi possível registrar a conta'],
+    }
     setInvalidUserMessage('');
+    let createUserResult = {
+      created: undefined,
+      message: undefined,
+      code: undefined,
+    }
 
     // Email validation
     if (nameMain != user.email) {
       setNameWrong(false);
     } else {
       setNameWrong(true);
-      valid = false;
-      errorMessages.push('- Email já cadastrado');
+      validateRegistrationValues.valid = false;
+      validateRegistrationValues.errorMessages.push('- Email já cadastrado');
     }
 
     // Password validation
@@ -42,27 +44,68 @@ export default function RegistrationScreen({ navigation }) {
       setPassWrong(false);
     } else {
       setPassWrong(true);
-      errorMessages.push('- Senha deve ter no mínimo 8 caracteres');
-      valid = false;
+      validateRegistrationValues.valid = false;
+      validateRegistrationValues.errorMessages.push('- Senha deve ter no mínimo 8 caracteres');
     }
 
-    return {
-      'valid': valid,
-      'errorMessages': errorMessages
-    };
-  }
+    if (validateRegistrationValues.valid) {
+      try {
+        var response = await fetch(
+          `https://doasangue.azurewebsites.net/api/user?email=${nameMain}&type=check`,
+          {
+            method: 'GET',
+          }
+        );
+        var json = await response.json();
 
-  function createAccount() {
-    // Check email availability and password validation
-    const validateRegistrationValues = validateRegistration();
-    const valid = validateRegistrationValues.valid;
-    const errorMessages = validateRegistrationValues.errorMessages;
-    if (!valid) {
-      setInvalidUserMessage(errorMessages.join('\n'));
+        if (json.exist === false) {
+          var response = await fetch(
+            `https://doasangue.azurewebsites.net/api/user`,
+            {
+              method: 'POST',
+              body: JSON.stringify({
+                "email": nameMain,
+                "pass": passMain,
+              }),
+            });
+          console.log(response);
+          createUserResult = {
+            created: true,
+            message: 'Usuário criado com sucesso!',
+            code: 201,
+          };
+        } else {
+          createUserResult = {
+            created: false,
+            message: '- Usuário já existe',
+            code: 400,
+          };
+        }
+      } catch (error) {
+        createUserResult = {
+          created: false,
+          message: '- Erro ao criar usuário, tente novamente mais tarde',
+          code: 500,
+        };
+      }
+      if (createUserResult.code === 201) {
+        navigation.navigate('LoginScreen',
+          {
+            reason: 'userCreated',
+          });
+      } else {
+        if (createUserResult.code === 400) {
+          setNameWrong(true);
+        }
+        validateRegistrationValues.errorMessages.push(createUserResult.message);
+        validateRegistrationValues.valid = false;
+      }
+    }
+    if (!validateRegistrationValues.valid) {
+      setInvalidUserMessage(validateRegistrationValues.errorMessages.join('\n'));
       onToggleSnackBar();
       return;
-    }
-    // Create account and go to home page
+    } 
   }
 
   return (

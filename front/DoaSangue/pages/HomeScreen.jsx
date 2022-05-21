@@ -4,6 +4,7 @@ import { Button, BottomNavigation } from 'react-native-paper';
 
 import { colors } from '../style/colors';
 import CampaignThingy from '../components/CampaignThingy';
+import ProfileThingy from '../components/ProfileThingy';
 
 const m_campaigns = [
 	{
@@ -11,7 +12,7 @@ const m_campaigns = [
 		"cnpj": '34.876.876/0001-00',
 		"start_date": '2022-06-12T15:33:33.000000-03:00',
 		"end_date": '2023-06-12T15:33:33.000-03:00',
-		"open_time": "3:33"	,
+		"open_time": "3:33",
 		"close_time": "15:33",
 		"country": 'BR',
 		"state": 'PE',
@@ -26,7 +27,7 @@ const m_campaigns = [
 		"num_doners": 12,
 		"campaign_rating": 5,
 		"observation": 'Estamos recebendo qualquer tipo de sangue, porém os mais importantes são os que foram listados abaixo.',
-		"blood_types": ['A+','AB+','O'],
+		"blood_types": ['A+', 'AB+', 'O'],
 		"header_color": '#F0D',
 		"banner_link": 'www.mousse.com',
 	},
@@ -35,7 +36,7 @@ const m_campaigns = [
 		"cnpj": '34.876.876/0001-00',
 		"start_date": '2022-06-12T15:33:33.000-03:00',
 		"end_date": '2023-06-12T15:33:33.000-03:00',
-		"open_time": "3:33"	,
+		"open_time": "3:33",
 		"close_time": "15:33",
 		"country": 'BR',
 		"state": 'PE',
@@ -50,7 +51,7 @@ const m_campaigns = [
 		"num_doners": 12,
 		"campaign_rating": 5,
 		"observation": 'Estamos recebendo qualquer tipo de sangue, porém os mais importantes são os que foram listados abaixo.',
-		"blood_types": ['A+','AB+','O'],
+		"blood_types": ['A+', 'AB+', 'O'],
 		"header_color": '#F0D',
 		"banner_link": 'www.mousse.com'
 	},
@@ -58,29 +59,42 @@ const m_campaigns = [
 
 export default function HomeScreen({ navigation, route }) {
 	function navigateTo(pageName, props) {
-		navigation.navigate(pageName, {data: props});
+		navigation.navigate(pageName, { data: props });
 	}
 
-	const CampaignsView = () => <SafeAreaView style={styles.screen} >
-		<ScrollView style={styles.scrollView}>
-			{m_campaigns.map(
-				(campaign, index) => <CampaignThingy
-					key={index}
-					data={campaign}
-					navigateTo={(pageName, props) => navigateTo(pageName, props)} 
-				/>)
-			}
-		</ScrollView>
+	const CampaignsView = () =>
+		<SafeAreaView style={styles.screen} >
+			<Button onPress={() => getMoviesFromApiAsync()} >Mousse</Button>
+			<ScrollView style={styles.scrollView}>
+				{m_campaigns.map(
+					(campaign, index) => <CampaignThingy
+						key={index}
+						data={campaign}
+						navigateTo={(pageName, props) => navigateTo(pageName, props)}
+					/>)
+				}
+			</ScrollView>
+		</SafeAreaView>;
 
-	</SafeAreaView>;
-	const AchievementView = () => <Text>Achievements</Text>;
-	const ProfileView = () => <Text>Profile page</Text>;
+	const AchievementView = () =>
+		<SafeAreaView style={styles.screen} >
+			<ScrollView style={styles.scrollView}>
+				<Text>Achievements</Text>
+			</ScrollView>
+		</SafeAreaView>;
+
+	const ProfileView = () =>
+		<SafeAreaView style={styles.screen} >
+			<ScrollView style={styles.scrollView}>
+				<ProfileThingy data={undefined} />
+			</ScrollView>
+		</SafeAreaView>;
 
 	const [index, setIndex] = React.useState(0);
 	const [routes] = React.useState([
 		{ key: 'campaigns', title: 'Campanhas', icon: 'account-heart' },
 		{ key: 'achievements', title: 'Conquistas', icon: 'trophy' },
-		{ key: 'profile', title: 'Recents', icon: 'history' },
+		{ key: 'profile', title: 'Perfil', icon: 'account-circle' },
 	]);
 
 	const renderScene = BottomNavigation.SceneMap({
@@ -106,8 +120,8 @@ const styles = StyleSheet.create({
 		flex: 1,
 	},
 	scrollView: {
-		paddingTop: 30,
-		paddingBottom:30,
+		paddingTop: 15,
+		paddingBottom: 30,
 	},
 	container: {
 		flex: 15,
@@ -115,5 +129,5 @@ const styles = StyleSheet.create({
 	},
 	bottom: {
 		flexBasis: 50,
-	}
+	},
 });

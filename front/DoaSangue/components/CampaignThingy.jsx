@@ -98,4 +98,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row-reverse',
     // justifyContent: 'space-between',
   },
+  chip: {
+    marginLeft: 3,
+    marginTop: 3,
+  },
 });
