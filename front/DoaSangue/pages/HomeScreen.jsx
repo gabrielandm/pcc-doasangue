@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
-import { StyleSheet, View, Text, ScrollView, SafeAreaView, StatusBar } from 'react-native';
-import { Button, BottomNavigation } from 'react-native-paper';
+import React, { useEffect, useState } from 'react';
+import { StyleSheet, View, Text, ScrollView, SafeAreaView, StatusBar, ActivityIndicator } from 'react-native';
+import { BottomNavigation } from 'react-native-paper';
 
 import { colors } from '../style/colors';
+import { config } from '../config/config';
 import CampaignThingy from '../components/CampaignThingy';
 import ProfileThingy from '../components/ProfileThingy';
 
@@ -58,20 +59,47 @@ const m_campaigns = [
 ]
 
 export default function HomeScreen({ navigation, route }) {
+	/* Variables and functions */
+	const [filters, setFilters] = useState(null);
+	const [campaignData, setCampaignData] = useState(null);
+
 	function navigateTo(pageName, props) {
 		navigation.navigate(pageName, { data: props });
 	}
 
+	async function getCampaigns() {
+		let query = ''
+		for (const key in filters) {
+			query += `${key}=${filters[key]}&`
+		}
+		if (query === '') {
+			query = 'no_filter=true';
+		}
+		try {
+			const response = await fetch(`${config.campaign}?${query}`)
+			const json = await response.json();
+			setCampaignData(json);
+		} catch (error) {
+			console.log(error);
+		}
+	}
+
+	/* When page loads */
+	useEffect(() => {
+		getCampaigns();
+	}, []);
+
+	/* Views */
+	// Definir variável q vai ser uma bool e salva se os dados já foram coletados e só coletar se ainda não foram :)
 	const CampaignsView = () =>
 		<SafeAreaView style={styles.screen} >
-			<Button onPress={() => getMoviesFromApiAsync()} >Mousse</Button>
 			<ScrollView style={styles.scrollView}>
-				{m_campaigns.map(
+				{campaignData !== null ? campaignData.map(
 					(campaign, index) => <CampaignThingy
 						key={index}
 						data={campaign}
 						navigateTo={(pageName, props) => navigateTo(pageName, props)}
-					/>)
+					/>) : <ActivityIndicator size="large" color="#0000ff" />
 				}
 			</ScrollView>
 		</SafeAreaView>;
@@ -90,19 +118,20 @@ export default function HomeScreen({ navigation, route }) {
 			</ScrollView>
 		</SafeAreaView>;
 
+	/* View controller */
 	const [index, setIndex] = React.useState(0);
 	const [routes] = React.useState([
 		{ key: 'campaigns', title: 'Campanhas', icon: 'account-heart' },
 		{ key: 'achievements', title: 'Conquistas', icon: 'trophy' },
 		{ key: 'profile', title: 'Perfil', icon: 'account-circle' },
 	]);
-
 	const renderScene = BottomNavigation.SceneMap({
 		campaigns: CampaignsView,
 		achievements: AchievementView,
 		profile: ProfileView,
 	});
 
+	/* Main View */
 	return (
 		<View style={styles.screen} >
 			<BottomNavigation
