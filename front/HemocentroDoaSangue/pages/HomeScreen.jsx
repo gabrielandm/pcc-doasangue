@@ -7,57 +7,6 @@ import { config } from '../config/config';
 import CampaignThingy from '../components/CampaignThingy';
 import ProfileThingy from '../components/ProfileThingy';
 
-const m_campaigns = [
-	{
-		"name": "Camapnha Doa Mais",
-		"cnpj": '34.876.876/0001-00',
-		"start_date": '2022-06-12T15:33:33.000000-03:00',
-		"end_date": '2023-06-12T15:33:33.000-03:00',
-		"open_time": "3:33",
-		"close_time": "15:33",
-		"country": 'BR',
-		"state": 'PE',
-		"city": 'Xvs',
-		"address": 'R. do Alfinetes, 33',
-		"coordinates": {
-			"latitude": -7.033889,
-			"longitude": -39.408889,
-		},
-		"phone": '(33) 3333-3333',
-		"creation_date": '2022-12-06 15:33:33.000-03:00',
-		"num_doners": 12,
-		"campaign_rating": 5,
-		"observation": 'Estamos recebendo qualquer tipo de sangue, porém os mais importantes são os que foram listados abaixo.',
-		"blood_types": ['A+', 'AB+', 'O'],
-		"header_color": '#F0D',
-		"banner_link": 'www.mousse.com',
-	},
-	{
-		"name": "Camapnha Doa Mais 33",
-		"cnpj": '34.876.876/0001-00',
-		"start_date": '2022-06-12T15:33:33.000-03:00',
-		"end_date": '2023-06-12T15:33:33.000-03:00',
-		"open_time": "3:33",
-		"close_time": "15:33",
-		"country": 'BR',
-		"state": 'PE',
-		"city": 'Xvs',
-		"address": 'R. do Alfinetes, 33',
-		"coordinates": {
-			"latitude": -8.05,
-			"longitude": -34.05
-		},
-		"phone": '(33) 3333-3333',
-		"creation_date": '2022-12-06 15:33:33.000-03:00',
-		"num_doners": 12,
-		"campaign_rating": 5,
-		"observation": 'Estamos recebendo qualquer tipo de sangue, porém os mais importantes são os que foram listados abaixo.',
-		"blood_types": ['A+', 'AB+', 'O'],
-		"header_color": '#F0D',
-		"banner_link": 'www.mousse.com'
-	},
-]
-
 export default function HomeScreen({ navigation, route }) {
 	/* Variables and functions */
 	const [filters, setFilters] = useState(null);
@@ -101,7 +50,7 @@ export default function HomeScreen({ navigation, route }) {
 		if (filter != undefined || !debug) {
 			// Get data from MongoDB
 			try {
-				const response = await fetch(`${config.user}?type=data&email=${filter.name}`)
+				const response = await fetch(`${config.corp}?type=data&cnpj=${filter.name}`)
 				if (response.status === 200) {
 					const json = await response.json();
 					// console.log(json)
@@ -118,7 +67,7 @@ export default function HomeScreen({ navigation, route }) {
 		if (debug) {
 			// Only for debug
 			// Create default user
-			setProfileData({'email': 'mousseuwu','pass': '12345678','validates': 1,'entry_date': new Date(),'name': 'Mousse Hardcoded','last_name': 'de Chocolate','phone': '+5519998049566','blood_type': 'O+','last_donation': new Date(),'city': 'Mistério 2','state': 'PE','country': 'BR','gender': 0,'birth_date': new Date(),'profile_link': null,'_id': '333',
+			setProfileData({'cnpj': '000','pass': '12345678','entry_date': new Date(),'name': 'Hemocentro Unicamp','phone': '+5519998049566','city': 'Campinas 2','state': 'SP','country': 'BR','birth_date': new Date(),'profile_link': null,'_id': '333',
 			})
 		}
 		console.log(profileData)

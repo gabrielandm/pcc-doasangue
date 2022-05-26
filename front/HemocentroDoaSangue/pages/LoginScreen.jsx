@@ -44,7 +44,7 @@ export default function LoginScreen({ navigation, route }) {
 	async function validateUser() {
 		// email and password validation
 		try {
-			var response = await fetch(`${config.user}?email=${nameMain}&pass=${passMain}&type=login`)
+			var response = await fetch(`${config.corp}?cnpj=${nameMain}&pass=${passMain}&type=login`)
 			var json = await response.json();
 			// console.log(json);
 		} catch (error) {

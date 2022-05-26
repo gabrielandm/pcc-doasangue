@@ -31,3 +31,7 @@ Estas anotações serão feitas a partir da própria documentação do React Nat
 - [Navigating Between Screens](https://reactnative.dev/docs/navigation)
 - [React Native](https://reactnative.dev/)
 - [Icones](https://callstack.github.io/react-native-paper/icons.html), você precisa clicar num botão que não parece um botão pra poder ver tudo que o React Paper suporta
+
+## Vídeos que podem ajudar
+
+- [Vídeo](https://youtu.be/UNFDILca9M8?t=251) - Salvar imagem para foto de perfil com edição

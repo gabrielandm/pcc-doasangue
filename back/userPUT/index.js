@@ -19,11 +19,12 @@ module.exports = async function (context, req) {
     const country = req.body.country;
     const gender = req.body.gender;
     const birth_date = req.body.birth_date;
+    const profile_link = req.body.profile_link;
 
     const res = await donerCollection.find({"email": email});
     let user = await res.toArray();
     user = user[0];
-    user = UpdateUser(user, email, pass, validated, name, last_name, phone, blood_type, last_donation, city, state, country, gender, birth_date);
+    user = UpdateUser(user, email, pass, validated, name, last_name, phone, blood_type, last_donation, city, state, country, gender, birth_date, profile_link);
 
     donerCollection.updateOne(
         {"email": email},
