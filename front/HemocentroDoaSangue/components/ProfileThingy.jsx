@@ -43,10 +43,6 @@ export default function ProfileThingy(props) {
               <Text style={styles.infoHeader}>Endereço:</Text>
               <Text style={styles.infoText}>{data.address}</Text>
             </View>
-            <View style={styles.rowCenter}>
-              <Text style={styles.infoHeader}>Dias para poder doar:</Text>
-              <Text style={styles.infoText}>{daysToDonate > 0 ? `${daysToDonate} dias` : 'já pode doar!'}</Text>
-            </View>
           </View>
         </View>
       </View>

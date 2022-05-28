@@ -2,6 +2,7 @@ import { StackActions } from '@react-navigation/native';
 import React, { useState } from 'react';
 import { StyleSheet, View, Text } from 'react-native';
 import { Button, Snackbar } from 'react-native-paper';
+import { useFonts } from 'expo-font';
 
 import SmallTextInput from '../components/SmallTextInput';
 
@@ -19,11 +20,6 @@ export default function LoginScreen({ navigation, route }) {
 	const [visible, setVisible] = React.useState(false);
 	const onToggleSnackBar = () => setVisible(!visible);
 	const onDismissSnackBar = () => setVisible(false);
-
-	user = {
-		email: 'email@mousse.com',
-		pass: 'pass123',
-	}
 
 	function reasonCheck() {
 		setCheckedReaseon(true)
@@ -77,8 +73,10 @@ export default function LoginScreen({ navigation, route }) {
 	return (
 		<View style={styles.container}>
 			{!checkedReaseon ? reasonCheck() : null}
-			<Text style={styles.header}>Bem vindo(a)!</Text>
-			<Text style={styles.subHeader}>Entre na sua conta</Text>
+			<Text style={styles.header}>Doa Sangue</Text>
+			<Text style={styles.subHeader}>Hemocentro</Text>
+
+			<Text style={styles.info}>Entre na sua conta</Text>
 
 			<SmallTextInput label={'Usuário'} isPassword={false} updateVar={(text) => setNameMain(text)} style={styles.textInput} invalidInput={passWrong} />
 			<SmallTextInput label={'Senha'} isPassword={true} updateVar={(text) => setPassMain(text)} style={styles.textInput} invalidInput={passWrong} />
@@ -112,7 +110,6 @@ const styles = StyleSheet.create({
 	},
 	secView: {
 		alignItems: 'center',
-		// justifyContent: 'center',
 		textAlign: 'center',
 		marginTop: 50,
 	},
@@ -126,10 +123,28 @@ const styles = StyleSheet.create({
 	},
 	header: {
 		textAlign: 'center',
-		fontSize: 28,
+		includeFontPadding: true,
+		textShadowColor: '#000',
+		textShadowOffset: { width: 1.2, height: 1.2 },
+		textShadowRadius: 2,
+		fontSize: 48,
+		// fontFamily: 'Karla-ExtraBold',
 		fontWeight: 'bold',
+		color: colors.red,
 	},
 	subHeader: {
+		textAlign: 'center',
+		includeFontPadding: true,
+		textShadowColor: '#000',
+		textShadowOffset: { width: 1.2, height: 1.2 },
+		textShadowRadius: 2,
+		fontSize: 48/2.5,
+		marginTop: -10,
+		fontWeight: 'bold',
+		color: colors.lightRed,
+		marginBottom: 50,
+	},
+	info: {
 		textAlign: 'center',
 		fontSize: 18,
 		marginBottom: 50,

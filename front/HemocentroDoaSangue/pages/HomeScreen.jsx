@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, View, Text, ScrollView, SafeAreaView, StatusBar, ActivityIndicator } from 'react-native';
-import { BottomNavigation, Snackbar } from 'react-native-paper';
+import { BottomNavigation, Snackbar, Button } from 'react-native-paper';
 
 import { colors } from '../style/colors';
 import { config } from '../config/config';
@@ -23,13 +23,15 @@ export default function HomeScreen({ navigation, route }) {
 		navigation.navigate(pageName, { data: props });
 	}
 
-	async function getCampaigns() {
-		let query = ''
+	async function getCampaigns(params, filters) {
+		let query = `cnpj=${params.name}&`
 		for (const key in filters) {
 			query += `${key}=${filters[key]}&`
 		}
 		if (query === '') {
 			query = 'no_filter=true';
+		} else {
+			query += `no_filter=false`;
 		}
 		try {
 			const response = await fetch(`${config.campaign}?${query}`)
@@ -67,7 +69,8 @@ export default function HomeScreen({ navigation, route }) {
 		if (debug) {
 			// Only for debug
 			// Create default user
-			setProfileData({'cnpj': '000','pass': '12345678','entry_date': new Date(),'name': 'Hemocentro Unicamp','phone': '+5519998049566','city': 'Campinas 2','state': 'SP','country': 'BR','birth_date': new Date(),'profile_link': null,'_id': '333',
+			setProfileData({
+				'cnpj': '000', 'pass': '12345678', 'entry_date': new Date(), 'name': 'Hemocentro Unicamp', 'phone': '+5519998049566', 'city': 'Campinas 2', 'state': 'SP', 'country': 'BR', 'birth_date': new Date(), 'profile_link': null, '_id': '333',
 			})
 		}
 		console.log(profileData)
@@ -75,8 +78,8 @@ export default function HomeScreen({ navigation, route }) {
 
 	/* When page loads */
 	useEffect(() => {
-		getProfileData(route.params);
-		getCampaigns();
+		// getProfileData(route.params);
+		// getCampaigns(route.params);
 	}, []);
 
 	/* Views */
@@ -92,6 +95,9 @@ export default function HomeScreen({ navigation, route }) {
 					/>) : <ActivityIndicator size="large" color="#0000ff" />
 				}
 			</ScrollView>
+			<Button style={styles.buttonStyle} onPress={() => navigateTo('createCampaign', profileData)}>
+				<Text style={styles.buttonTextStyle}>+</Text>
+			</Button>
 			<Snackbar
 				visible={visible}
 				onDismiss={onDismissSnackBar}
@@ -104,7 +110,7 @@ export default function HomeScreen({ navigation, route }) {
 	const AchievementView = () =>
 		<SafeAreaView style={styles.screen} >
 			<ScrollView style={styles.scrollView}>
-				<Text>Achievements</Text>
+				<Text>Dashboard</Text>
 			</ScrollView>
 		</SafeAreaView>;
 
@@ -119,7 +125,7 @@ export default function HomeScreen({ navigation, route }) {
 	const [index, setIndex] = React.useState(0);
 	const [routes] = React.useState([
 		{ key: 'campaigns', title: 'Campanhas', icon: 'account-heart' },
-		{ key: 'achievements', title: 'Conquistas', icon: 'trophy' },
+		{ key: 'achievements', title: 'Relatório', icon: 'chart-donut' },
 		{ key: 'profile', title: 'Perfil', icon: 'account-circle' },
 	]);
 	const renderScene = BottomNavigation.SceneMap({
@@ -155,5 +161,24 @@ const styles = StyleSheet.create({
 	},
 	bottom: {
 		flexBasis: 50,
+	},
+	buttonStyle: {
+		backgroundColor: colors.lightRed,
+		width: 60,
+		height: 60,
+		borderRadius: 60/2,
+		justifyContent: 'center',
+		alignItems: 'center',
+		position: 'absolute',
+		bottom: 15,
+		right: 20,
+	},
+	buttonTextStyle: {
+		color: colors.white,
+		fontSize: 26,
+		marginTop: 0,
+		marginBottom: 10,
+		borderWidth: 2,
+		borderColor: colors.white,
 	},
 });

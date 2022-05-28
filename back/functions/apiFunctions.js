@@ -232,4 +232,14 @@ function UpdateDonationDate(res, doner_email, corp_cnpj, campaign_code, ammount_
   return res;
 }
 
-module.exports = { connectDB, UpdateUser, UpdateCorp, UpdateCampaign, UpdateDonationDate, header };
+function getCampaignFilters(query) {
+  let filters = {};
+  for (key in query) {
+    if (key !== 'no_filter') {
+      filters[key] = query[key];
+    }
+  }
+  return filters;
+}
+
+module.exports = { connectDB, UpdateUser, UpdateCorp, UpdateCampaign, UpdateDonationDate, getCampaignFilters, header };
