@@ -18,6 +18,7 @@ export default function SmallTextInput(props) {
 				activeOutlineColor={!props.invalidInput ? colors.blue : colors.lightRed}
 				outlineColor={!props.invalidInput ? colors.gray : colors.red}
 				style={props.style}
+				keyboardType={props.keyboardType}
 			/>
 		</View>
 	);
