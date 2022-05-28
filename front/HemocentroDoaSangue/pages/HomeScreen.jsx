@@ -1,62 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, View, Text, ScrollView, SafeAreaView, StatusBar, ActivityIndicator } from 'react-native';
-import { BottomNavigation, Snackbar } from 'react-native-paper';
+import { BottomNavigation, Snackbar, Button } from 'react-native-paper';
 
 import { colors } from '../style/colors';
 import { config } from '../config/config';
 import CampaignThingy from '../components/CampaignThingy';
 import ProfileThingy from '../components/ProfileThingy';
-
-const m_campaigns = [
-	{
-		"name": "Camapnha Doa Mais",
-		"cnpj": '34.876.876/0001-00',
-		"start_date": '2022-06-12T15:33:33.000000-03:00',
-		"end_date": '2023-06-12T15:33:33.000-03:00',
-		"open_time": "3:33",
-		"close_time": "15:33",
-		"country": 'BR',
-		"state": 'PE',
-		"city": 'Xvs',
-		"address": 'R. do Alfinetes, 33',
-		"coordinates": {
-			"latitude": -7.033889,
-			"longitude": -39.408889,
-		},
-		"phone": '(33) 3333-3333',
-		"creation_date": '2022-12-06 15:33:33.000-03:00',
-		"num_doners": 12,
-		"campaign_rating": 5,
-		"observation": 'Estamos recebendo qualquer tipo de sangue, porém os mais importantes são os que foram listados abaixo.',
-		"blood_types": ['A+', 'AB+', 'O'],
-		"header_color": '#F0D',
-		"banner_link": 'www.mousse.com',
-	},
-	{
-		"name": "Camapnha Doa Mais 33",
-		"cnpj": '34.876.876/0001-00',
-		"start_date": '2022-06-12T15:33:33.000-03:00',
-		"end_date": '2023-06-12T15:33:33.000-03:00',
-		"open_time": "3:33",
-		"close_time": "15:33",
-		"country": 'BR',
-		"state": 'PE',
-		"city": 'Xvs',
-		"address": 'R. do Alfinetes, 33',
-		"coordinates": {
-			"latitude": -8.05,
-			"longitude": -34.05
-		},
-		"phone": '(33) 3333-3333',
-		"creation_date": '2022-12-06 15:33:33.000-03:00',
-		"num_doners": 12,
-		"campaign_rating": 5,
-		"observation": 'Estamos recebendo qualquer tipo de sangue, porém os mais importantes são os que foram listados abaixo.',
-		"blood_types": ['A+', 'AB+', 'O'],
-		"header_color": '#F0D',
-		"banner_link": 'www.mousse.com'
-	},
-]
 
 export default function HomeScreen({ navigation, route }) {
 	/* Variables and functions */
@@ -74,13 +23,15 @@ export default function HomeScreen({ navigation, route }) {
 		navigation.navigate(pageName, { data: props });
 	}
 
-	async function getCampaigns() {
-		let query = ''
+	async function getCampaigns(params, filters) {
+		let query = `cnpj=${params.name}&`
 		for (const key in filters) {
 			query += `${key}=${filters[key]}&`
 		}
 		if (query === '') {
 			query = 'no_filter=true';
+		} else {
+			query += `no_filter=false`;
 		}
 		try {
 			const response = await fetch(`${config.campaign}?${query}`)
@@ -101,7 +52,7 @@ export default function HomeScreen({ navigation, route }) {
 		if (filter != undefined || !debug) {
 			// Get data from MongoDB
 			try {
-				const response = await fetch(`${config.user}?type=data&email=${filter.name}`)
+				const response = await fetch(`${config.corp}?type=data&cnpj=${filter.name}`)
 				if (response.status === 200) {
 					const json = await response.json();
 					// console.log(json)
@@ -118,7 +69,8 @@ export default function HomeScreen({ navigation, route }) {
 		if (debug) {
 			// Only for debug
 			// Create default user
-			setProfileData({'email': 'mousseuwu','pass': '12345678','validates': 1,'entry_date': new Date(),'name': 'Mousse Hardcoded','last_name': 'de Chocolate','phone': '+5519998049566','blood_type': 'O+','last_donation': new Date(),'city': 'Mistério 2','state': 'PE','country': 'BR','gender': 0,'birth_date': new Date(),'profile_link': null,'_id': '333',
+			setProfileData({
+				'cnpj': '000', 'pass': '12345678', 'entry_date': new Date(), 'name': 'Hemocentro Unicamp', 'phone': '+5519998049566', 'city': 'Campinas 2', 'state': 'SP', 'country': 'BR', 'birth_date': new Date(), 'profile_link': null, '_id': '333',
 			})
 		}
 		console.log(profileData)
@@ -126,8 +78,8 @@ export default function HomeScreen({ navigation, route }) {
 
 	/* When page loads */
 	useEffect(() => {
-		getProfileData(route.params);
-		getCampaigns();
+		// getProfileData(route.params);
+		// getCampaigns(route.params);
 	}, []);
 
 	/* Views */
@@ -143,6 +95,9 @@ export default function HomeScreen({ navigation, route }) {
 					/>) : <ActivityIndicator size="large" color="#0000ff" />
 				}
 			</ScrollView>
+			<Button style={styles.buttonStyle} onPress={() => navigateTo('createCampaign', profileData)}>
+				<Text style={styles.buttonTextStyle}>+</Text>
+			</Button>
 			<Snackbar
 				visible={visible}
 				onDismiss={onDismissSnackBar}
@@ -155,7 +110,7 @@ export default function HomeScreen({ navigation, route }) {
 	const AchievementView = () =>
 		<SafeAreaView style={styles.screen} >
 			<ScrollView style={styles.scrollView}>
-				<Text>Achievements</Text>
+				<Text>Dashboard</Text>
 			</ScrollView>
 		</SafeAreaView>;
 
@@ -170,7 +125,7 @@ export default function HomeScreen({ navigation, route }) {
 	const [index, setIndex] = React.useState(0);
 	const [routes] = React.useState([
 		{ key: 'campaigns', title: 'Campanhas', icon: 'account-heart' },
-		{ key: 'achievements', title: 'Conquistas', icon: 'trophy' },
+		{ key: 'achievements', title: 'Relatório', icon: 'chart-donut' },
 		{ key: 'profile', title: 'Perfil', icon: 'account-circle' },
 	]);
 	const renderScene = BottomNavigation.SceneMap({
@@ -206,5 +161,24 @@ const styles = StyleSheet.create({
 	},
 	bottom: {
 		flexBasis: 50,
+	},
+	buttonStyle: {
+		backgroundColor: colors.lightRed,
+		width: 60,
+		height: 60,
+		borderRadius: 60/2,
+		justifyContent: 'center',
+		alignItems: 'center',
+		position: 'absolute',
+		bottom: 15,
+		right: 20,
+	},
+	buttonTextStyle: {
+		color: colors.white,
+		fontSize: 26,
+		marginTop: 0,
+		marginBottom: 10,
+		borderWidth: 2,
+		borderColor: colors.white,
 	},
 });

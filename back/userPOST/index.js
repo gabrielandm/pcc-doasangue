@@ -43,6 +43,7 @@ module.exports = async function (context, req) {
         "country": country,
         "gender": gender,
         "birth_date": birth_date,
+        "profile_link": null,
 	});
 
 	context.res = {

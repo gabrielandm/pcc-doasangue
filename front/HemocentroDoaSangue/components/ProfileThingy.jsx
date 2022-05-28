@@ -37,43 +37,11 @@ export default function ProfileThingy(props) {
           <View style={styles.column}>
             <View style={styles.rowCenter}>
               <Text style={styles.infoHeader}>Nome:</Text>
-              <Text style={styles.infoText}>{data.name} {data.last_name}</Text>
+              <Text style={styles.infoText}>{data.name}</Text>
             </View>
             <View style={styles.rowCenter}>
-              <Text style={styles.infoHeader}>Tipo sanguineo:</Text>
-              <Text style={styles.infoText}>{data.blood_type}</Text>
-            </View>
-            <View style={styles.rowCenter}>
-              <Text style={styles.infoHeader}>Dias para poder doar:</Text>
-              <Text style={styles.infoText}>{daysToDonate > 0 ? `${daysToDonate} dias` : 'já pode doar!'}</Text>
-            </View>
-          </View>
-        </View>
-      </View>
-
-      {/* Other info */}
-      <View style={styles.outerBox}>
-        <View style={styles.rowHeader}>
-          <Text style={styles.title}>Outras informações:</Text>
-          <IconButton icon="square-edit-outline" size={textSize} onPress={() => openEditPage('EditOtherInfoScreen')} />
-        </View>
-        <View style={styles.row}>
-          <View style={styles.column}>
-            <View style={styles.rowCenter}>
-              <Text style={styles.infoHeader}>Última doação:</Text>
-              <Text style={styles.infoText}>{data.last_donation.toLocaleDateString("pt-BR", options)}</Text>
-            </View>
-            <View style={styles.rowCenter}>
-              <Text style={styles.infoHeader}>Genêro:</Text>
-              <Text style={styles.infoText}>{data.gender === 0 ? 'Feminino' : 'Masculino'}</Text>
-            </View>
-            <View style={styles.rowCenter}>
-              <Text style={styles.infoHeader}>Data de nscimento:</Text>
-              <Text style={styles.infoText}>{data.birth_date.toLocaleDateString("pt-BR", options)}</Text>
-            </View>
-            <View style={styles.rowCenter}>
-              <Text style={styles.infoHeader}>Idade:</Text>
-              <Text style={styles.infoText}>{userAge}</Text>
+              <Text style={styles.infoHeader}>Endereço:</Text>
+              <Text style={styles.infoText}>{data.address}</Text>
             </View>
           </View>
         </View>
@@ -88,15 +56,15 @@ export default function ProfileThingy(props) {
           <View style={styles.column}>
             <View style={styles.rowCenter}>
               <Text style={styles.infoHeader}>Total de doações:</Text>
-              <Text style={styles.infoText}>3</Text>
+              <Text style={styles.infoText}>300</Text>
             </View>
             <View style={styles.rowCenter}>
-              <Text style={styles.infoHeader}>Postos diferentes:</Text>
-              <Text style={styles.infoText}>3</Text>
+              <Text style={styles.infoHeader}>Campanhas ativas:</Text>
+              <Text style={styles.infoText}>6</Text>
             </View>
             <View style={styles.rowCenter}>
-              <Text style={styles.infoHeader}>Volume total doado:</Text>
-              <Text style={styles.infoText}>3.000 ml</Text>
+              <Text style={styles.infoHeader}>Volume total recebido:</Text>
+              <Text style={styles.infoText}>12.000 ml</Text>
             </View>
           </View>
         </View>

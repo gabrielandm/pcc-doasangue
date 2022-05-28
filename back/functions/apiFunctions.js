@@ -25,7 +25,7 @@ const header = {
   "Access-Control-Max-Age": "86400"
 }
 
-function UpdateUser(list, email, pass, validated, name, last_name, phone, blood_type, last_donation, city, state, country, gender, birth_date) {
+function UpdateUser(list, email, pass, validated, name, last_name, phone, blood_type, last_donation, city, state, country, gender, birth_date, profile_link) {
   if (email !== undefined) {
     list.email = email;
   }
@@ -64,6 +64,9 @@ function UpdateUser(list, email, pass, validated, name, last_name, phone, blood_
   }
   if (birth_date !== undefined) {
     list.birth_date = birth_date;
+  }
+  if (profile_link !== undefined) {
+    list.profile_link = profile_link;
   }
 
   return list;
@@ -229,4 +232,14 @@ function UpdateDonationDate(res, doner_email, corp_cnpj, campaign_code, ammount_
   return res;
 }
 
-module.exports = { connectDB, UpdateUser, UpdateCorp, UpdateCampaign, UpdateDonationDate, header };
+function getCampaignFilters(query) {
+  let filters = {};
+  for (key in query) {
+    if (key !== 'no_filter') {
+      filters[key] = query[key];
+    }
+  }
+  return filters;
+}
+
+module.exports = { connectDB, UpdateUser, UpdateCorp, UpdateCampaign, UpdateDonationDate, getCampaignFilters, header };

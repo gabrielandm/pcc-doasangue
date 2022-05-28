@@ -58,6 +58,15 @@ module.exports = async function (context, req) {
                     headers: header
                 };
             }
+        } else if (type === 'data') {
+            context.res = {
+                // status: 200, /* Defaults to 200 */
+                body: {
+                    "status": "success",
+                    "data": foundDoc
+                },
+                headers: header
+            };
         }
     } else {
         context.res = {
