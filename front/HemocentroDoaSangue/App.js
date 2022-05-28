@@ -9,6 +9,7 @@ import LoginScreen from './pages/LoginScreen';
 import RegistrationScreen from './pages/RegistrationScreen';
 import PasswordSendEmail from './pages/PasswordSendEmail';
 import CampaignScreen from './pages/CampaignScreen';
+import CampaignCreationScreen from './pages/CampaignCreationScreen';
 import {colors} from './style/colors';
 
 const Stack = createNativeStackNavigator();
@@ -23,7 +24,7 @@ function App() {
 
       <NavigationContainer>
         <Stack.Navigator>
-          <Stack.Screen
+          {/* <Stack.Screen
             name="LoginScreen"
             component={LoginScreen}
             options={{
@@ -63,6 +64,18 @@ function App() {
           <Stack.Screen
             name="CampaignScreen"
             component={CampaignScreen}
+            options={{
+              title: 'DoaSangue',
+              headerShown: true,
+              headerStyle: {
+                backgroundColor: colors.red,
+              },
+              headerTintColor: colors.white,
+            }}
+          /> */}
+          <Stack.Screen
+            name="CampaignCreationScreen"
+            component={CampaignCreationScreen}
             options={{
               title: 'DoaSangue',
               headerShown: true,

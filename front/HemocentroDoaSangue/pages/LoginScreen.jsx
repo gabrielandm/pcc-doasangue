@@ -70,6 +70,8 @@ export default function LoginScreen({ navigation, route }) {
 		}
 	}
 
+	function setInputType() { }
+
 	return (
 		<View style={styles.container}>
 			{!checkedReaseon ? reasonCheck() : null}
@@ -79,7 +81,7 @@ export default function LoginScreen({ navigation, route }) {
 			<Text style={styles.info}>Entre na sua conta</Text>
 
 			<SmallTextInput label={'Usuário'} isPassword={false} updateVar={(text) => setNameMain(text)} style={styles.textInput} invalidInput={passWrong} />
-			<SmallTextInput label={'Senha'} isPassword={true} updateVar={(text) => setPassMain(text)} style={styles.textInput} invalidInput={passWrong} />
+			<SmallTextInput label={'Senha'} isPassword={true} updateVar={(text) => setPassMain(text)} style={styles.textInput} invalidInput={passWrong} right={<TextInput.Icon name="eye" onPress={() => setInputType()}/>} />
 
 			<View style={styles.secView}>
 				{!passWrong ? null : <Text>Email ou senha incorretos</Text>}
