@@ -9,6 +9,7 @@ import LoginScreen from './pages/LoginScreen';
 import RegistrationScreen from './pages/RegistrationScreen';
 import PasswordSendEmail from './pages/PasswordSendEmail';
 import CampaignScreen from './pages/CampaignScreen';
+import CampaignCreation from './pages/CampaignCreation';
 import {colors} from './style/colors';
 
 const Stack = createNativeStackNavigator();
@@ -23,7 +24,19 @@ function App() {
 
       <NavigationContainer>
         <Stack.Navigator>
-          {/* <Stack.Screen
+          {<Stack.Screen
+            name="CampaignCreation"
+            component={CampaignCreation}
+            options={{
+              title: 'Criar Campanha',
+              headerShown: true,
+              headerStyle: {
+                backgroundColor: colors.red,
+              },
+              headerTintColor: colors.white,
+            }}
+          />
+          /* <Stack.Screen
             name="LoginScreen"
             component={LoginScreen}
             options={{
@@ -90,3 +103,5 @@ const styles = StyleSheet.create({
 });
 
 export default App;
+
+//null
