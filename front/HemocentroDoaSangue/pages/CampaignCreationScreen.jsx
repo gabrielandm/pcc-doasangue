@@ -1,42 +1,67 @@
 import React, { useState } from 'react';
 import { StyleSheet, View, Text, ScrollView, SafeAreaView, Dimensions, Linking } from 'react-native';
-import { Button, Chip, Avatar, TextInput } from 'react-native-paper';
+import { Button, Chip } from 'react-native-paper';
 import SmallTextInput from '../components/SmallTextInput';
 import DateTimePicker from '@react-native-community/datetimepicker';
 
 
 import { colors } from '../style/colors';
+import { statesList, bloodTypesList } from '../config/data';
 
 export default function CampaignScreen({ navigation, route }) {
+  /* Observation and open - close time */
   const options = { year: '4-digit', month: '2-digit', day: '2-digit' };
   // Text and Number data
   const cnpj = '000'
   const country = 'BR'
   const [name, setName] = useState(null)
+  const [city, setCity] = useState(null)
+  const [address, setAddress] = useState(null)
+  const [phone, setPhone] = useState(null)
+
+  // State dropdown list data
   const [state, setState] = useState(null);
+  const [stateItems, setStateItems] = useState(statesList);
+
+  /* Blood stuff */
+  // BloodType dropdown list data
+  const [bloodTypes, setBloodTypes] = useState(new Array(bloodTypesList.length).fill(false));
+  const [bloodTypeItems, setBloodTypeItems] = useState(bloodTypesList);
+
+  function bloodSelected(index) {
+    /* Selects after onPress of a chip, but it only works if the code is like this \'-'/ 
+      setMyArray( arr => [...arr, `${arr.length}`]);
+    */
+    const newBloodTypes = bloodTypes;
+    newBloodTypes[index] = !newBloodTypes[index];
+    setBloodTypes(newBloodTypes => [...newBloodTypes, `${newBloodTypes.length}`]);
+  }
+
+  /* Date stuff */
   // Start Date
-  const [startDate, setStartDate] = useState(new Date());
   const [mode, setMode] = useState('date');
+  const [startDate, setStartDate] = useState(new Date());
   const [showStartDate, setShowStartDate] = useState(false);
+
   // End Date
   const [endDate, setEndDate] = useState(new Date());
   const [showEndDate, setShowEndDate] = useState(false);
 
-  const onChange = (event, selectedDate, updateDate, updateShow) => {
+  function onChange(event, selectedDate, updateDate, updateShow) {
     const currentDate = selectedDate;
     updateShow(false);
     if (currentDate !== undefined) {
       updateDate(currentDate);
     }
   };
-  const showMode = (currentMode, updatePickerShow) => {
+  function showMode (currentMode, updatePickerShow) {
     updatePickerShow(true);
     setMode(currentMode);
   };
-  const showDatepicker = (updatePickerShow) => {
+  function showDatepicker (updatePickerShow) {
     showMode('date', updatePickerShow);
   };
-  const showTimepicker = () => {
+  function showTimepicker (updatePickerShow) {
     showMode('time', updatePickerShow);
   };
 
@@ -44,15 +69,44 @@ export default function CampaignScreen({ navigation, route }) {
   return (
     <SafeAreaView style={styles.screen} >
       <View style={styles.columnCenter}>
-        {/* CNPJ */}
+        {/* Basic info inputs */}
+        <View style={styles.row}>
+          <Text style={styles.boxTitle}>Informações gerais</Text>
+        </View>
         <View style={styles.rowCenter}>
-          {/* Temp input */}
           <SmallTextInput label={'Nome'} isPassword={false} updateVar={(text) => setName(text)} style={styles.textInput} invalidInput={false} />
+        </View>
+
+        <View style={styles.rowCenter}>
+          <SmallTextInput label={'Estado'} isPassword={false} updateVar={(text) => setState(text)} style={styles.textInput} invalidInput={false} />
+        </View>
+        <View style={styles.rowCenter}>
+          <SmallTextInput label={'Cidade'} isPassword={false} updateVar={(text) => setCity(text)} style={styles.textInput} invalidInput={false} />
+        </View>
+        <View style={styles.rowCenter}>
+          <SmallTextInput label={'Endereço'} isPassword={false} updateVar={(text) => setAddress(text)} style={styles.textInput} invalidInput={false} />
+        </View>
+        <View style={styles.rowCenter}>
+          <SmallTextInput label={'Telefone'} isPassword={false} updateVar={(text) => setPhone(text)} style={styles.textInput} invalidInput={false} />
+        </View>
+
+        {/* Blood info inputs */}
+        <View style={styles.row}>
+          <Text style={styles.boxTitle}>Tipos sanguineos em falta</Text>
+        </View>
+        <View style={styles.rowCenter}>
+          {bloodTypeItems.map((bloodTypeItem, index) => 
+            <Chip key={index} style={styles.chip} selected={bloodTypes[index]} onPress={() => bloodSelected(index)}>{bloodTypeItem.label}</Chip>)}
+        </View>
+
+        {/* Date inputs */}
+        <View style={styles.row}>
+          <Text style={styles.boxTitle}>Período da campanha</Text>
         </View>
         {/* Starting date */}
         <View style={styles.row}>
           <Text style={styles.text}>Início</Text>
-          <Button onPress={() => showDatepicker(setShowStartDate)} color={colors.blue} >
+          <Button onPress={() => showDatepicker(setShowStartDate)} color={colors.blue} icon="calendar" >
             {startDate.toLocaleDateString("pt-BR", options)}
           </Button>
           {/* Date Picker */}
@@ -69,7 +123,7 @@ export default function CampaignScreen({ navigation, route }) {
         {/* Ending date */}
         <View style={styles.row}>
           <Text style={styles.text}>Término</Text>
-          <Button onPress={() => showDatepicker(setShowEndDate)} color={colors.blue} >
+          <Button onPress={() => showDatepicker(setShowEndDate)} color={colors.blue} icon="calendar" >
             {endDate.toLocaleDateString("pt-BR", options)}
           </Button>
           {/* Date Picker */}
@@ -105,53 +159,50 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     flexWrap: 'wrap',
-    paddingLeft: 10,
+    padding: 10,
+    borderWidth: 1,
   },
   row: {
     flexDirection: 'row',
-    paddingLeft: 20,
     paddingTop: 6,
     flexWrap: 'wrap',
+    // borderWidth: 1,
   },
   rowCenter: {
-    marginTop: 12,
+    marginTop: 6,
     width: Dimensions.get('window').width * 0.9,
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
     flexWrap: 'wrap',
   },
-  title: {
+  // title: {
+  //   fontSize: 20,
+  //   fontWeight: 'bold',
+  //   marginTop: 20,
+  //   marginBottom: 3,
+  // },
+  boxTitle: {
     fontSize: 20,
     fontWeight: 'bold',
-    marginTop: 20,
-    marginBottom: 3,
+    color: colors.red,
+    marginTop: 12,
   },
   textInput: {
-    width: (Dimensions.get('window').width * 0.65),
-    marginRight: 20,
+    width: (Dimensions.get('window').width * 0.8),
+    height: 50,
   },
   chip: {
     marginTop: 5,
     marginLeft: 5,
-  },
-  dataText: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    marginTop: 3,
+    height: 33,
   },
   text: {
-    fontSize: 17,
-    width: Dimensions.get('window').width * 0.2,
+    fontSize: 16,
+    width: Dimensions.get('window').width * 0.33,
     marginTop: 2,
     marginRight: 10,
     lineHeight: 20,
     alignSelf: 'center',
-  },
-  input: {
-    height: 40,
-    margin: 12,
-    borderWidth: 1,
-    padding: 10,
   },
 });

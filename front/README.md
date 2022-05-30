@@ -31,6 +31,7 @@ Estas anotações serão feitas a partir da própria documentação do React Nat
 - [Navigating Between Screens](https://reactnative.dev/docs/navigation)
 - [React Native](https://reactnative.dev/)
 - [Icones](https://callstack.github.io/react-native-paper/icons.html), você precisa clicar num botão que não parece um botão pra poder ver tudo que o React Paper suporta
+- [Dropdown](https://www.npmjs.com/package/react-native-dropdown-picker)
 
 ## Vídeos que podem ajudar
 
