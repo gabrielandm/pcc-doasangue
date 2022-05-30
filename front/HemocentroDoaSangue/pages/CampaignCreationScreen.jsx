@@ -9,8 +9,9 @@ import { colors } from '../style/colors';
 import { statesList, bloodTypesList } from '../config/data';
 
 export default function CampaignScreen({ navigation, route }) {
-  /* Observation and open - close time */
+  /* open - close time */
   const options = { year: '4-digit', month: '2-digit', day: '2-digit' };
+  const timeOptions = { hour: '2-digit', minute: '2-digit' };
   // Text and Number data
   const cnpj = '000'
   const country = 'BR'
@@ -18,6 +19,7 @@ export default function CampaignScreen({ navigation, route }) {
   const [city, setCity] = useState(null)
   const [address, setAddress] = useState(null)
   const [phone, setPhone] = useState(null)
+  const [observation, setObservation] = useState(null)
 
   // State dropdown list data
   const [state, setState] = useState(null);
@@ -47,97 +49,154 @@ export default function CampaignScreen({ navigation, route }) {
   const [endDate, setEndDate] = useState(new Date());
   const [showEndDate, setShowEndDate] = useState(false);
 
+  // Open time
+  const [openTime, setOpenTime] = useState(new Date('2005-01-01T08:00:00.000-03:00'));
+  const [showOpenTime, setShowOpenTime] = useState(false);
+
+  // Clode time  
+  const [closeTime, setCloseTime] = useState(new Date('2005-01-01T16:00:00.000-03:00'));
+  const [showCloseTime, setShowCloseTime] = useState(false);
+
   function onChange(event, selectedDate, updateDate, updateShow) {
-    const currentDate = selectedDate;
     updateShow(false);
-    if (currentDate !== undefined) {
-      updateDate(currentDate);
+    if (selectedDate !== undefined) {
+      console.log(selectedDate);
+      updateDate(new Date(selectedDate));
     }
   };
-  function showMode (currentMode, updatePickerShow) {
+  function showMode(currentMode, updatePickerShow) {
     updatePickerShow(true);
     setMode(currentMode);
   };
-  function showDatepicker (updatePickerShow) {
+  function showDatepicker(updatePickerShow) {
     showMode('date', updatePickerShow);
   };
-  function showTimepicker (updatePickerShow) {
+  function showTimepicker(updatePickerShow) {
     showMode('time', updatePickerShow);
   };
 
 
   return (
     <SafeAreaView style={styles.screen} >
-      <View style={styles.columnCenter}>
-        {/* Basic info inputs */}
-        <View style={styles.row}>
-          <Text style={styles.boxTitle}>Informações gerais</Text>
-        </View>
-        <View style={styles.rowCenter}>
-          <SmallTextInput label={'Nome'} isPassword={false} updateVar={(text) => setName(text)} style={styles.textInput} invalidInput={false} />
-        </View>
+      <ScrollView style={styles.screen}>
+        <View style={styles.columnCenter}>
+          {/* Basic info inputs */}
+          <View style={styles.row}>
+            <Text style={styles.boxTitle}>Informações gerais</Text>
+          </View>
+          <View style={styles.rowCenter}>
+            <SmallTextInput label={'Nome'} isPassword={false} updateVar={(text) => setName(text)} style={styles.textInput} invalidInput={false} />
+          </View>
+          <View style={styles.rowCenter}>
+            <SmallTextInput label={'Estado'} isPassword={false} updateVar={(text) => setState(text)} style={styles.textInput} invalidInput={false} />
+          </View>
+          <View style={styles.rowCenter}>
+            <SmallTextInput label={'Cidade'} isPassword={false} updateVar={(text) => setCity(text)} style={styles.textInput} invalidInput={false} />
+          </View>
+          <View style={styles.rowCenter}>
+            <SmallTextInput label={'Endereço'} isPassword={false} updateVar={(text) => setAddress(text)} style={styles.textInput} invalidInput={false} />
+          </View>
+          <View style={styles.rowCenter}>
+            <SmallTextInput label={'Telefone'} isPassword={false} updateVar={(text) => setPhone(text)} style={styles.textInput} invalidInput={false} />
+          </View>
 
-        <View style={styles.rowCenter}>
-          <SmallTextInput label={'Estado'} isPassword={false} updateVar={(text) => setState(text)} style={styles.textInput} invalidInput={false} />
-        </View>
-        <View style={styles.rowCenter}>
-          <SmallTextInput label={'Cidade'} isPassword={false} updateVar={(text) => setCity(text)} style={styles.textInput} invalidInput={false} />
-        </View>
-        <View style={styles.rowCenter}>
-          <SmallTextInput label={'Endereço'} isPassword={false} updateVar={(text) => setAddress(text)} style={styles.textInput} invalidInput={false} />
-        </View>
-        <View style={styles.rowCenter}>
-          <SmallTextInput label={'Telefone'} isPassword={false} updateVar={(text) => setPhone(text)} style={styles.textInput} invalidInput={false} />
-        </View>
+          <View style={styles.rowCenter}>
+            <SmallTextInput label={'Observações'} isPassword={false} updateVar={(text) => setObservation(text)} style={styles.textInput} invalidInput={false} multiline={true} />
+          </View>
 
-        {/* Blood info inputs */}
-        <View style={styles.row}>
-          <Text style={styles.boxTitle}>Tipos sanguineos em falta</Text>
-        </View>
-        <View style={styles.rowCenter}>
-          {bloodTypeItems.map((bloodTypeItem, index) => 
-            <Chip key={index} style={styles.chip} selected={bloodTypes[index]} onPress={() => bloodSelected(index)}>{bloodTypeItem.label}</Chip>)}
-        </View>
+          {/* Blood info inputs */}
+          <View style={styles.row}>
+            <Text style={styles.boxTitle}>Tipos sanguineos em falta</Text>
+          </View>
+          <View style={styles.rowCenter}>
+            {bloodTypeItems.map((bloodTypeItem, index) =>
+              <Chip key={index} style={styles.chip} selected={bloodTypes[index]} onPress={() => bloodSelected(index)}>{bloodTypeItem.label}</Chip>)}
+          </View>
 
-        {/* Date inputs */}
-        <View style={styles.row}>
-          <Text style={styles.boxTitle}>Período da campanha</Text>
+          {/* Date inputs */}
+          <View style={styles.row}>
+            <Text style={styles.boxTitle}>Período da campanha</Text>
+          </View>
+          {/* Starting date */}
+          <View style={styles.row}>
+            <Text style={styles.text}>Início</Text>
+            <Button onPress={() => showDatepicker(setShowStartDate)} color={colors.blue} icon="calendar" >
+              {startDate.toLocaleDateString("pt-BR", options)}
+            </Button>
+            {/* Date Picker */}
+            {showStartDate && (
+              <DateTimePicker
+                testID="startDate"
+                value={startDate}
+                mode={mode}
+                is24Hour={true}
+                onChange={(e, value) => onChange(e, value, setStartDate, setShowStartDate)}
+                timeZoneOffsetInMinutes={-180}
+              />
+            )}
+          </View>
+          {/* Ending date */}
+          <View style={styles.row}>
+            <Text style={styles.text}>Término</Text>
+            <Button onPress={() => showDatepicker(setShowEndDate)} color={colors.blue} icon="calendar" >
+              {endDate.toLocaleDateString("pt-BR", options)}
+            </Button>
+            {/* Date Picker */}
+            {showEndDate && (
+              <DateTimePicker
+                testID="endDate"
+                value={endDate}
+                mode={mode}
+                is24Hour={true}
+                onChange={(e, value) => onChange(e, value, setEndDate, setShowEndDate)}
+                timeZoneOffsetInMinutes={-180}
+              />
+            )}
+          </View>
+
+          {/* Date inputs */}
+          <View style={styles.row}>
+            <Text style={styles.boxTitle}>Horários de functionamento</Text>
+          </View>
+          {/* Starting date */}
+          <View style={styles.row}>
+            <Text style={styles.text}>Início</Text>
+            <Button onPress={() => showTimepicker(setShowStartDate)} color={colors.blue} icon="clock-outline" >
+              {`${openTime.toLocaleTimeString('pt-BR', timeOptions)}`}
+            </Button>
+            {/* Date Picker */}
+            {showOpenTime && (
+              <DateTimePicker
+                testID="openTime"
+                value={openTime}
+                mode={mode}
+                is24Hour={true}
+                onChange={(e, value) => onChange(e, value, setOpenTime, setShowOpenTime)}
+                timeZoneOffsetInMinutes={-180}
+              />
+            )}
+          </View>
+          {/* Ending date */}
+          <View style={styles.row}>
+            <Text style={styles.text}>Término</Text>
+            <Button onPress={() => showTimepicker(setShowEndDate)} color={colors.blue} icon="clock-outline" >
+              {`${closeTime.toLocaleTimeString('pt-BR', timeOptions)}`}
+            </Button>
+            {/* Date Picker */}
+            {showCloseTime && (
+              <DateTimePicker
+                testID="closeTime"
+                value={closeTime}
+                mode={mode}
+                is24Hour={true}
+                onChange={(e, value) => onChange(e, value, setCloseTime, setShowCloseTime)}
+                timeZoneOffsetInMinutes={-180}
+              />
+            )}
+          </View>
+
         </View>
-        {/* Starting date */}
-        <View style={styles.row}>
-          <Text style={styles.text}>Início</Text>
-          <Button onPress={() => showDatepicker(setShowStartDate)} color={colors.blue} icon="calendar" >
-            {startDate.toLocaleDateString("pt-BR", options)}
-          </Button>
-          {/* Date Picker */}
-          {showStartDate && (
-            <DateTimePicker
-              testID="startDate"
-              value={startDate}
-              mode={mode}
-              is24Hour={true}
-              onChange={(e, value) => onChange(e, value, setStartDate, setShowStartDate)}
-            />
-          )}
-        </View>
-        {/* Ending date */}
-        <View style={styles.row}>
-          <Text style={styles.text}>Término</Text>
-          <Button onPress={() => showDatepicker(setShowEndDate)} color={colors.blue} icon="calendar" >
-            {endDate.toLocaleDateString("pt-BR", options)}
-          </Button>
-          {/* Date Picker */}
-          {showEndDate && (
-            <DateTimePicker
-              testID="endDate"
-              value={endDate}
-              mode={mode}
-              is24Hour={true}
-              onChange={(e, value) => onChange(e, value, setEndDate, setShowEndDate)}
-            />
-          )}
-        </View>
-      </View>
+      </ScrollView>
     </SafeAreaView >
   );
 }
@@ -190,7 +249,7 @@ const styles = StyleSheet.create({
   },
   textInput: {
     width: (Dimensions.get('window').width * 0.8),
-    height: 50,
+    // height: 50,
   },
   chip: {
     marginTop: 5,
