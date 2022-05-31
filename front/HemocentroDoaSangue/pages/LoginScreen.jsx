@@ -1,7 +1,7 @@
 import { StackActions } from '@react-navigation/native';
 import React, { useState } from 'react';
 import { StyleSheet, View, Text } from 'react-native';
-import { Button, Snackbar } from 'react-native-paper';
+import { Button, Snackbar, TextInput } from 'react-native-paper';
 import { useFonts } from 'expo-font';
 
 import SmallTextInput from '../components/SmallTextInput';
@@ -81,7 +81,7 @@ export default function LoginScreen({ navigation, route }) {
 			<Text style={styles.info}>Entre na sua conta</Text>
 
 			<SmallTextInput label={'Usuário'} isPassword={false} updateVar={(text) => setNameMain(text)} style={styles.textInput} invalidInput={passWrong} />
-			<SmallTextInput label={'Senha'} isPassword={true} updateVar={(text) => setPassMain(text)} style={styles.textInput} invalidInput={passWrong} right={<TextInput.Icon name="eye" onPress={() => setInputType()}/>} />
+			<SmallTextInput label={'Senha'} isPassword={true} updateVar={(text) => setPassMain(text)} style={styles.textInput} invalidInput={passWrong} />
 
 			<View style={styles.secView}>
 				{!passWrong ? null : <Text>Email ou senha incorretos</Text>}

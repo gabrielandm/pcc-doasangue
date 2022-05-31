@@ -7,14 +7,13 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 
 import { colors } from '../style/colors';
 import { statesList, bloodTypesList } from '../config/data';
+import { config } from '../config/config';
 
 export default function CampaignScreen({ navigation, route }) {
   /* open - close time */
-  const options = { year: '4-digit', month: '2-digit', day: '2-digit' };
+  const options = { year: 'numeric', month: '2-digit', day: '2-digit' };
   const timeOptions = { hour: '2-digit', minute: '2-digit' };
   // Text and Number data
-  const cnpj = '000'
-  const country = 'BR'
   const [name, setName] = useState(null)
   const [city, setCity] = useState(null)
   const [address, setAddress] = useState(null)
@@ -53,14 +52,13 @@ export default function CampaignScreen({ navigation, route }) {
   const [openTime, setOpenTime] = useState(new Date('2005-01-01T08:00:00.000-03:00'));
   const [showOpenTime, setShowOpenTime] = useState(false);
 
-  // Clode time  
+  // Close time  
   const [closeTime, setCloseTime] = useState(new Date('2005-01-01T16:00:00.000-03:00'));
   const [showCloseTime, setShowCloseTime] = useState(false);
 
   function onChange(event, selectedDate, updateDate, updateShow) {
     updateShow(false);
     if (selectedDate !== undefined) {
-      console.log(selectedDate);
       updateDate(new Date(selectedDate));
     }
   };
@@ -74,6 +72,52 @@ export default function CampaignScreen({ navigation, route }) {
   function showTimepicker(updatePickerShow) {
     showMode('time', updatePickerShow);
   };
+
+  async function createCampaign() {
+    const selectedBloodTypes = []
+    for (var i in bloodTypes) {
+      if (bloodTypes[i] == true) {
+        selectedBloodTypes.push(bloodTypeItems[i]['value']);
+      }
+    }
+    const campaignData = {
+      cnpj: route.params == undefined ? '000' : route.params.data.cnpj,
+      start_date: startDate.toISOString(),
+      end_date: endDate.toISOString(),
+      country: 'BR',
+      state: state,
+      city: city,
+      address: address,
+      phone: phone,
+      observation: observation,
+      banner_color: colors.red,
+      banner_link: null,
+      open_time: `${openTime.getHours() < 10 ? '0' + openTime.getHours() : openTime.getHours()}:${openTime.getMinutes() < 10 ? '0' + openTime.getMinutes() : openTime.getMinutes()}`,
+      close_time: `${closeTime.getHours() < 10 ? '0' + closeTime.getHours() : closeTime.getHours()}:${closeTime.getMinutes() < 10 ? '0' + closeTime.getMinutes() : closeTime.getMinutes()}`,
+      name: name,
+      blood_types: selectedBloodTypes,
+    }
+
+    // POST request to Campaign collection and check if request was successful
+    try {
+      const response = await fetch(config.campaign,
+        {
+          method: 'POST',
+          body: JSON.stringify(campaignData),
+        }
+      )
+      if (response.status == 201) {
+        navigation.navigate('HomeScreen', {
+          created: true,
+          name: route.params.data.cnpj,
+        });
+      } else {
+        throw new Error('Error creating campaign');
+      }
+    } catch (e) {
+      console.log(e);
+    }
+  }
 
 
   return (
@@ -161,8 +205,8 @@ export default function CampaignScreen({ navigation, route }) {
           {/* Starting date */}
           <View style={styles.row}>
             <Text style={styles.text}>Início</Text>
-            <Button onPress={() => showTimepicker(setShowStartDate)} color={colors.blue} icon="clock-outline" >
-              {`${openTime.toLocaleTimeString('pt-BR', timeOptions)}`}
+            <Button onPress={() => showTimepicker(setShowOpenTime)} color={colors.blue} icon="clock-outline" >
+              {`${openTime.getHours() < 10 ? '0' + openTime.getHours() : openTime.getHours()}:${openTime.getMinutes() < 10 ? '0' + openTime.getMinutes() : openTime.getMinutes()}`}
             </Button>
             {/* Date Picker */}
             {showOpenTime && (
@@ -179,8 +223,8 @@ export default function CampaignScreen({ navigation, route }) {
           {/* Ending date */}
           <View style={styles.row}>
             <Text style={styles.text}>Término</Text>
-            <Button onPress={() => showTimepicker(setShowEndDate)} color={colors.blue} icon="clock-outline" >
-              {`${closeTime.toLocaleTimeString('pt-BR', timeOptions)}`}
+            <Button onPress={() => showTimepicker(setShowCloseTime)} color={colors.blue} icon="clock-outline" >
+              {`${closeTime.getHours() < 10 ? '0' + closeTime.getHours() : closeTime.getHours()}:${closeTime.getMinutes() < 10 ? '0' + closeTime.getMinutes() : closeTime.getMinutes()}`}
             </Button>
             {/* Date Picker */}
             {showCloseTime && (
@@ -195,6 +239,12 @@ export default function CampaignScreen({ navigation, route }) {
             )}
           </View>
 
+          {/* Submit button */}
+          <View style={styles.row}>
+            <Button onPress={() => createCampaign()} mode="outlined" color={colors.blue} icon="check" >
+              Salvar
+            </Button>
+          </View>
         </View>
       </ScrollView>
     </SafeAreaView >
@@ -223,7 +273,8 @@ const styles = StyleSheet.create({
   },
   row: {
     flexDirection: 'row',
-    paddingTop: 6,
+    paddingTop: 0,
+    paddingBottom: 6,
     flexWrap: 'wrap',
     // borderWidth: 1,
   },

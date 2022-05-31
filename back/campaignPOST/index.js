@@ -6,6 +6,7 @@ module.exports = async function (context, req) {
     // const corpCollection = collections[1]; // Needed for authentication of cnpj
 
     const cnpj = req.body.cnpj;
+    const name = req.body.name;
     const start_date = req.body.start_date;
     const end_date = req.body.end_date;
     const open_time = req.body.open_time;
@@ -14,7 +15,7 @@ module.exports = async function (context, req) {
     const state = req.body.state;
     const city = req.body.city;
     const address = req.body.address;
-    const coordinates = req.body.coordinates;
+    let coordinates = req.body.coordinates;
     const phone = req.body.phone;
     const creation_date = new Date();
     const num_doners = 0;
@@ -25,11 +26,12 @@ module.exports = async function (context, req) {
     const banner_link = req.body.banner_link;
 
     if (coordinates == undefined) {
-        coordinates = { latitude: '0', longitude: '0' };
+        coordinates = { latitude: '-22.907370', longitude: '-47.062901' };
     }
 
     const createdDoc = await campaignCollection.insertOne({
         "cnpj": cnpj,
+        "name": name,
         "start_date": start_date,
         "end_date": end_date,
         "open_time": open_time,

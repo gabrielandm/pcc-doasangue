@@ -6,11 +6,11 @@ import { colors } from '../style/colors';
 
 export default function ProfileThingy(props) {
   const data = props.data;
-  data.birth_date = new Date(data.birth_date);
-  data.last_donation = new Date(data.last_donation);
-  const userAge = Math.abs(new Date(new Date() - data.birth_date).getUTCFullYear()) - 1970
-  const daysFromDonate = Math.ceil((new Date() - data.last_donation) / (1000 * 60 * 60 * 24));
-  const daysToDonate = data.gender == 0 ? 90 - daysFromDonate : 60 - daysFromDonate;
+  // data.birth_date = new Date(data.birth_date);
+  // data.last_donation = new Date(data.last_donation);
+  // const userAge = Math.abs(new Date(new Date() - data.birth_date).getUTCFullYear()) - 1970
+  // const daysFromDonate = Math.ceil((new Date() - data.last_donation) / (1000 * 60 * 60 * 24));
+  // const daysToDonate = data.gender == 0 ? 90 - daysFromDonate : 60 - daysFromDonate;
   const options = { year: '2-digit', month: '2-digit', day: '2-digit' };
   const profile_link = typeof data.profile_link == 'string' ?	 {uri: data.profile_link} : {uri: 'https://doasanguefiles.blob.core.windows.net/doasangueblob/default-profile-pic.png'}
   

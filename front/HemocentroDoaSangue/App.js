@@ -24,7 +24,7 @@ function App() {
 
       <NavigationContainer>
         <Stack.Navigator>
-          {/* <Stack.Screen
+          <Stack.Screen
             name="LoginScreen"
             component={LoginScreen}
             options={{
@@ -72,7 +72,7 @@ function App() {
               },
               headerTintColor: colors.white,
             }}
-          /> */}
+          />
           <Stack.Screen
             name="CampaignCreationScreen"
             component={CampaignCreationScreen}
