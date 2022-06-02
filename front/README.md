@@ -1,6 +1,12 @@
 # pcc-doasangue
 
-## Guia rápido
+## Explicação das pastas e arquivos
+
+### 📁 [DoaSangue](./DoaSangue/) - Pasta onde todos os arquivos do aplicativo voltado para o doador estão
+
+### 📁 [HemocentroDoaSangue](./HemocentroDoaSangue/) - Pasta onde todos os arquivos do aplicativo voltado para o hemocentro estão
+
+## Guia rápido para instalar e executar o aplicativo
 
 0. Versão do Node é a **v16.14.2**
 
