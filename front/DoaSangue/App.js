@@ -9,7 +9,6 @@ import LoginScreen from './pages/LoginScreen';
 import RegistrationScreen from './pages/RegistrationScreen';
 import PasswordSendEmail from './pages/PasswordSendEmail';
 import CampaignScreen from './pages/CampaignScreen';
-import CampaignCreation from './pages/CampaignCreation';
 import {colors} from './style/colors';
 
 const Stack = createNativeStackNavigator();
@@ -24,7 +23,7 @@ function App() {
 
       <NavigationContainer>
         <Stack.Navigator>
-          {/* <Stack.Screen
+          <Stack.Screen
             name="LoginScreen"
             component={LoginScreen}
             options={{

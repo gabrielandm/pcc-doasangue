@@ -1,7 +1,7 @@
 import { StackActions } from '@react-navigation/native';
 import React, { useState } from 'react';
 import { StyleSheet, View, Text } from 'react-native';
-import { Button, Snackbar } from 'react-native-paper';
+import { Button, Snackbar, TextInput } from 'react-native-paper';
 import { useFonts } from 'expo-font';
 
 import SmallTextInput from '../components/SmallTextInput';
@@ -69,6 +69,8 @@ export default function LoginScreen({ navigation, route }) {
 			setVisible(true);
 		}
 	}
+
+	function setInputType() { }
 
 	return (
 		<View style={styles.container}>

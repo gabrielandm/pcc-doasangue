@@ -1,6 +1,12 @@
 # pcc-doasangue
 
-## Guia rápido
+## Explicação das pastas e arquivos
+
+### 📁 [DoaSangue](./DoaSangue/) - Pasta onde todos os arquivos do aplicativo voltado para o doador estão
+
+### 📁 [HemocentroDoaSangue](./HemocentroDoaSangue/) - Pasta onde todos os arquivos do aplicativo voltado para o hemocentro estão
+
+## Guia rápido para instalar e executar o aplicativo
 
 0. Versão do Node é a **v16.14.2**
 
@@ -31,6 +37,7 @@ Estas anotações serão feitas a partir da própria documentação do React Nat
 - [Navigating Between Screens](https://reactnative.dev/docs/navigation)
 - [React Native](https://reactnative.dev/)
 - [Icones](https://callstack.github.io/react-native-paper/icons.html), você precisa clicar num botão que não parece um botão pra poder ver tudo que o React Paper suporta
+- [Dropdown](https://www.npmjs.com/package/react-native-dropdown-picker)
 
 ## Vídeos que podem ajudar
 

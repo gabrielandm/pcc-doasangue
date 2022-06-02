@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, View, Text, ScrollView, SafeAreaView, StatusBar, ActivityIndicator } from 'react-native';
+import { useFocusEffect } from '@react-navigation/native';
 import { BottomNavigation, Snackbar, Button } from 'react-native-paper';
 
 import { colors } from '../style/colors';
@@ -55,7 +56,6 @@ export default function HomeScreen({ navigation, route }) {
 				const response = await fetch(`${config.corp}?type=data&cnpj=${filter.name}`)
 				if (response.status === 200) {
 					const json = await response.json();
-					// console.log(json)
 					setProfileData(json['data']);
 				} else if (response.status !== 200) {
 					console.log('Error: ', response.status);
@@ -73,14 +73,23 @@ export default function HomeScreen({ navigation, route }) {
 				'cnpj': '000', 'pass': '12345678', 'entry_date': new Date(), 'name': 'Hemocentro Unicamp', 'phone': '+5519998049566', 'city': 'Campinas 2', 'state': 'SP', 'country': 'BR', 'birth_date': new Date(), 'profile_link': null, '_id': '333',
 			})
 		}
-		console.log(profileData)
 	}
 
 	/* When page loads */
 	useEffect(() => {
-		// getProfileData(route.params);
-		// getCampaigns(route.params);
+		console.log('mousse useEffect')
+		route.params.created = false;
+		getProfileData(route.params);
+		getCampaigns(route.params);
 	}, []);
+	/* When page is focused */
+	useFocusEffect(React.useCallback(() => {
+		if (route.params.created === true) {
+			console.log('mousse useFocusEffect')
+			// getProfileData(route.params);
+			getCampaigns(route.params);
+		}
+	}, []));
 
 	/* Views */
 	// Definir variável q vai ser uma bool e salva se os dados já foram coletados e só coletar se ainda não foram :)
@@ -95,7 +104,7 @@ export default function HomeScreen({ navigation, route }) {
 					/>) : <ActivityIndicator size="large" color="#0000ff" />
 				}
 			</ScrollView>
-			<Button style={styles.buttonStyle} onPress={() => navigateTo('createCampaign', profileData)}>
+			<Button style={styles.buttonStyle} onPress={() => navigateTo('CampaignCreationScreen', { cnpj: profileData.cnpj })}>
 				<Text style={styles.buttonTextStyle}>+</Text>
 			</Button>
 			<Snackbar
@@ -166,7 +175,7 @@ const styles = StyleSheet.create({
 		backgroundColor: colors.lightRed,
 		width: 60,
 		height: 60,
-		borderRadius: 60/2,
+		borderRadius: 60 / 2,
 		justifyContent: 'center',
 		alignItems: 'center',
 		position: 'absolute',
