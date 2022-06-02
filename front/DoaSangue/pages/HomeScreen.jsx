@@ -6,6 +6,7 @@ import { colors } from '../style/colors';
 import { config } from '../config/config';
 import CampaignThingy from '../components/CampaignThingy';
 import ProfileThingy from '../components/ProfileThingy';
+import AchievementThingy from '../components/AchievementThingy';
 
 const m_campaigns = [
 	{
@@ -118,7 +119,8 @@ export default function HomeScreen({ navigation, route }) {
 		if (debug) {
 			// Only for debug
 			// Create default user
-			setProfileData({'email': 'mousseuwu','pass': '12345678','validates': 1,'entry_date': new Date(),'name': 'Mousse Hardcoded','last_name': 'de Chocolate','phone': '+5519998049566','blood_type': 'O+','last_donation': new Date(),'city': 'Mistério 2','state': 'PE','country': 'BR','gender': 0,'birth_date': new Date(),'profile_link': null,'_id': '333',
+			setProfileData({
+				'email': 'mousseuwu', 'pass': '12345678', 'validates': 1, 'entry_date': new Date(), 'name': 'Mousse Hardcoded', 'last_name': 'de Chocolate', 'phone': '+5519998049566', 'blood_type': 'O+', 'last_donation': new Date(), 'city': 'Mistério 2', 'state': 'PE', 'country': 'BR', 'gender': 0, 'birth_date': new Date(), 'profile_link': null, '_id': '333',
 			})
 		}
 		console.log(profileData)
@@ -126,8 +128,8 @@ export default function HomeScreen({ navigation, route }) {
 
 	/* When page loads */
 	useEffect(() => {
-		getProfileData(route.params);
-		getCampaigns();
+		// getProfileData(route.params);
+		// getCampaigns();
 	}, []);
 
 	/* Views */
@@ -155,7 +157,15 @@ export default function HomeScreen({ navigation, route }) {
 	const AchievementView = () =>
 		<SafeAreaView style={styles.screen} >
 			<ScrollView style={styles.scrollView}>
-				<Text>Achievements</Text>
+				<View style={styles.row}>
+					<AchievementThingy />
+					<AchievementThingy />
+					<AchievementThingy />
+				</View>
+				<View style={styles.row}>
+					<AchievementThingy />
+					<AchievementThingy />
+				</View>
 			</ScrollView>
 		</SafeAreaView>;
 
@@ -206,5 +216,9 @@ const styles = StyleSheet.create({
 	},
 	bottom: {
 		flexBasis: 50,
+	},
+	row: {
+		flexDirection: 'row',
+		justifyContent: 'space-around',
 	},
 });
