@@ -8,56 +8,7 @@ import CampaignThingy from '../components/CampaignThingy';
 import ProfileThingy from '../components/ProfileThingy';
 import AchievementThingy from '../components/AchievementThingy';
 
-const m_campaigns = [
-	{
-		"name": "Camapnha Doa Mais",
-		"cnpj": '34.876.876/0001-00',
-		"start_date": '2022-06-12T15:33:33.000000-03:00',
-		"end_date": '2023-06-12T15:33:33.000-03:00',
-		"open_time": "3:33",
-		"close_time": "15:33",
-		"country": 'BR',
-		"state": 'PE',
-		"city": 'Xvs',
-		"address": 'R. do Alfinetes, 33',
-		"coordinates": {
-			"latitude": -7.033889,
-			"longitude": -39.408889,
-		},
-		"phone": '(33) 3333-3333',
-		"creation_date": '2022-12-06 15:33:33.000-03:00',
-		"num_doners": 12,
-		"campaign_rating": 5,
-		"observation": 'Estamos recebendo qualquer tipo de sangue, porém os mais importantes são os que foram listados abaixo.',
-		"blood_types": ['A+', 'AB+', 'O'],
-		"header_color": '#F0D',
-		"banner_link": 'www.mousse.com',
-	},
-	{
-		"name": "Camapnha Doa Mais 33",
-		"cnpj": '34.876.876/0001-00',
-		"start_date": '2022-06-12T15:33:33.000-03:00',
-		"end_date": '2023-06-12T15:33:33.000-03:00',
-		"open_time": "3:33",
-		"close_time": "15:33",
-		"country": 'BR',
-		"state": 'PE',
-		"city": 'Xvs',
-		"address": 'R. do Alfinetes, 33',
-		"coordinates": {
-			"latitude": -8.05,
-			"longitude": -34.05
-		},
-		"phone": '(33) 3333-3333',
-		"creation_date": '2022-12-06 15:33:33.000-03:00',
-		"num_doners": 12,
-		"campaign_rating": 5,
-		"observation": 'Estamos recebendo qualquer tipo de sangue, porém os mais importantes são os que foram listados abaixo.',
-		"blood_types": ['A+', 'AB+', 'O'],
-		"header_color": '#F0D',
-		"banner_link": 'www.mousse.com'
-	},
-]
+import {m_achievements} from '../config/mousse';
 
 export default function HomeScreen({ navigation, route }) {
 	/* Variables and functions */
@@ -154,17 +105,16 @@ export default function HomeScreen({ navigation, route }) {
 			</Snackbar>
 		</SafeAreaView>;
 
+  function renderAchievements() {
+		return m_achievements.map((achievement, index) => 
+			<AchievementThingy key={index} navigateTo={(pageName, props) => navigateTo(pageName, props)} data={achievement} />);
+	}
+
 	const AchievementView = () =>
 		<SafeAreaView style={styles.screen} >
 			<ScrollView style={styles.scrollView}>
-				<View style={styles.row}>
-					<AchievementThingy />
-					<AchievementThingy />
-					<AchievementThingy />
-				</View>
-				<View style={styles.row}>
-					<AchievementThingy />
-					<AchievementThingy />
+				<View style={styles.rowWrap}>
+					{renderAchievements()}
 				</View>
 			</ScrollView>
 		</SafeAreaView>;
@@ -220,5 +170,10 @@ const styles = StyleSheet.create({
 	row: {
 		flexDirection: 'row',
 		justifyContent: 'space-around',
+	},
+	rowWrap: {
+		flexDirection: 'row',
+		justifyContent: 'space-around',
+		flexWrap: 'wrap',
 	},
 });
