@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, View, Text, Image, ScrollView, SafeAreaView, Dimensions } from 'react-native';
-import { IconButton, Chip } from 'react-native-paper';
+import { StyleSheet, View, Text, Image, Button, ScrollView, SafeAreaView, Dimensions } from 'react-native';
+import { IconButton, Chip, RadioButton } from 'react-native-paper';
 
 import SmallTextInput from '../components/SmallTextInput';
 import { colors } from '../style/colors';
@@ -11,6 +11,12 @@ export default function ProfileThingy({ navigation, route }) {
   const [loaded, setLoaded] = useState(false);
   const [bloodTypes, setBloodTypes] = useState(new Array(bloodTypesList.length).fill(false));
   const [bloodTypeItems, setBloodTypeItems] = useState(bloodTypesList);
+  const options = { year: '2-digit', month: '2-digit', day: '2-digit' };
+
+  /* Date stuff */
+  const [date, setDate] = useState(new Date())
+  const [open, setOpen] = useState(false)
+
 
   function bloodSelected(index) {
     /* Selects after onPress of a chip, but it only works if the code is like this \'-'/ 
@@ -37,10 +43,12 @@ export default function ProfileThingy({ navigation, route }) {
         <SafeAreaView style={styles.screen}>
           <ScrollView style={styles.screen}>
             <View style={styles.columnCenter}>
-            <View style={styles.row}>
+
+              <View style={styles.row}>
                 <Text style={styles.boxTitle}>Informações gerais</Text>
               </View>
               <View style={styles.rowCenter}>
+                {/* Name input */}
                 <SmallTextInput
                   label="Nome"
                   value={data.name}
@@ -50,6 +58,46 @@ export default function ProfileThingy({ navigation, route }) {
                   outlineColor={colors.gray}
                   style={styles.textInput}
                 />
+                {/* Last name input */}
+                <SmallTextInput
+                  label="Sobrenome"
+                  value={data.last_name}
+                  onChangeText={(text) => setData({ ...data, last_name: text })}
+                  mode="outlined"
+                  activeOutlineColor={colors.blue}
+                  outlineColor={colors.gray}
+                  style={styles.textInput}
+                />
+                {/* Phone number input */}
+                <SmallTextInput
+                  label="Telefone"
+                  value={data.phone}
+                  onChangeText={(text) => setData({ ...data, phone: text })}
+                  mode="outlined"
+                  activeOutlineColor={colors.blue}
+                  outlineColor={colors.gray}
+                  style={styles.textInput}
+                  mask={['+', /\d/, /\d/, ' (', /\d/, /\d/, ') ', /\d/, /\d/, /\d/, /\d/, /\d/, '-', /\d/, /\d/, /\d/, /\d/]}
+                />
+                {/* Last donation input */}
+                
+
+                <View style={styles.rowCenter}>
+                  {/* Gender input */}
+                  <RadioButton
+                    value="Feminino"
+                    status={data.gender === 0 ? 'checked' : 'unchecked'}
+                    onPress={() => setData({ ...data, gender: 0 })}
+                  />
+                  <Text>Feimino</Text>
+                  <RadioButton
+                    value="Masculino"
+                    status={data.gender === 1 ? 'checked' : 'unchecked'}
+                    onPress={() => setData({ ...data, gender: 1 })}
+                  />
+                  <Text>Masculino</Text>
+                </View>
+
               </View>
               <View style={styles.row}>
                 <Text style={styles.boxTitle}>Escolha seu tipo sanguíneo</Text>
@@ -100,7 +148,7 @@ const styles = StyleSheet.create({
   },
   textInput: {
     width: (Dimensions.get('window').width * 0.8),
-    // height: 50,
+    marginBottom: 6,
   },
   chip: {
     marginTop: 5,
