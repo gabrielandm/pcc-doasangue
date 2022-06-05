@@ -1,10 +1,19 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, View, Text, Image, Button, ScrollView, SafeAreaView, Dimensions } from 'react-native';
-import { IconButton, Chip, RadioButton } from 'react-native-paper';
+import { StyleSheet, View, Text, Image, ScrollView, SafeAreaView, Dimensions } from 'react-native';
+import { IconButton, Chip, RadioButton, Button } from 'react-native-paper';
+import DateTimePicker from '@react-native-community/datetimepicker';
 
 import SmallTextInput from '../components/SmallTextInput';
 import { colors } from '../style/colors';
 import { bloodTypesList } from '../config/data';
+
+/*
+  - BloodType
+  - Static Location
+    - City
+    - State
+    - Country
+*/
 
 export default function ProfileThingy({ navigation, route }) {
   const [data, setData] = useState(JSON.parse(route.params.data.data));
@@ -14,8 +23,28 @@ export default function ProfileThingy({ navigation, route }) {
   const options = { year: '2-digit', month: '2-digit', day: '2-digit' };
 
   /* Date stuff */
-  const [date, setDate] = useState(new Date())
-  const [open, setOpen] = useState(false)
+  // Last donation date
+  const [mode, setMode] = useState('date');
+  const [showLastDonation, setShowLastDonation] = useState(false);
+  // Birth date
+  const [showBirthDate, setShowBirthDate] = useState(false);
+
+  // Functions to handle datepicker
+  function onChange(event, selectedDate, data, dataKey, updateData, updateShow) {
+    updateShow(false);
+    if (selectedDate !== undefined) {
+      updateData({...data,
+        [dataKey]: new Date(selectedDate)
+      });
+    }
+  };
+  function showMode(currentMode, updatePickerShow) {
+    updatePickerShow(true);
+    setMode(currentMode);
+  };
+  function showDatepicker(updatePickerShow) {
+    showMode('date', updatePickerShow);
+  };
 
 
   function bloodSelected(index) {
@@ -23,6 +52,7 @@ export default function ProfileThingy({ navigation, route }) {
       setMyArray( arr => [...arr, `${arr.length}`]);
     */
     const newBloodTypes = bloodTypes;
+
     newBloodTypes[index] = !newBloodTypes[index];
     setBloodTypes(newBloodTypes => [...newBloodTypes, `${newBloodTypes.length}`]);
   }
@@ -30,8 +60,9 @@ export default function ProfileThingy({ navigation, route }) {
   useEffect(() => {
     setData({
       ...data,
-      birth_date: new Date(data.birth_date),
-      last_donation: new Date(data.last_donation),
+      birth_date: new Date(data.birth_date !== undefined ? data.birth_date : new Date()),
+      last_donation: new Date(data.last_donation !== undefined ? data.last_donation : new Date()),
+
     });
     setLoaded(true);
   }, [])
@@ -79,8 +110,40 @@ export default function ProfileThingy({ navigation, route }) {
                   style={styles.textInput}
                   mask={['+', /\d/, /\d/, ' (', /\d/, /\d/, ') ', /\d/, /\d/, /\d/, /\d/, /\d/, '-', /\d/, /\d/, /\d/, /\d/]}
                 />
+                {/* Birth date input */}
+                <View style={styles.rowCenter}>
+                  <Text style={styles.text}>Data de nascimento</Text>
+                  <Button onPress={() => showDatepicker(setShowBirthDate)} color={colors.blue} icon="calendar" >
+                    {data.birth_date.toLocaleDateString("pt-BR", options)}
+                  </Button>
+                  {showBirthDate && (
+                    <DateTimePicker
+                      testID="birthDate"
+                      value={data.birth_date}
+                      mode={mode}
+                      is24Hour={true}
+                      onChange={(e, value) => onChange(e, value, data, 'birth_date', setData, setShowLastDonation)}
+                      timeZoneOffsetInMinutes={-180}
+                    />
+                  )}
+                </View>
                 {/* Last donation input */}
-                
+                <View style={styles.rowCenter}>
+                  <Text style={styles.text}>Última doação</Text>
+                  <Button onPress={() => showDatepicker(setShowLastDonation)} color={colors.blue} icon="calendar" >
+                    {data.last_donation.toLocaleDateString("pt-BR", options)}
+                  </Button>
+                  {showLastDonation && (
+                    <DateTimePicker
+                      testID="lastDonation"
+                      value={data.last_donation}
+                      mode={mode}
+                      is24Hour={true}
+                      onChange={(e, value) => onChange(e, value, data, 'last_donation', setData, setShowLastDonation)}
+                      timeZoneOffsetInMinutes={-180}
+                    />
+                  )}
+                </View>
 
                 <View style={styles.rowCenter}>
                   {/* Gender input */}
