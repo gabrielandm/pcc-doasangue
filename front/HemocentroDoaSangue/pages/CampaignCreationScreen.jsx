@@ -4,7 +4,6 @@ import { Button, Chip } from 'react-native-paper';
 import SmallTextInput from '../components/SmallTextInput';
 import DateTimePicker from '@react-native-community/datetimepicker';
 
-
 import { colors } from '../style/colors';
 import { statesList, bloodTypesList } from '../config/data';
 import { config } from '../config/config';

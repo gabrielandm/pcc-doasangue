@@ -79,7 +79,7 @@ export default function HomeScreen({ navigation, route }) {
 
 	/* When page loads */
 	useEffect(() => {
-		// getProfileData(route.params);
+		getProfileData(route.params, true); // !!!Remember to set debug to false!!!
 		// getCampaigns();
 	}, []);
 
@@ -122,7 +122,10 @@ export default function HomeScreen({ navigation, route }) {
 	const ProfileView = () =>
 		<SafeAreaView style={styles.screen} >
 			<ScrollView style={styles.scrollView}>
-				<ProfileThingy data={profileData} />
+				<ProfileThingy
+					data={profileData}
+					navigateTo={(pageName, props) => navigateTo(pageName, props)}
+				/>
 			</ScrollView>
 		</SafeAreaView>;
 

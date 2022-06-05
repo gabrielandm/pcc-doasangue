@@ -13,12 +13,11 @@ export default function SmallTextInput(props) {
 				value={props.value}
 				onChangeText={text =>props.updateVar(text)}
 				// style={styles.input}
-				secureTextEntry={props.isPassword}
-				mode='outlined'
-				activeOutlineColor={!props.invalidInput ? colors.blue : colors.lightRed}
+				secureTextEntry={props.isPassword !== undefined ? props.isPassword : false}
+				mode={props.mode !== undefined ? props.mode : 'outlined'}
+				activeOutlineColor={props.invalidInput !== undefined ? !props.invalidInput ? colors.blue : colors.lightRed : colors.blue}
 				outlineColor={!props.invalidInput ? colors.gray : colors.red}
-				style={props.style}
-				keyboardType={props.keyboardType}
+				style={!props.style !== undefined ? props.style : {}}
 			/>
 		</View>
 	);

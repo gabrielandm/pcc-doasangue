@@ -1,23 +1,31 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { StyleSheet, View, Text, Image } from 'react-native';
-import { Button, Chip, IconButton } from 'react-native-paper';
+import { IconButton } from 'react-native-paper';
 
 import { colors } from '../style/colors';
 
 export default function ProfileThingy(props) {
-  const data = props.data;
-  data.birth_date = new Date(data.birth_date);
-  data.last_donation = new Date(data.last_donation);
-  const userAge = Math.abs(new Date(new Date() - data.birth_date).getUTCFullYear()) - 1970
-  const daysFromDonate = Math.ceil((new Date() - data.last_donation) / (1000 * 60 * 60 * 24));
-  const daysToDonate = data.gender == 0 ? 90 - daysFromDonate : 60 - daysFromDonate;
+  const [data, setData] = useState(props.data);
+  const [userAge, setUserAge] = useState(Math.abs(new Date(new Date() - data.birth_date).getUTCFullYear()) - 1970);
+  const [daysFromDonate, setDaysFromDonate] = useState(Math.ceil((new Date() - data.last_donation) / (1000 * 60 * 60 * 24)));
+  const [daysToDonate, setDaysToDonate] = useState(data.gender == 0 ? 90 - daysFromDonate : 60 - daysFromDonate);
+  const [profileLink, setProfileLink] = useState(typeof data.profile_link == 'string' ? { uri: data.profile_link } : { uri: 'https://doasanguefiles.blob.core.windows.net/doasangueblob/default-profile-pic.png' });
   const options = { year: '2-digit', month: '2-digit', day: '2-digit' };
-  const profile_link = typeof data.profile_link == 'string' ?	 {uri: data.profile_link} : {uri: 'https://doasanguefiles.blob.core.windows.net/doasangueblob/default-profile-pic.png'}
-  
+
   function openEditPage(screenName) {
-    console.log(screenName);
-    // props.navigateTo(screenName, props.data);
+    props.navigateTo(screenName,
+      {
+        data: JSON.stringify(data)
+      }
+    );
   }
+
+  useEffect(() => {
+    setData({...data,
+      birth_date: new Date(data.birth_date),
+      last_donation: new Date(data.last_donation),
+    });
+  }, [])
 
   return (
     <View style={styles.column}>
@@ -25,15 +33,15 @@ export default function ProfileThingy(props) {
       <View style={styles.outerBox}>
         <View style={styles.rowHeader}>
           <Text style={styles.title}>Informações básicas:</Text>
-          <IconButton icon="square-edit-outline" size={textSize} onPress={() => openEditPage('EditBasicInfoScreen')} />
+          <IconButton icon="square-edit-outline" size={textSize} onPress={() => openEditPage('EditProfileScreen')} />
         </View>
         <View style={styles.row}>
-          <View style={styles.column}>
+          {/* <View style={styles.column}>
             <Image style={styles.profImg}
               // source={{ uri: 'https://doasanguefiles.blob.core.windows.net/doasangueblob/doner-333.jpg' }}
-              source={profile_link}
+              source={profileLink}
             />
-          </View>
+          </View> */}
           <View style={styles.column}>
             <View style={styles.rowCenter}>
               <Text style={styles.infoHeader}>Nome:</Text>
@@ -55,7 +63,7 @@ export default function ProfileThingy(props) {
       <View style={styles.outerBox}>
         <View style={styles.rowHeader}>
           <Text style={styles.title}>Outras informações:</Text>
-          <IconButton icon="square-edit-outline" size={textSize} onPress={() => openEditPage('EditOtherInfoScreen')} />
+          <IconButton icon="square-edit-outline" size={textSize} onPress={() => openEditPage('EditProfileScreen')} />
         </View>
         <View style={styles.row}>
           <View style={styles.column}>
