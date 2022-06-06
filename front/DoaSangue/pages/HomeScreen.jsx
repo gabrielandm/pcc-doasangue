@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, View, Text, ScrollView, SafeAreaView, StatusBar, ActivityIndicator } from 'react-native';
 import { BottomNavigation, Snackbar } from 'react-native-paper';
+import { useFocusEffect } from '@react-navigation/native';
 
 import { colors } from '../style/colors';
 import { config } from '../config/config';
@@ -8,7 +9,7 @@ import CampaignThingy from '../components/CampaignThingy';
 import ProfileThingy from '../components/ProfileThingy';
 import AchievementThingy from '../components/AchievementThingy';
 
-import {m_achievements} from '../config/mousse';
+import { m_achievements } from '../config/mousse';
 
 export default function HomeScreen({ navigation, route }) {
 	/* Variables and functions */
@@ -53,7 +54,7 @@ export default function HomeScreen({ navigation, route }) {
 		if (filter != undefined || !debug) {
 			// Get data from MongoDB
 			try {
-				const response = await fetch(`${config.user}?type=data&email=${filter.name}`)
+				const response = await fetch(`${config.user}?type=data&email=${filter.email}`)
 				if (response.status === 200) {
 					const json = await response.json();
 					// console.log(json)
@@ -71,17 +72,31 @@ export default function HomeScreen({ navigation, route }) {
 			// Only for debug
 			// Create default user
 			setProfileData({
-				'email': 'mousseuwu', 'pass': '12345678', 'validates': 1, 'entry_date': new Date(), 'name': 'Mousse Hardcoded', 'last_name': 'de Chocolate', 'phone': '+5519998049566', 'blood_type': 'O+', 'last_donation': new Date(), 'city': 'Mistério 2', 'state': 'PE', 'country': 'BR', 'gender': 0, 'birth_date': new Date(), 'profile_link': null, '_id': '333',
+				'email': 'mousseuwu', 'pass': '12345678', 'validates': 1, 'entry_date': new Date(), 'name': 'Mousse Hardcoded', 'last_name': 'de Chocolate', 'phone': '+5519998049566', 'blood_type': 'O+', 'last_donation': new Date(), 'city': 'Mistério', 'state': 'PE', 'country': 'BR', 'gender': 0, 'birth_date': new Date(), 'profile_link': null, '_id': '333',
 			})
 		}
-		console.log(profileData)
+		// console.log(profileData)
 	}
 
 	/* When page loads */
 	useEffect(() => {
-		getProfileData(route.params, true); // !!!Remember to set debug to false!!!
-		// getCampaigns();
+		getProfileData(route.params, false); // !!!Remember to set debug to false!!!
+		getCampaigns();
 	}, []);
+	/* When page is focused */
+	useFocusEffect(React.useCallback(() => {
+		if (route.params !== undefined) {
+			if (route.params.message !== undefined) {
+				setSnackbarText(route.params.message);
+				setVisible(true);
+				if (route.params.message === 'Dados atualizados com sucesso!') {
+					// getProfileData(route.params, true);
+					getProfileData(route.params);
+					navigation.setParams({...route.params, message: undefined});
+				}
+			}
+		}
+	}, [route]));
 
 	/* Views */
 	// Definir variável q vai ser uma bool e salva se os dados já foram coletados e só coletar se ainda não foram :)
@@ -105,8 +120,8 @@ export default function HomeScreen({ navigation, route }) {
 			</Snackbar>
 		</SafeAreaView>;
 
-  function renderAchievements() {
-		return m_achievements.map((achievement, index) => 
+	function renderAchievements() {
+		return m_achievements.map((achievement, index) =>
 			<AchievementThingy key={index} navigateTo={(pageName, props) => navigateTo(pageName, props)} data={achievement} />);
 	}
 
@@ -124,6 +139,7 @@ export default function HomeScreen({ navigation, route }) {
 			<ScrollView style={styles.scrollView}>
 				<ProfileThingy
 					data={profileData}
+					updateData={setProfileData}
 					navigateTo={(pageName, props) => navigateTo(pageName, props)}
 				/>
 			</ScrollView>

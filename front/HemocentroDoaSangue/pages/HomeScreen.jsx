@@ -181,6 +181,12 @@ const styles = StyleSheet.create({
 		position: 'absolute',
 		bottom: 15,
 		right: 20,
+		// Shadow
+    shadowColor: colors.black,
+    shadowOffset: { width: 2, height: 2 },
+    shadowOpacity: 1,
+    shadowRadius: 2,
+    elevation: 8,
 	},
 	buttonTextStyle: {
 		color: colors.white,

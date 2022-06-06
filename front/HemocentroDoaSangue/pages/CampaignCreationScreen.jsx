@@ -34,7 +34,12 @@ export default function CampaignScreen({ navigation, route }) {
     */
     const newBloodTypes = bloodTypes;
     newBloodTypes[index] = !newBloodTypes[index];
-    setBloodTypes(newBloodTypes => [...newBloodTypes, `${newBloodTypes.length}`]);
+    if (newBloodTypes.length == bloodTypesList.length) {
+      newBloodTypes.push(3);
+    } else {
+      newBloodTypes.pop();
+    }
+    setBloodTypes(newBloodTypes);
   }
 
   /* Date stuff */
