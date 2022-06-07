@@ -72,7 +72,7 @@ export default function HomeScreen({ navigation, route }) {
 			// Only for debug
 			// Create default user
 			setProfileData({
-				'email': 'mousseuwu', 'pass': '12345678', 'validates': 1, 'entry_date': new Date(), 'name': 'Mousse Hardcoded', 'last_name': 'de Chocolate', 'phone': '+5519998049566', 'blood_type': 'O+', 'last_donation': new Date(), 'city': 'Mistério', 'state': 'PE', 'country': 'BR', 'gender': 0, 'birth_date': new Date(), 'profile_link': null, '_id': '333',
+				'email': 'mousseuwu', 'pass': '12345678', 'validated': 1, 'entry_date': new Date(), 'name': 'Mousse Hardcoded', 'last_name': 'de Chocolate', 'phone': '19998049566', 'blood_type': 'O+', 'last_donation': new Date(), 'city': 'Mistério', 'state': 'PE', 'country': 'BR', 'gender': 0, 'birth_date': new Date(), 'profile_link': null, '_id': '333',
 			})
 		}
 		// console.log(profileData)
@@ -80,18 +80,19 @@ export default function HomeScreen({ navigation, route }) {
 
 	/* When page loads */
 	useEffect(() => {
-		getProfileData(route.params, false); // !!!Remember to set debug to false!!!
-		getCampaigns();
+		getProfileData(route.params, true); // !!!Remember to set debug to false!!!
+		// getCampaigns();
 	}, []);
 	/* When page is focused */
 	useFocusEffect(React.useCallback(() => {
 		if (route.params !== undefined) {
 			if (route.params.message !== undefined) {
+				console.log(route.params.message);
 				setSnackbarText(route.params.message);
 				setVisible(true);
 				if (route.params.message === 'Dados atualizados com sucesso!') {
-					// getProfileData(route.params, true);
-					getProfileData(route.params);
+					getProfileData(route.params, true);
+					// getProfileData(route.params);
 					navigation.setParams({...route.params, message: undefined});
 				}
 			}

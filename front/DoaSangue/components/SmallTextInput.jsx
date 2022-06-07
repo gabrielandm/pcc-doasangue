@@ -1,16 +1,15 @@
 import React, { useState } from 'react';
 import { StyleSheet, View, Text } from 'react-native';
-import { TextInput } from 'react-native-paper';
+import { TextInput, HelperText } from 'react-native-paper';
 import { Provider as PaperProvider } from "react-native-paper";
 import MaskInput from 'react-native-mask-input';
 
 import { colors } from '../style/colors';
 
 export default function SmallTextInput(props) {
-
 	return (
 		<View >
-			{props.mask !== undefined ?
+			{props.mask !== undefined ? (
 				<TextInput
 					label={props.label}
 					render={props =>
@@ -18,7 +17,7 @@ export default function SmallTextInput(props) {
 							value={props.globalProps.value}
 							mask={props.globalProps.mask}
 							onChangeText={(masked, unmasked) => {
-								props.globalProps.onChangeText(unmasked);
+								props.globalProps.updateVar(unmasked);
 							}}
 							placeholderFillCharacter={'0'}
 							style={!props.globalProps.style !== undefined ? props.style : {}}
@@ -32,8 +31,8 @@ export default function SmallTextInput(props) {
 					style={!props.style !== undefined ? props.style : {}}
 					// All props from the main component
 					globalProps={props}
-				/> :
-				<TextInput
+				/>) :
+				(<TextInput
 					label={props.label}
 					value={props.value}
 					onChangeText={text => props.updateVar(text)}
@@ -43,7 +42,14 @@ export default function SmallTextInput(props) {
 					outlineColor={!props.invalidInput ? colors.gray : colors.red}
 					style={!props.style !== undefined ? props.style : {}}
 				/>
-			}
+				)}
+			{props.errorText !== undefined ? (props.errorText.length > 0 ?
+				<View>
+					<HelperText type="error" visible={true}>
+						{props.errorText.join('\n')}
+					</HelperText>
+				</View> : null)
+				: null}
 
 		</View>
 	);
