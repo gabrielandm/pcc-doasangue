@@ -26,7 +26,7 @@ module.exports = async function (context, req) {
     const banner_link = req.body.banner_link;
 
     if (coordinates == undefined) {
-        coordinates = { latitude: '-22.907370', longitude: '-47.062901' };
+        coordinates = { latitude: -22.907370, longitude: -47.062901 };
     }
 
     const createdDoc = await campaignCollection.insertOne({
