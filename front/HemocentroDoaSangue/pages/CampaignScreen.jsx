@@ -30,9 +30,7 @@ export default function CampaignScreen({ navigation, route }) {
           <View style={styles.row} >
             <View style={styles.column} >
               <Text style={styles.title}>{data.name}</Text>
-            </View>
 
-            <View style={styles.column} >
               <Text style={styles.dataText}>Duração da campanha</Text>
               <Text style={styles.text}>{data.start_date.toLocaleDateString("pt-BR", options)} - {data.end_date.toLocaleDateString("pt-BR", options)}</Text>
               <Text style={styles.dataText}>Horário de funcionamento</Text>
@@ -42,7 +40,7 @@ export default function CampaignScreen({ navigation, route }) {
 
           <View style={styles.rowCenter} >
             <View style={styles.columnCenter} >
-              
+
               <MapView style={styles.map}
                 initialRegion={{
                   latitude: data.coordinates.latitude,
@@ -68,8 +66,10 @@ export default function CampaignScreen({ navigation, route }) {
           </View>
 
           <View style={styles.row} >
-            <Text style={styles.dataText}>Observações</Text>
-            <Text style={styles.text}>{data.observation}</Text>
+            <View style={styles.column} >
+              <Text style={styles.dataText}>Observações</Text>
+              <Text style={styles.text}>{data.observation}</Text>
+            </View>
           </View>
 
           <View style={styles.rowCenter}>
