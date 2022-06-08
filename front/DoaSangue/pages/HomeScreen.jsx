@@ -37,6 +37,7 @@ export default function HomeScreen({ navigation, route }) {
 		}
 		try {
 			const response = await fetch(`${config.campaign}?${query}`)
+			console.log(JSON.stringify(response))
 			if (response.status === 200) {
 				const json = await response.json();
 				setCampaignData(json);
@@ -72,7 +73,7 @@ export default function HomeScreen({ navigation, route }) {
 			// Only for debug
 			// Create default user
 			setProfileData({
-				'email': 'mousseuwu', 'pass': '12345678', 'validated': 1, 'entry_date': new Date(), 'name': 'Mousse Hardcoded', 'last_name': 'de Chocolate', 'phone': '19998049566', 'blood_type': 'O+', 'last_donation': new Date(), 'city': 'Mistério', 'state': 'PE', 'country': 'BR', 'gender': 0, 'birth_date': new Date(), 'profile_link': null, '_id': '333',
+				'email': 'mousseuwu', 'pass': '12345678', 'validated': 1, 'entry_date': new Date(), 'name': 'Mousse Hardcoded', 'last_name': 'de Chocolate', 'phone': '19998049566', 'blood_type': 'O+', 'last_donation': new Date(), 'city': 'Mistério', 'state': 'PE', 'country': 'BR', 'gender': 0, 'birth_date': new Date(), 'profile_link': null, '_id': '628f7c80d18a1daa0050a6d1',
 			})
 		}
 		// console.log(profileData)
@@ -81,7 +82,7 @@ export default function HomeScreen({ navigation, route }) {
 	/* When page loads */
 	useEffect(() => {
 		getProfileData(route.params, true); // !!!Remember to set debug to false!!!
-		// getCampaigns();
+		getCampaigns();
 	}, []);
 	/* When page is focused */
 	useFocusEffect(React.useCallback(() => {
@@ -108,6 +109,7 @@ export default function HomeScreen({ navigation, route }) {
 					(campaign, index) => <CampaignThingy
 						key={index}
 						data={campaign}
+						userId={profileData._id}
 						navigateTo={(pageName, props) => navigateTo(pageName, props)}
 					/>) : <ActivityIndicator size="large" color="#0000ff" />
 				}

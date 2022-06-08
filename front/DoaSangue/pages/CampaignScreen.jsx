@@ -3,12 +3,15 @@ import { StyleSheet, View, Text, ScrollView, SafeAreaView, Dimensions, Linking, 
 import * as Clipboard from 'expo-clipboard';
 import { Button, Chip, IconButton } from 'react-native-paper';
 import MapView, { Marker } from 'react-native-maps';
+import QRCode from 'react-native-qrcode-svg';
 
 import { colors } from '../style/colors';
 
 export default function CampaignScreen({ navigation, route }) {
   const [data, setData] = useState(JSON.parse(route.params.data.data));
   const [loaded, setLoaded] = useState(false);
+  const [qrGenerated, setQrGenerated] = useState(false);
+  const [qrCodeData, setQrCodeData] = useState('');
   const options = { year: '2-digit', month: '2-digit', day: '2-digit' };
   const mapsURL = `http://www.google.com/maps/place/${data.coordinates.latitude},${data.coordinates.longitude}`
 
@@ -17,7 +20,7 @@ export default function CampaignScreen({ navigation, route }) {
       ...data,
       start_date: new Date(data.start_date),
       end_date: new Date(data.end_date),
-      observation: `\t${data.observation.replace("\n", "\n\t")}`,
+      observation: `\t${data.observation.replace('\t', '').replace("\n", "\n\t")}`,
     })
     setLoaded(true);
   }, [])
@@ -28,6 +31,15 @@ export default function CampaignScreen({ navigation, route }) {
 
   function copyToClipboard() {
     Clipboard.setString(data.address);
+  }
+
+  function generateQR() {
+    const objectData = {
+      'campaignId': data._id,
+      'userId': route.params.data.userId,
+    }
+    setQrCodeData(JSON.stringify(objectData));
+    setQrGenerated(true);
   }
 
   return (
@@ -85,6 +97,29 @@ export default function CampaignScreen({ navigation, route }) {
               {data.blood_types.map((blood_type, index) => <Chip key={index} style={styles.chip}>{blood_type}</Chip>)}
             </View>
 
+            <View style={styles.column}>
+              <Text style={styles.textCenter}>Para registrar sua doação, aperte o botão e mostre para o responsável da campanha atual.</Text>
+              <View style={styles.rowCenter} >
+                <Button
+                  icon='qrcode'
+                  mode='outlined'
+                  color={colors.blue}
+                  onPress={() => generateQR()}
+                >Gerar QR Code</Button>
+              </View>
+            </View>
+
+            {qrGenerated ?
+              (<View style={styles.rowCenterQR} >
+                <QRCode
+                  value={qrCodeData}
+                  size={250}
+                  color={colors.red}
+                  backgroundColor={colors.white}
+                />
+              </View>) : null
+            }
+
           </View> : null
         }
       </ScrollView >
@@ -100,7 +135,6 @@ const styles = StyleSheet.create({
   },
   column: {
     flexDirection: 'column',
-    flexWrap: 'wrap',
   },
   columnCenter: {
     flexDirection: 'column',
@@ -119,6 +153,15 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     flexWrap: 'wrap',
+  },
+  rowCenterQR: {
+    width: Dimensions.get('window').width * 1,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    flexWrap: 'wrap',
+    marginTop: 33,
+    marginBottom: 33,
   },
   title: {
     fontSize: 20,
@@ -146,6 +189,16 @@ const styles = StyleSheet.create({
     fontSize: 14,
     marginTop: 2,
     lineHeight: 20,
+  },
+  textCenter: {
+    fontSize: 14,
+    lineHeight: 20,
+    textAlign: 'center',
+    marginTop: 20,
+    marginBottom: 3,
+    marginLeft: 45,
+    marginRight: 45,
+
   },
   iconButton: {
     margin: 0,

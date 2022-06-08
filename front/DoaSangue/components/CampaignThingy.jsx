@@ -12,7 +12,10 @@ export default function CampaignThingy(props) {
   const options = { year: '2-digit', month: '2-digit', day: '2-digit' };
 
   function navigateTo() {
-    props.navigateTo('CampaignScreen', {data: JSON.stringify(data)});
+    props.navigateTo('CampaignScreen', {
+      data: JSON.stringify(data),
+      userId: props.userId,
+    });
   }
 
   return (
