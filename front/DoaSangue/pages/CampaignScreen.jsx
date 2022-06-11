@@ -23,6 +23,7 @@ export default function CampaignScreen({ navigation, route }) {
       observation: `\t${data.observation.replace('\t', '').replace("\n", "\n\t")}`,
     })
     setLoaded(true);
+    console.log(route.params.data.location)
   }, [])
 
   function VisitMaps(url) {
@@ -63,10 +64,10 @@ export default function CampaignScreen({ navigation, route }) {
 
                 <MapView style={styles.map}
                   initialRegion={{
-                    latitude: data.coordinates.latitude,
-                    longitude: data.coordinates.longitude,
-                    latitudeDelta: 0.04,
-                    longitudeDelta: 0.04,
+                    latitude: (data.coordinates.latitude + route.params.data.location['coords']['latitude']) / 2,
+                    longitude: (data.coordinates.longitude + route.params.data.location['coords']['longitude']) / 2,
+                    latitudeDelta: Math.abs(data.coordinates.latitude - route.params.data.location['coords']['latitude'])*1.33,
+                    longitudeDelta: Math.abs(data.coordinates.longitude - route.params.data.location['coords']['longitude'])*1.33,
                   }}
                 >
                   <Marker
@@ -74,13 +75,31 @@ export default function CampaignScreen({ navigation, route }) {
                     coordinate={data.coordinates}
                     title={data.name}
                     description={data.address}
+                    pinColor={colors.red}
                   />
+                  {route.params.data.location !== null ?
+                    <Marker
+                      key={0}
+                      coordinate={{
+                        latitude: route.params.data.location['coords']['latitude'],
+                        longitude: route.params.data.location['coords']['longitude']}}
+                      title={'Você está aqui'}
+                      description={'Endereço atual'}
+                      pinColor={colors.blue}
+                    />
+                    : null}
                 </MapView>
                 <View style={styles.rowCenter} >
                   <Text style={styles.dataText}>Endereço: </Text>
                   <Text style={{ textAlign: 'center', color: colors.gray }}>{data.address}</Text>
                   <IconButton style={styles.iconButton} icon="content-copy" size={16} onPress={() => copyToClipboard()} />
                 </View>
+                {route.params.data.distance !== null ?
+                  <View style={styles.rowCenter} >
+                    <Text style={styles.dataText}>Distância: </Text>
+                    <Text style={{ textAlign: 'center', color: colors.gray }}>{route.params.data.distance} Km</Text>
+                  </View> : null
+                }
                 <Button mode="text" icon="google-maps" color={colors.lightRed} onPress={() => VisitMaps(mapsURL)} >Abrir no Google Maps</Button>
               </View>
             </View>

@@ -45,12 +45,12 @@ export default function ProfileThingy(props) {
               <IconButton icon="square-edit-outline" size={textSize} onPress={() => openEditPage('EditProfileScreen')} />
             </View>
             <View style={styles.row}>
-              {/* <View style={styles.column}>
-            <Image style={styles.profImg}
-              // source={{ uri: 'https://doasanguefiles.blob.core.windows.net/doasangueblob/doner-333.jpg' }}
-              source={profileLink}
-            />
-          </View> */}
+              <View style={styles.column}>
+                <Image style={styles.profImg}
+                  // source={{ uri: 'https://doasanguefiles.blob.core.windows.net/doasangueblob/doner-333.jpg' }}
+                  source={profileLink}
+                />
+              </View>
               <View style={styles.column}>
                 <View style={styles.rowCenter}>
                   <Text style={styles.infoHeader}>Nome:</Text>

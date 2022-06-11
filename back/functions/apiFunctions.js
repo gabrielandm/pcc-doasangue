@@ -1,5 +1,10 @@
+/* MongoDB */
 const { MongoClient } = require("mongodb");
 const { config } = require('../functions/config');
+
+/* Blob Storage */
+const uuid = require('uuid');
+const { BlobServiceClient } = require("@azure/storage-blob");
 
 async function connectDB(collection_names) {
   /*
@@ -14,6 +19,56 @@ async function connectDB(collection_names) {
     }
 
     return collections;
+}
+
+async function saveBlob(rawImage, fileName, imageType) {
+  const connStr = "DefaultEndpointsProtocol=https;AccountName=doasanguefiles;AccountKey=CCwuT+nXra5AxbTjt5M4UZCvqK7vqHU+wfd+NiY0DIPQCBk0sYUac1G6j6CA82/DHutN86FL/nr4+AStloCiSA==;EndpointSuffix=core.windows.net";
+	const blobServiceClient = BlobServiceClient.fromConnectionString(connStr);
+	
+	// let matches = rawImage.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/);
+	// let type = matches[1];
+  if (fileName === undefined) {
+    fileName = uuid.v4().toString() + '.jpg';
+  }
+	let buffer = new Buffer(rawImage, 'base64');
+
+  const containerClient = blobServiceClient.getContainerClient('doasangueblob');
+	let blockBlobClient = containerClient.getBlockBlobClient(fileName);
+  // Verify if the image has the same type
+  const oldImageType = fileName.split('.')[fileName.split('.').length - 1]
+  if (imageType !== oldImageType) {
+    // Delete old file
+    await blockBlobClient.delete();
+    // Set new filename
+    fileName = uuid.v4().toString() + '.' + imageType;
+    // Create new file
+    blockBlobClient = containerClient.getBlockBlobClient(fileName);
+  }
+
+  const uploadBlobResponse = await blockBlobClient.upload(buffer, buffer.length);
+
+  return {
+    response: uploadBlobResponse,
+    fileUrl: `https://doasanguefiles.blob.core.windows.net/doasangueblob/${fileName}`
+  };
+}
+
+async function deleteBlob(fileName) {
+  const connStr = "DefaultEndpointsProtocol=https;AccountName=doasanguefiles;AccountKey=CCwuT+nXra5AxbTjt5M4UZCvqK7vqHU+wfd+NiY0DIPQCBk0sYUac1G6j6CA82/DHutN86FL/nr4+AStloCiSA==;EndpointSuffix=core.windows.net";
+	const blobServiceClient = BlobServiceClient.fromConnectionString(connStr);
+
+  if (fileName === undefined) {
+    fileName = uuid.v4().toString() + '.jpg';
+  }
+
+	const containerClient = blobServiceClient.getContainerClient('doasangueblob');
+	const blockBlobClient = containerClient.getBlockBlobClient(fileName);
+  const uploadBlobResponse = await blockBlobClient.delete();
+
+  return {
+    response: uploadBlobResponse,
+    fileUrl: null,
+  };
 }
 
 const header = {
@@ -242,4 +297,4 @@ function getCampaignFilters(query) {
   return filters;
 }
 
-module.exports = { connectDB, UpdateUser, UpdateCorp, UpdateCampaign, UpdateDonationDate, getCampaignFilters, header };
+module.exports = { connectDB, saveBlob, deleteBlob, UpdateUser, UpdateCorp, UpdateCampaign, UpdateDonationDate, getCampaignFilters, header };

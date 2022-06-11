@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { StyleSheet, View, Text, Image, ScrollView, SafeAreaView, Dimensions } from 'react-native';
 import { IconButton, Chip, RadioButton, Button, Checkbox } from 'react-native-paper';
 import DateTimePicker from '@react-native-community/datetimepicker';
+import * as ImagePicker from 'expo-image-picker';
 
 import SmallTextInput from '../components/SmallTextInput';
 import { config } from '../config/config';
@@ -9,12 +10,17 @@ import { colors } from '../style/colors';
 import { statesList, bloodTypesList } from '../config/data';
 
 export default function ProfileThingy({ navigation, route }) {
+  /* Data */
   const [data, setData] = useState(JSON.parse(route.params.data.data));
   const oldData = JSON.parse(route.params.data.data)
   const [loaded, setLoaded] = useState(false);
   const [bloodTypes, setBloodTypes] = useState(new Array(bloodTypesList.length).fill(false));
   const [bloodTypeItems, setBloodTypeItems] = useState(bloodTypesList);
   const options = { year: '2-digit', month: '2-digit', day: '2-digit' };
+  const [profileLink, setProfileLink] = useState(null);
+  const [image, setImage] = useState(null); // Image that will be selected
+  const [deleteImage, setDeleteImage] = useState(false); // If true, image will be deleted
+  const [imageBase64, setImageBase64] = useState(null); // Image in base64 format
 
   /* Input validation control */
   const [nameErrorMessage, setNameErrorMessage] = useState([]);
@@ -61,6 +67,7 @@ export default function ProfileThingy({ navigation, route }) {
     showMode('date', updatePickerShow);
   };
 
+  // Function to define the new type of blood
   function bloodSelected(index, willSetData = true) {
     const newBloodTypes = new Array(bloodTypes.length).fill(false);
     if (index !== -1) {
@@ -86,6 +93,24 @@ export default function ProfileThingy({ navigation, route }) {
     setBloodTypes(newBloodTypes);
   }
 
+  // Function to handle image changes
+  async function pickImage() {
+    // No permissions request is necessary for launching the image library
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [1, 1],
+      quality: 1,
+      base64: true,
+    });
+
+    if (!result.cancelled) {
+      setImage(result.uri);
+      setImageBase64(result.base64);
+    }
+  };
+
+  // Function to validate all data inputs
   function validateUserInputs() {
     let status = {
       validated: true,
@@ -194,14 +219,21 @@ export default function ProfileThingy({ navigation, route }) {
     return status
   }
 
+  // Function to handle text changes
   function onTextInputChange(text, key) {
     setData({ ...data, [key]: text });
-    // validateUserInputs();
+    validateUserInputs();
   }
 
+  // Function to send an API request to save the user data
   async function saveData() {
     const status = validateUserInputs();
-    /* const data = status.data;
+    const data = {...status.data,
+      delete_image: deleteImage,
+      image: imageBase64,
+      // image_type: image.split('.')[image.split('.').length - 1],
+    };
+    // console.log(data)
     if (status.validated) {
       try {
         const response = await fetch(config.user,
@@ -229,7 +261,7 @@ export default function ProfileThingy({ navigation, route }) {
         // Make an error appear for the user
         console.log(e);
       }
-    } */
+    }
   }
 
   useEffect(() => {
@@ -238,6 +270,7 @@ export default function ProfileThingy({ navigation, route }) {
       birth_date: new Date(data.birth_date !== undefined ? data.birth_date : new Date()),
       last_donation: new Date(data.last_donation !== undefined ? data.last_donation : new Date()),
     });
+    setProfileLink(typeof data.profile_link == 'string' ? { uri: data.profile_link } : { uri: 'https://doasanguefiles.blob.core.windows.net/doasangueblob/default-profile-pic.png' })
     if (data.blood_type !== null) {
       for (var i in bloodTypeItems) {
         if (data.blood_type === bloodTypeItems[i].value) {
@@ -258,9 +291,35 @@ export default function ProfileThingy({ navigation, route }) {
       {loaded ?
         <SafeAreaView style={styles.screen}>
           <ScrollView style={styles.screen}>
+            {/* Image imput */}
             <View style={styles.columnCenter}>
+              <View style={styles.columnCenter}>
+                <View style={styles.rowCenter}>
+                  <View style={styles.column}>
+                    {image == null ?
+                      <Image source={profileLink} style={styles.profImg} /> :
+                      <Image source={{ uri: image }} style={styles.profImg} />
+                    }
+                  </View>
+
+                  <View style={styles.column}>
+                    <View style={styles.row}>
+                      <Button onPress={pickImage} color={colors.red}>ALterar imagem</Button>
+                    </View>
+                    <View style={styles.row}>
+                      <Checkbox
+                        status={deleteImage == true ? 'checked' : 'unchecked'}
+                        onPress={() => setDeleteImage(!deleteImage)}
+                        color={colors.red}
+                      />
+                      <Text style={styles.text}>Remover imagem</Text>
+                    </View>
+                  </View>
+                </View>
+              </View>
 
               <View style={styles.row}>
+
                 <Text style={styles.boxTitle}>Informações gerais</Text>
               </View>
               <View style={styles.rowCenter}>
@@ -522,5 +581,12 @@ const styles = StyleSheet.create({
   },
   end: {
     height: 300,
+  },
+  profImg: {
+    width: 75,
+    height: 75,
+    borderRadius: 75 / 2,
+    borderWidth: 1,
+    borderColor: colors.red,
   },
 });

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { StyleSheet, View, Text, ScrollView, SafeAreaView, StatusBar, ActivityIndicator } from 'react-native';
 import { BottomNavigation, Snackbar } from 'react-native-paper';
 import { useFocusEffect } from '@react-navigation/native';
+import * as Location from 'expo-location';
 
 import { colors } from '../style/colors';
 import { config } from '../config/config';
@@ -16,6 +17,7 @@ export default function HomeScreen({ navigation, route }) {
 	const [filters, setFilters] = useState(null);
 	const [campaignData, setCampaignData] = useState(null);
 	const [profileData, setProfileData] = useState(null);
+	const [loaded, setLoaded] = useState(false);
 
 	/* Snackbar */
 	const [visible, setVisible] = React.useState(false);
@@ -37,7 +39,7 @@ export default function HomeScreen({ navigation, route }) {
 		}
 		try {
 			const response = await fetch(`${config.campaign}?${query}`)
-			console.log(JSON.stringify(response))
+			// console.log(JSON.stringify(response))
 			if (response.status === 200) {
 				const json = await response.json();
 				setCampaignData(json);
@@ -81,37 +83,59 @@ export default function HomeScreen({ navigation, route }) {
 
 	/* When page loads */
 	useEffect(() => {
-		getProfileData(route.params, true); // !!!Remember to set debug to false!!!
+		getProfileData(route.params, false); // !!!Remember to set debug to false!!!
 		getCampaigns();
+		setLoaded(true);
 	}, []);
+
 	/* When page is focused */
 	useFocusEffect(React.useCallback(() => {
 		if (route.params !== undefined) {
 			if (route.params.message !== undefined) {
-				console.log(route.params.message);
+				// console.log(route.params.message);
 				setSnackbarText(route.params.message);
 				setVisible(true);
 				if (route.params.message === 'Dados atualizados com sucesso!') {
-					getProfileData(route.params, true);
+					getProfileData(route.params, false); // !!!Remember to set debug to false!!!
 					// getProfileData(route.params);
-					navigation.setParams({...route.params, message: undefined});
+					navigation.setParams({ ...route.params, message: undefined });
 				}
 			}
 		}
 	}, [route]));
+
+	/* Geolocation */
+	const [location, setLocation] = useState(null);
+	const [errorMsg, setErrorMsg] = useState(null);
+
+	useEffect(() => {
+		(async () => {
+			let { status } = await Location.requestForegroundPermissionsAsync();
+			if (status !== 'granted') {
+				setErrorMsg('Permission to access location was denied');
+				return;
+			}
+			let location = await Location.getCurrentPositionAsync({});
+			setLocation(location);
+		})();
+	}, []);
+
 
 	/* Views */
 	// Definir variável q vai ser uma bool e salva se os dados já foram coletados e só coletar se ainda não foram :)
 	const CampaignsView = () =>
 		<SafeAreaView style={styles.screen} >
 			<ScrollView style={styles.scrollView}>
-				{campaignData !== null ? campaignData.map(
-					(campaign, index) => <CampaignThingy
-						key={index}
-						data={campaign}
-						userId={profileData._id}
-						navigateTo={(pageName, props) => navigateTo(pageName, props)}
-					/>) : <ActivityIndicator size="large" color="#0000ff" />
+				{loaded ?
+					(campaignData !== null ? campaignData.map(
+						(campaign, index) => <CampaignThingy
+							key={index}
+							data={campaign}
+							userId={profileData._id}
+							location={location}
+							navigateTo={(pageName, props) => navigateTo(pageName, props)}
+						/>)
+						: <ActivityIndicator size="large" color="#0000ff" />) : <ActivityIndicator size="large" color="#0000ff" />
 				}
 			</ScrollView>
 			<Snackbar
@@ -135,6 +159,13 @@ export default function HomeScreen({ navigation, route }) {
 					{renderAchievements()}
 				</View>
 			</ScrollView>
+			<Snackbar
+				visible={visible}
+				onDismiss={onDismissSnackBar}
+				duration={3000}
+			>
+				{snackbarText}
+			</Snackbar>
 		</SafeAreaView>;
 
 	const ProfileView = () =>
@@ -146,6 +177,13 @@ export default function HomeScreen({ navigation, route }) {
 					navigateTo={(pageName, props) => navigateTo(pageName, props)}
 				/>
 			</ScrollView>
+			<Snackbar
+				visible={visible}
+				onDismiss={onDismissSnackBar}
+				duration={3000}
+			>
+				{snackbarText}
+			</Snackbar>
 		</SafeAreaView>;
 
 	/* View controller */
