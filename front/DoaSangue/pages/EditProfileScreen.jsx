@@ -100,7 +100,7 @@ export default function ProfileThingy({ navigation, route }) {
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
       aspect: [1, 1],
-      quality: 1,
+      quality: 0.3,
       base64: true,
     });
 
