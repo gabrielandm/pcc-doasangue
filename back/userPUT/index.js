@@ -13,12 +13,12 @@ module.exports = async function (context, req) {
 	const last_name = req.body.last_name;
 	const phone = req.body.phone;
 	const blood_type = req.body.blood_type;
-	const last_donation = req.body.last_donation;
+	const last_donation = new Date(req.body.last_donation);
 	const city = req.body.city;
 	const state = req.body.state;
 	const country = req.body.country;
 	const gender = req.body.gender;
-	const birth_date = req.body.birth_date;
+	const birth_date = new Date(req.body.birth_date);
 
 	/* Image stuff */
 	const profile_link = req.body.profile_link; // Null if doesn't exist
@@ -40,15 +40,24 @@ module.exports = async function (context, req) {
 	const res = await donerCollection.find({ "email": email });
 	let user = await res.toArray();
 	user = user[0];
-	user = UpdateUser(user, email, pass, validated, name, last_name, phone, blood_type, last_donation, city, state, country, gender, birth_date, blobResult.fileUrl);
+	result = UpdateUser(user, email, pass, validated, name, last_name, phone, blood_type, last_donation, city, state, country, gender, birth_date, blobResult.fileUrl);
 
-	await donerCollection.updateOne(
-		{ "email": email },
-		{ $set: user }
-	);
+	if (result.isValid == true) {
+		await donerCollection.updateOne(
+			{ "email": email },
+			{ $set: result.user }
+		);
 
-	context.res = {
-		body: { status: "updated" },
-		headers: header
-	};
+		context.res = {
+			body: {
+				status: "updated",
+			},
+			headers: header
+		};
+	} else if (result.isValid == false) {
+		context.res = {
+			status: 400,
+			headers: header
+		};
+	}
 }

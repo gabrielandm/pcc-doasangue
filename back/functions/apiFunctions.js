@@ -10,30 +10,30 @@ async function connectDB(collection_names) {
   /*
     Connect to the database
   */
-    const client = new MongoClient(config['conn'], { useUnifiedTopology: true });
-    await client.connect();
-    const database = client.db(config['db']);
-    const collections = []
-    for (let i = 0; i < collection_names.length; i++) {
-      collections.push(database.collection(collection_names[i]));
-    }
+  const client = new MongoClient(config['conn'], { useUnifiedTopology: true });
+  await client.connect();
+  const database = client.db(config['db']);
+  const collections = []
+  for (let i = 0; i < collection_names.length; i++) {
+    collections.push(database.collection(collection_names[i]));
+  }
 
-    return collections;
+  return collections;
 }
 
 async function saveBlob(rawImage, fileName, imageType) {
   const connStr = "DefaultEndpointsProtocol=https;AccountName=doasanguefiles;AccountKey=CCwuT+nXra5AxbTjt5M4UZCvqK7vqHU+wfd+NiY0DIPQCBk0sYUac1G6j6CA82/DHutN86FL/nr4+AStloCiSA==;EndpointSuffix=core.windows.net";
-	const blobServiceClient = BlobServiceClient.fromConnectionString(connStr);
-	
-	// let matches = rawImage.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/);
-	// let type = matches[1];
+  const blobServiceClient = BlobServiceClient.fromConnectionString(connStr);
+
+  // let matches = rawImage.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/);
+  // let type = matches[1];
   if (fileName === undefined) {
     fileName = uuid.v4().toString() + '.jpg';
   }
-	let buffer = new Buffer(rawImage, 'base64');
+  let buffer = new Buffer(rawImage, 'base64');
 
   const containerClient = blobServiceClient.getContainerClient('doasangueblob');
-	let blockBlobClient = containerClient.getBlockBlobClient(fileName);
+  let blockBlobClient = containerClient.getBlockBlobClient(fileName);
   // Verify if the image has the same type
   const oldImageType = fileName.split('.')[fileName.split('.').length - 1]
   if (imageType !== oldImageType) {
@@ -55,14 +55,14 @@ async function saveBlob(rawImage, fileName, imageType) {
 
 async function deleteBlob(fileName) {
   const connStr = "DefaultEndpointsProtocol=https;AccountName=doasanguefiles;AccountKey=CCwuT+nXra5AxbTjt5M4UZCvqK7vqHU+wfd+NiY0DIPQCBk0sYUac1G6j6CA82/DHutN86FL/nr4+AStloCiSA==;EndpointSuffix=core.windows.net";
-	const blobServiceClient = BlobServiceClient.fromConnectionString(connStr);
+  const blobServiceClient = BlobServiceClient.fromConnectionString(connStr);
 
   if (fileName === undefined) {
     fileName = uuid.v4().toString() + '.jpg';
   }
 
-	const containerClient = blobServiceClient.getContainerClient('doasangueblob');
-	const blockBlobClient = containerClient.getBlockBlobClient(fileName);
+  const containerClient = blobServiceClient.getContainerClient('doasangueblob');
+  const blockBlobClient = containerClient.getBlockBlobClient(fileName);
   const uploadBlobResponse = await blockBlobClient.delete();
 
   return {
@@ -80,51 +80,149 @@ const header = {
   "Access-Control-Max-Age": "86400"
 }
 
-function UpdateUser(list, email, pass, validated, name, last_name, phone, blood_type, last_donation, city, state, country, gender, birth_date, profile_link) {
-  if (email !== undefined) {
-    list.email = email;
+function UpdateUser(userData, email, pass, validated, name, last_name, phone, blood_type, last_donation, city, state, country, gender, birth_date, profile_link) {
+  // Preparing data for validation
+  userData = {
+    ...userData,
+    name: userData.name.replace(/\s+/g, ' ').trim(),
+    last_name: userData.last_name.replace(/\s+/g, ' ').trim(),
+    phone: userData.phone.replace(/\s+/g, ' ').trim(),
+    country: userData.country.replace(/\s+/g, ' ').trim(),
+    state: userData.state.replace(/\s+/g, ' ').trim(),
+    city: userData.city.replace(/\s+/g, ' ').trim(),
+    birth_date: new Date(userData.birth_date),
+    last_donation: new Date(userData.last_donation),
   }
-  if (pass !== undefined) {
-    list.pass = pass;
+  // Variable to check if some change was made
+  const oldUserData = JSON.stringify(userData);
+  // Validation check variable
+  let isValid = true;
+  // Email validation
+  if (email !== undefined && isValid) { // Not yet changeable
+    userData.email = email;
   }
-  if (validated !== undefined) {
-    list.validated = validated;
+  // Password validation ✔️
+  if (pass !== undefined && isValid) {
+    // Check if pass has 8 digits with numbers and special characters and upper case letters
+    if (
+      pass.length > 8 &&
+      pass.match(/[0-9]/) &&
+      pass.match(/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/) &&
+      pass.match(/[A-Z]/)) {
+      userData.pass = pass;
+    } else {
+      isValid = false;
+    }
   }
-  if (name !== undefined) {
-    list.name = name;
+  // Validated validation ✔️
+  if (validated !== undefined && isValid) { // Not yet changeable
+    // Check if validated is a boolean
+    if (typeof validated === 'boolean') {
+      userData.validated = validated;
+    } else {
+      isValid = false;
+    }
   }
-  if (last_name !== undefined) {
-    list.last_name = last_name;
+  // Name validation ✔️
+  if (name !== undefined && isValid) {
+    // Check if name has more than 2 letters and if has only letters or brazilian letters
+    if (name.length > 2 && name.match(/^[a-zA-ZÀ-ÿ ]+$/)) {
+      userData.name = name;
+    } else {
+      isValid = false;
+    }
   }
-  if (phone !== undefined) {
-    list.phone = phone;
+  // Last name validation ✔️
+  if (last_name !== undefined && isValid) {
+    // Check if name has 1 or letters and if has only letters or brazilian letters
+    if (last_name.length >= 1 && last_name.match(/^[a-zA-ZÀ-ÿ ]+$/)) {
+      userData.last_name = last_name;
+    } else {
+      isValid = false;
+    }
   }
-  if (blood_type !== undefined) {
-    list.blood_type = blood_type;
+  // Phone validation ✔️
+  if (phone !== undefined && isValid) {
+    // Check if has 10 or 11 digits and if has only numbers
+    if ((phone.length === 10 || phone.length === 11) && phone.match(/^[0-9]+$/)) {
+      userData.phone = phone;
+    } else {
+      isValid = false;
+    }
   }
-  if (last_donation !== undefined) {
-    list.last_donation = last_donation;
+  // Blood type validation ✔️
+  if (blood_type !== undefined && isValid) {
+    // Check if blood type is one of the following: O+, O-, A+, A-, B+, B-, AB+, AB-
+    if (blood_type.match(/^(O\+|O-|A\+|A-|B\+|B-|AB\+|AB-)$/)) {
+      userData.blood_type = blood_type;
+    } else {
+      isValid = false;
+    }
   }
-  if (city !== undefined) {
-    list.city = city;
+  // Last donation validation ✔️
+  if (last_donation !== undefined && isValid) {
+    // If last_donation is not null and if birth_date is not null. check if is after birth_date
+    if (last_donation !== null && userData.birth_date !== null) {
+      if (last_donation > userData.birth_date) {
+        userData.last_donation = last_donation;
+      } else {
+        isValid = false;
+      }
+      // if last_donation is Date
+    } else if (last_donation instanceof Date && isValid) {
+      userData.last_donation = last_donation;
+    } else {
+      isValid = false;
+    }
   }
-  if (state !== undefined) {
-    list.state = state;
+  // City validation
+  if (city !== undefined && isValid) {
+    userData.city = city;
   }
-  if (country !== undefined) {
-    list.country = country;
+  // State validation
+  if (state !== undefined && isValid) {
+    userData.state = state;
   }
-  if (gender !== undefined) {
-    list.gender = gender;
+  // Country validation
+  if (country !== undefined && isValid) { // Not yet changeable
+    userData.country = country;
   }
-  if (birth_date !== undefined) {
-    list.birth_date = birth_date;
+  // Gender validation ✔️
+  if (gender !== undefined && isValid) {
+    // Check if gender is 0 or 1
+    if (gender === 0 || gender === 1) {
+      userData.gender = gender;
+    } else {
+      isValid = false;
+    }
   }
-  if (profile_link !== undefined) {
-    list.profile_link = profile_link;
+  // Birth date validation ✔️
+  if (birth_date !== undefined && isValid) {
+    // Check if birth_date is instance of Date
+    if (birth_date instanceof Date) {
+      if (new Date() > birth_date) {
+        userData.birth_date = birth_date;
+      } else {
+        isValid = false;
+      }
+    } else {
+      isValid = false;
+    }
   }
-
-  return list;
+  // Profile link validation
+  if (profile_link !== undefined && isValid) {
+    // Check if profile_link is a syting or null
+    if (profile_link === null || typeof profile_link === 'string') {
+      userData.profile_link = profile_link;
+    } else {
+      isValid = false;
+    }
+  }
+  // If some change was made
+  if (oldUserData !== JSON.stringify(userData) && isValid) {
+    isValid = false;
+  }
+  return { userData: userData, isValid: isValid };
 }
 
 function UpdateCorp(corp, cnpj, pass, name, country, city, address, coordinates, phone, email, state, entry_date, subscription_type, subscription_start, subscription_end) {
