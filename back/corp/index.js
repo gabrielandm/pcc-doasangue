@@ -1,4 +1,3 @@
-const { MongoClient } = require("mongodb");
 const { connectDB, UpdateCorp, header } = require("../functions/apiFunctions");
 
 async function Post(context, req) {

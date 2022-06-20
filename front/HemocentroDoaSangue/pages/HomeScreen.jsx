@@ -45,7 +45,7 @@ export default function HomeScreen({ navigation, route }) {
 				setVisible(true);
 			}
 		} catch (error) {
-			console.log(error);
+			console.log(JSON.stringify(error));
 		}
 	}
 
@@ -63,7 +63,7 @@ export default function HomeScreen({ navigation, route }) {
 					setVisible(true);
 				}
 			} catch (error) {
-				console.log(error);
+				console.log(JSON.stringify(error));
 			}
 		}
 		if (debug) {

@@ -1,5 +1,3 @@
-const { MongoClient } = require("mongodb");
-const ObjectId = require('mongodb').ObjectId;
 const { connectDB, saveBlob, deleteBlob, UpdateUser, header } = require("../functions/apiFunctions");
 
 async function Post(context, req) {

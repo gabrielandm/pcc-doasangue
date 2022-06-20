@@ -1,4 +1,3 @@
-const { MongoClient } = require("mongodb");
 const ObjectId = require('mongodb').ObjectId;
 const { connectDB, header, getCampaignFilters, UpdateCampaign } = require("../functions/apiFunctions");
 

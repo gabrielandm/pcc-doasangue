@@ -44,7 +44,7 @@ export default function LoginScreen({ navigation, route }) {
 			var json = await response.json();
 			// console.log(json);
 		} catch (error) {
-			console.log(error);
+			console.log(JSON.stringify(error));
 			return null;
 		}
 		// If value exists
