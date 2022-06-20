@@ -92,6 +92,7 @@ function UpdateUser(userData, email, pass, validated, name, last_name, phone, bl
     city: userData.city.replace(/\s+/g, ' ').trim(),
     birth_date: new Date(userData.birth_date),
     last_donation: new Date(userData.last_donation),
+    profile_link: userData.profile_link.replace(/\s+/g, ' ').trim(),
   }
   // Variable to check if some change was made
   const oldUserData = JSON.stringify(userData);
@@ -218,71 +219,149 @@ function UpdateUser(userData, email, pass, validated, name, last_name, phone, bl
       isValid = false;
     }
   }
-  // If some change was made
-  if (oldUserData !== JSON.stringify(userData) && isValid) {
+  // If no changes were made ✔️
+  if (oldUserData === JSON.stringify(userData) && isValid) {
     isValid = false;
   }
   return { userData: userData, isValid: isValid };
 }
 
-function UpdateCorp(corp, cnpj, pass, name, country, city, address, coordinates, phone, email, state, entry_date, subscription_type, subscription_start, subscription_end) {
-  if (cnpj !== undefined) {
-    corp.cnpj = cnpj;
+function UpdateCorp(corpData, cnpj, pass, name, country, city, address, coordinates, phone, email, state, subscription_type, subscription_start, subscription_end, profile_link) {
+  // Preparing data for validation
+  corpData = {
+    ...corpData,
+    name: corpData.name.replace(/\s+/g, ' ').trim(),
+    phone: corpData.phone.replace(/\s+/g, ' ').trim(),
+    country: corpData.country.replace(/\s+/g, ' ').trim(),
+    state: corpData.state.replace(/\s+/g, ' ').trim(),
+    city: corpData.city.replace(/\s+/g, ' ').trim(),
+    subscription_start: new Date(corpData.subscription_start),
+    subscription_end: new Date(corpData.subscription_end),
+    profile_link: corpData.profile_link.replace(/\s+/g, ' ').trim()
+  }
+  // Variable to check if some change was made
+  const oldCorpData = JSON.stringify(corpData);
+  // Validation check variable
+  let isValid = true;
+  // cnpj validation ✔️
+  if (cnpj !== undefined && isValid) {
+    // Check if cnpj follow cnpj rules
+    if (cnpj.match(/^[0-9]{2}\.?[0-9]{3}\.?[0-9]{3}\/?[0-9]{4}\-?[0-9]{2}$/)) {
+      corpData.cnpj = cnpj;
+    } else {
+      isValid = false;
+    }
+  }
+  // Pass validation ✔️
+  if (pass !== undefined && isValid) {
+    // Check if pass has 8 digits with numbers and special characters and upper case letters
+    if (
+      pass.length > 8 &&
+      pass.match(/[0-9]/) &&
+      pass.match(/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/) &&
+      pass.match(/[A-Z]/)) {
+      userData.pass = pass;
+    } else {
+      isValid = false;
+    }
+  }
+  // Name validation ✔️
+  if (name !== undefined && isValid) {
+    // Check if name has 3 or more letters and if has only letters or brazilian letters
+    if (name.length >= 3 && name.match(/^[a-zA-ZÀ-ÿ ]+$/)) {
+      corpData.name = name;
+    } else {
+      isValid = false;
+    }
+  }
+  // Country validation
+  if (country !== undefined && isValid) { // Not yet changeable
+    corpData.country = country;
+  }
+  // State validation
+  if (state !== undefined && isValid) {
+    corpData.state = state;
+  }
+  // City validation
+  if (city !== undefined && isValid) {
+    corpData.city = city;
+  }
+  // Address validation
+  if (address !== undefined && isValid) {
+    corpData.address = address;
+  }
+  // Coordinates validation ✔️
+  if (coordinates !== undefined && isValid) {
+    // Check if is an Array with 2 numbers inside
+    if (coordinates.length === 2 && coordinates.every(x => typeof x === 'number')) {
+      corpData.coordinates = coordinates;
+    } else {
+      isValid = false;
+    }
+  }
+  // Phone validation ✔️
+  if (phone !== undefined && isValid) {
+    // Check if has 10 or 11 digits and if has only numbers
+    if (phone.length === 10 || phone.length === 11 && phone.match(/^[0-9]+$/)) {
+      corpData.phone = phone;
+    } else {
+      isValid = false;
+    }
+  }
+  // Email validation
+  if (email !== undefined && isValid) { // Not yet changeable
+    corpData.email = email;
+  }
+  // Subscription type validation ✔️
+  if (subscription_type !== undefined && isValid) {
+    // Check if it's a number between 0 and 5
+    /*
+      0 = Free
+      1 = Basic
+      2 = Standard
+      3 = Premium
+      4 = Ultimate
+      5 = Mousse
+    */
+    if (typeof subscription_type === 'number' && subscription_type >= 0 && subscription_type <= 5) {
+      corpData.subscription_type = subscription_type;
+    } else {
+      isValid = false;
+    }
+  }
+  // Subscription start validation ✔️
+  if (subscription_start !== undefined && isValid) {
+    // Check if subscription_start is instance of Date
+    if (subscription_start instanceof Date) {
+      corpData.subscription_start = subscription_start;
+    } else {
+      isValid = false;
+    }
+  }
+  // Subscription end validation ✔️
+  if (subscription_end !== undefined && isValid) {
+    // Check if subscription_end is instance of Date
+    if (subscription_end instanceof Date) {
+      corpData.subscription_end = subscription_end;
+    } else {
+      isValid = false;
+    }
+  }
+  // Profile link validation ✔️
+  if (profile_link !== undefined && isValid) {
+    // Check if profile_link is a string or null
+    if (profile_link === null || typeof profile_link === 'string') {
+      corpData.profile_link = profile_link;
+    } else {
+      isValid = false;
+    }
+  }
+  // If no changes were made ✔️
+  if (oldCorpData === JSON.stringify(corpData) && isValid) {
+    isValid = false;
   }
 
-  if (pass !== undefined) {
-    corp.pass = pass;
-  }
-
-  if (name !== undefined) {
-    corp.name = name;
-  }
-
-  if (country !== undefined) {
-    corp.country = country;
-  }
-
-  if (city !== undefined) {
-    corp.city = city;
-  }
-
-  if (address !== undefined) {
-    corp.address = address;
-  }
-
-  if (coordinates !== undefined) {
-    corp.coordinates = coordinates;
-  }
-
-  if (phone !== undefined) {
-    corp.phone = phone;
-  }
-
-  if (email !== undefined) {
-    corp.email = email;
-  }
-
-  if (state !== undefined) {
-    corp.state = state;
-  }
-
-  if (entry_date !== undefined) {
-    corp.entry_date = entry_date;
-  }
-
-  if (subscription_type !== undefined) {
-    corp.subscription_type = subscription_type;
-  }
-
-  if (subscription_start !== undefined) {
-    corp.subscription_start = subscription_start;
-  }
-
-  if (subscription_end !== undefined) {
-    corp.subscription_end = subscription_end;
-  }
-
-  return corp;
+  return { corpData: corpData, isValid: isValid };
 }
 
 function UpdateCampaign(foundDoc, cnpj, start_date, end_date, open_time, close_time, country, state, city, address, coordinates, phone, creation_date, num_doners, campaign_rating, observation, blood_types, header_color, banner_link) {
