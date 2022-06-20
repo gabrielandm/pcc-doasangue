@@ -1,12 +1,12 @@
 {
   "bindings": [
     {
-      "authLevel": "anonymous",
+      "authLevel": "function",
       "type": "httpTrigger",
       "direction": "in",
       "name": "req",
-      "methods": ["post"],
-      "route": "corp"
+      "methods": ["get","post","put","delete","options"],
+      "route": "corp/{cnpj?}"
     },
     {
       "type": "http",

@@ -1,12 +1,12 @@
 {
   "bindings": [
     {
-      "authLevel": "anonymous",
+      "authLevel": "function",
       "type": "httpTrigger",
       "direction": "in",
       "name": "req",
-      "methods": ["options"],
-      "route": "donationdate"
+      "methods": ["get","post","put","delete","options"],
+      "route": "donationdate/{id?}"
     },
     {
       "type": "http",
