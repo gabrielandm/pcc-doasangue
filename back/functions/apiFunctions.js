@@ -243,13 +243,15 @@ function UpdateCorp(corpData, cnpj, pass, name, country, city, address, coordina
   const oldCorpData = JSON.stringify(corpData);
   // Validation check variable
   let isValid = true;
+  let notValidData = '';
   // cnpj validation ✔️
   if (cnpj !== undefined && isValid) {
     // Check if cnpj follow cnpj rules
-    if (cnpj.match(/^[0-9]{2}\.?[0-9]{3}\.?[0-9]{3}\/?[0-9]{4}\-?[0-9]{2}$/)) {
+    if (cnpj.match(/^[0-9]{2}\.?[0-9]{3}\.?[0-9]{3}\/?[0-9]{4}\-?[0-9]{2}$/) || cnpj === '000') {
       corpData.cnpj = cnpj;
     } else {
       isValid = false;
+      notValidData = 'cnpj';
     }
   }
   // Pass validation ✔️
@@ -263,6 +265,7 @@ function UpdateCorp(corpData, cnpj, pass, name, country, city, address, coordina
       userData.pass = pass;
     } else {
       isValid = false;
+      notValidData = 'pass';
     }
   }
   // Name validation ✔️
@@ -272,6 +275,7 @@ function UpdateCorp(corpData, cnpj, pass, name, country, city, address, coordina
       corpData.name = name;
     } else {
       isValid = false;
+      notValidData = 'name';
     }
   }
   // Country validation
@@ -293,10 +297,11 @@ function UpdateCorp(corpData, cnpj, pass, name, country, city, address, coordina
   // Coordinates validation ✔️
   if (coordinates !== undefined && isValid) {
     // Check if is an Array with 2 numbers inside
-    if (coordinates.length === 2 && coordinates.every(x => typeof x === 'number')) {
+    if (Object.keys(coordinates).length === 2 && Object.values(coordinates).every(function(element) {return typeof element === 'number';})) {
       corpData.coordinates = coordinates;
     } else {
       isValid = false;
+      notValidData = 'coordinates';
     }
   }
   // Phone validation ✔️
@@ -306,6 +311,7 @@ function UpdateCorp(corpData, cnpj, pass, name, country, city, address, coordina
       corpData.phone = phone;
     } else {
       isValid = false;
+      notValidData = 'phone';
     }
   }
   // Email validation
@@ -327,6 +333,7 @@ function UpdateCorp(corpData, cnpj, pass, name, country, city, address, coordina
       corpData.subscription_type = subscription_type;
     } else {
       isValid = false;
+      notValidData = 'subscription_type';
     }
   }
   // Subscription start validation ✔️
@@ -336,6 +343,7 @@ function UpdateCorp(corpData, cnpj, pass, name, country, city, address, coordina
       corpData.subscription_start = subscription_start;
     } else {
       isValid = false;
+      notValidData = 'subscription_start';
     }
   }
   // Subscription end validation ✔️
@@ -345,6 +353,7 @@ function UpdateCorp(corpData, cnpj, pass, name, country, city, address, coordina
       corpData.subscription_end = subscription_end;
     } else {
       isValid = false;
+      notValidData = 'subscription_end';
     }
   }
   // Profile link validation ✔️
@@ -354,14 +363,16 @@ function UpdateCorp(corpData, cnpj, pass, name, country, city, address, coordina
       corpData.profile_link = profile_link;
     } else {
       isValid = false;
+      notValidData = 'profile_link';
     }
   }
   // If no changes were made ✔️
   if (oldCorpData === JSON.stringify(corpData) && isValid) {
     isValid = false;
+    notValidData = 'oldCorpData';
   }
 
-  return { corpData: corpData, isValid: isValid };
+  return { corpData: corpData, isValid: isValid, notValidData: notValidData };
 }
 
 function UpdateCampaign(foundDoc, cnpj, start_date, end_date, open_time, close_time, country, state, city, address, coordinates, phone, creation_date, num_doners, campaign_rating, observation, blood_types, header_color, banner_link) {

@@ -55,6 +55,8 @@ async function Get(context, req) {
 		"cnpj": cnpj
 	});
 
+	delete foundDoc.pass;
+
 	if (foundDoc !== null) {
 		if (type === "check") {
 			context.res = {
@@ -133,8 +135,8 @@ async function Put(context, req) {
 	const email = req.body.email;
 	const state = req.body.state;
 	const subscription_type = req.body.subscription_type;
-	const subscription_start = req.body.subscription_start;
-	const subscription_end = req.body.subscription_end;
+	const subscription_start = new Date(req.body.subscription_start);
+	const subscription_end = new Date(req.body.subscription_end);
 
 	/* Image stuff */
 	const profile_link = req.body.profile_link; // Null if doesn't exist
@@ -146,17 +148,29 @@ async function Put(context, req) {
 	const deleteImage = req.body.delete_image; // True if user want's to delete current image
 	// Image
 	const image = req.body.image;
+	let blobResult = undefined;
 	if (image != null && deleteImage === false) {
 		blobResult = await saveBlob(image, fileName, image_type);
 	} else if (deleteImage === true && fileName != null) {
-		blovResult = await deleteBlob(fileName);
+		blobResult = await deleteBlob(fileName);
 	}
 	/* End of image stuff */
 
 	const res = await corpCollection.find({ "cnpj": cnpj });
 	let corp = await res.toArray();
 	corp = corp[0];
-	corp = UpdateCorp(corp, cnpj, pass, name, country, city, address, coordinates, phone, email, state, subscription_type, subscription_start, subscription_end, blobResult.fileUrl);
+	if (corp === undefined) {
+		context.res = {
+			status: 400,
+			body: {
+				status:"cnpj not found",
+				notValidData: "cnpj"
+			},
+			headers: header
+		};
+		return;
+	}
+	corp = UpdateCorp(corp, cnpj, pass, name, country, city, address, coordinates, phone, email, state, subscription_type, subscription_start, subscription_end, blobResult);
 
 	if (corp.isValid) {
 		corpCollection.updateOne(
@@ -166,7 +180,7 @@ async function Put(context, req) {
 
 		context.res = {
 			body: {
-				status: "updated"
+				status: "updated",
 			},
 			headers: header
 		};
@@ -174,7 +188,8 @@ async function Put(context, req) {
 		context.res = {
 			status: 400,
 			body: {
-				status:"not valid update"
+				status:"not valid update",
+				notValidData: corp.notValidData
 			},
 			headers: header
 		};

@@ -52,7 +52,7 @@ export default function ProfileThingy(props) {
 
   /* When page loads */
   useEffect(() => {
-    console.log(data)
+    // console.log(data)
     setData({
       ...data,
       subscription_end: new Date(data.subscription_end),

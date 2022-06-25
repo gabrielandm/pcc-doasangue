@@ -56,7 +56,7 @@ export default function HomeScreen({ navigation, route }) {
 				const response = await fetch(`${config.corp}?type=data&cnpj=${filter.name}`)
 				if (response.status === 200) {
 					const json = await response.json();
-					console.log(json)
+					// console.log(json)
 					setProfileData(json['data']);
 				} else if (response.status !== 200) {
 					console.log('Error: ', response.status);
@@ -96,10 +96,11 @@ export default function HomeScreen({ navigation, route }) {
 	useFocusEffect(React.useCallback(() => {
 		if (route.params !== undefined) {
 			if (route.params.message !== undefined) {
-				// console.log(route.params.message);
+				console.log(route.params.message);
 				setSnackbarText(route.params.message);
 				setVisible(true);
 				if (route.params.message === 'Dados atualizados com sucesso!') {
+					route.params.created = false;
 					getProfileData(route.params, false); // !!!Remember to set debug to false!!!
 					// getProfileData(route.params);
 					navigation.setParams({ ...route.params, message: undefined });
@@ -149,6 +150,13 @@ export default function HomeScreen({ navigation, route }) {
 					navigateTo={(pageName, props) => navigateTo(pageName, props)}
 				/>
 			</ScrollView>
+			<Snackbar
+				visible={visible}
+				onDismiss={onDismissSnackBar}
+				duration={3000}
+			>
+				{snackbarText}
+			</Snackbar>
 		</SafeAreaView>;
 
 	/* View controller */

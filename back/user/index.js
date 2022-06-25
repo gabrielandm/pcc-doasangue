@@ -147,17 +147,18 @@ async function Put(context, req) {
 	const deleteImage = req.body.delete_image; // True if user want's to delete current image
 	// Image
 	const image = req.body.image;
+	let blobResult = undefined;
 	if (image != null && deleteImage === false) {
 		blobResult = await saveBlob(image, fileName, image_type);
 	} else if (deleteImage === true && fileName != null) {
-		blovResult = await deleteBlob(fileName);
+		blobResult = await deleteBlob(fileName);
 	}
 	/* End of image stuff */
 
 	const res = await donerCollection.find({ "email": email });
 	let user = await res.toArray();
 	user = user[0];
-	result = UpdateUser(user, email, pass, validated, name, last_name, phone, blood_type, last_donation, city, state, country, gender, birth_date, blobResult.fileUrl);
+	result = UpdateUser(user, email, pass, validated, name, last_name, phone, blood_type, last_donation, city, state, country, gender, birth_date, blobResult);
 
 	if (result.isValid == true) {
 		await donerCollection.updateOne(

@@ -150,7 +150,10 @@ export default function ProfileThingy({ navigation, route }) {
       image: imageBase64,
       // image_type: image.split('.')[image.split('.').length - 1],
     };
-    // console.log(data)
+    // Removing unnecessary data
+    delete data._id;
+
+    console.log(data)
     if (status.validated) {
       try {
         const response = await fetch(config.corp,
@@ -166,13 +169,19 @@ export default function ProfileThingy({ navigation, route }) {
             name: 'HomeScreen',
             params: {
               message: 'Dados atualizados com sucesso!',
-              name: data.email
+              name: data.cnpj
             },
             merge: true,
           });
         } else {
           // Make an error appear for the user
           console.log(response.status);
+          try {
+            const json = await response.json();
+            console.log(json)
+          } catch (e) {
+            console.log(e)
+          }
         }
       } catch (e) {
         // Make an error appear for the user
@@ -286,7 +295,7 @@ export default function ProfileThingy({ navigation, route }) {
                   {/* Address input */}
                   <SmallTextInput
                     label="Cidade"
-                    value={data.city}
+                    value={data.address}
                     updateVar={(text) => onTextInputChange(text, 'address')}
                     mode="outlined"
                     activeOutlineColor={colors.blue}
@@ -410,7 +419,7 @@ const styles = StyleSheet.create({
     borderColor: colors.red,
   },
   button: {
-    borderWidth: 1,
-    borderColor: colors.black,
+    // borderWidth: 1,
+    // borderColor: colors.black,
   }
 });
