@@ -77,6 +77,9 @@ export default function CampaignScreen({ navigation, route }) {
     showMode('time', updatePickerShow);
   };
 
+  // Location variables and functions
+  
+
   async function createCampaign() {
     const selectedBloodTypes = []
     for (var i in bloodTypes) {

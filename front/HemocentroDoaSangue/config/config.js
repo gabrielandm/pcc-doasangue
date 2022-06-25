@@ -5,4 +5,6 @@ const config = {
   user: 'https://doasangue2.azurewebsites.net/api/user',
 }
 
-module.exports = { config };
+const subLevels = ['Free','Basic','Standard','Premium','Ultimate','Mousse']
+
+module.exports = { config, subLevels };

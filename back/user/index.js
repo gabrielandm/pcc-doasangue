@@ -162,7 +162,7 @@ async function Put(context, req) {
 	if (result.isValid == true) {
 		await donerCollection.updateOne(
 			{ "email": email },
-			{ $set: result.user }
+			{ $set: result.userData }
 		);
 
 		context.res = {
@@ -174,6 +174,9 @@ async function Put(context, req) {
 	} else if (result.isValid == false) {
 		context.res = {
 			status: 400,
+			body: {
+				status: "not valid update"
+			},
 			headers: header
 		};
 	}

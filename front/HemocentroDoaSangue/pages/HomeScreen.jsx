@@ -56,6 +56,7 @@ export default function HomeScreen({ navigation, route }) {
 				const response = await fetch(`${config.corp}?type=data&cnpj=${filter.name}`)
 				if (response.status === 200) {
 					const json = await response.json();
+					console.log(json)
 					setProfileData(json['data']);
 				} else if (response.status !== 200) {
 					console.log('Error: ', response.status);
@@ -82,17 +83,33 @@ export default function HomeScreen({ navigation, route }) {
 		getProfileData(route.params);
 		getCampaigns(route.params);
 	}, []);
+
 	/* When page is focused */
 	useFocusEffect(React.useCallback(() => {
 		if (route.params.created === true) {
-			console.log('mousse useFocusEffect')
 			// getProfileData(route.params);
 			getCampaigns(route.params);
 		}
 	}, []));
 
+	/* When page is focused and route has been changed */
+	useFocusEffect(React.useCallback(() => {
+		if (route.params !== undefined) {
+			if (route.params.message !== undefined) {
+				// console.log(route.params.message);
+				setSnackbarText(route.params.message);
+				setVisible(true);
+				if (route.params.message === 'Dados atualizados com sucesso!') {
+					getProfileData(route.params, false); // !!!Remember to set debug to false!!!
+					// getProfileData(route.params);
+					navigation.setParams({ ...route.params, message: undefined });
+				}
+			}
+		}
+	}, [route]));
+
 	/* Views */
-	// Definir variável q vai ser uma bool e salva se os dados já foram coletados e só coletar se ainda não foram :)
+	// Definir variável q vai ser uma bool. Salva se os dados já foram coletados e só coletar se ainda não foram :)
 	const CampaignsView = () =>
 		<SafeAreaView style={styles.screen} >
 			<ScrollView style={styles.scrollView}>
@@ -126,7 +143,11 @@ export default function HomeScreen({ navigation, route }) {
 	const ProfileView = () =>
 		<SafeAreaView style={styles.screen} >
 			<ScrollView style={styles.scrollView}>
-				<ProfileThingy data={profileData} />
+				<ProfileThingy
+					data={profileData}
+					updateData={setProfileData}
+					navigateTo={(pageName, props) => navigateTo(pageName, props)}
+				/>
 			</ScrollView>
 		</SafeAreaView>;
 
@@ -182,11 +203,11 @@ const styles = StyleSheet.create({
 		bottom: 15,
 		right: 20,
 		// Shadow
-    shadowColor: colors.black,
-    shadowOffset: { width: 2, height: 2 },
-    shadowOpacity: 1,
-    shadowRadius: 2,
-    elevation: 8,
+		shadowColor: colors.black,
+		shadowOffset: { width: 2, height: 2 },
+		shadowOpacity: 1,
+		shadowRadius: 2,
+		elevation: 8,
 	},
 	buttonTextStyle: {
 		color: colors.white,

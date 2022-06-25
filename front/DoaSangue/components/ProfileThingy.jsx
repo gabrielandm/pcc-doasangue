@@ -13,6 +13,36 @@ export default function ProfileThingy(props) {
   const [profileLink, setProfileLink] = useState(null);
   const options = { year: '2-digit', month: '2-digit', day: '2-digit' };
 
+  /* Function to calculate difference between dates*/
+  function calcDate(date1, date2) {
+    const diff = Math.floor(date1.getTime() - date2.getTime());
+    const day = 1000 * 60 * 60 * 24;
+
+    // Days remaining
+    const days = Math.floor(diff / day);
+    const days_left = Math.floor((days / 365 - Math.floor(days / 365)) * 365);
+
+    // Months remaining
+    const months = Math.floor(days / 31);
+    const months_left = Math.floor((months / 12 - Math.floor(months / 12)) * 12);
+
+    // Years remaining
+    const years_left = Math.floor(months / 12);
+
+    let message = "";
+    if (days_left > 0) {
+      message += days_left + " dias ";
+    }
+    if (months_left > 0) {
+      message += months_left + " meses ";
+    }
+    if (years_left > 0) {
+      message += years_left + " anos";
+    }
+
+    return message;
+  }
+
   function openEditPage(screenName) {
     props.navigateTo(screenName,
       {
