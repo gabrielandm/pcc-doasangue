@@ -7,17 +7,6 @@ import MaskInput from 'react-native-mask-input';
 import { colors } from '../style/colors';
 
 export default function SmallTextInput(props) {
-	/* Props documentation
-		-> label: string - label of the input (like a placeholder)
-		-> value: string - value of the input
-		-> updateVar: function - function to update the value of the input
-		-> multiline: boolean - if the input is multiline
-		-> invalidInput: boolean - if the input is invalid (will make input set a style of error, all red)
-		-> isPassword: boolean - if the input is a password (will make the input show a * instead of the value)
-		-> style: object - style of the input
-		-> hasErrorText: boolean - if the input has an error text (will make the input show an error text if is invalid, it renders the HelperText)
-		-> errorText: string - text of the error text (will be able to appear if hasErrorText is true)
-	*/
 	return (
 		<View >
 			{props.mask !== undefined ? (
@@ -40,6 +29,7 @@ export default function SmallTextInput(props) {
 					activeOutlineColor={props.invalidInput !== undefined ? !props.invalidInput ? colors.blue : colors.lightRed : colors.blue}
 					outlineColor={!props.invalidInput ? colors.gray : colors.red}
 					style={!props.style !== undefined ? props.style : {}}
+					multiline={!props.multiline !== undefined ? props.multiline : false}
 					// All props from the main component
 					globalProps={props}
 				/>) :
@@ -51,6 +41,7 @@ export default function SmallTextInput(props) {
 					mode={props.mode !== undefined ? props.mode : 'outlined'}
 					activeOutlineColor={props.invalidInput !== undefined ? !props.invalidInput ? colors.blue : colors.lightRed : colors.blue}
 					outlineColor={!props.invalidInput ? colors.gray : colors.red}
+					multiline={!props.multiline !== undefined ? props.multiline : false}
 					style={!props.style !== undefined ? props.style : {}}
 				/>
 				)}

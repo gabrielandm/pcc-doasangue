@@ -1,5 +1,5 @@
 const ObjectId = require('mongodb').ObjectId;
-const { connectDB, header, getCampaignFilters, UpdateCampaign } = require("../functions/apiFunctions");
+const { connectDB, saveBlob, deleteBlob, header, getCampaignFilters, UpdateCampaign } = require("../functions/apiFunctions");
 
 async function Post(context, req) {
 	const collections = await connectDB(['Campaign', 'Corp']);
@@ -8,8 +8,8 @@ async function Post(context, req) {
 
 	const cnpj = req.body.cnpj;
 	const name = req.body.name;
-	const start_date = req.body.start_date;
-	const end_date = req.body.end_date;
+	const start_date = new Date(req.body.start_date);
+	const end_date = new Date(req.body.end_date);
 	const open_time = req.body.open_time;
 	const close_time = req.body.close_time;
 	const country = req.body.country;
@@ -24,8 +24,18 @@ async function Post(context, req) {
 	const observation = req.body.observation;
 	const blood_types = req.body.blood_types;
 	const header_color = req.body.header_color;
-	const banner_link = req.body.banner_link;
 
+	/* Image stuff */
+	const image_type = req.body.image_type;
+	// Image
+	const image = req.body.image;
+	let blobResult = undefined;
+	if (image != null) {
+		blobResult = await saveBlob(image, undefined, image_type);
+	}
+	/* End of image stuff */
+
+	/* Default coordinates, delete this in the future */
 	if (coordinates == undefined) {
 		coordinates = { latitude: -22.907370, longitude: -47.062901 };
 	}
@@ -33,8 +43,8 @@ async function Post(context, req) {
 	const createdDoc = await campaignCollection.insertOne({
 		"cnpj": cnpj,
 		"name": name,
-		"start_date": start_date,
-		"end_date": end_date,
+		"start_date": start_date.toISOString(),
+		"end_date": end_date.toISOString(),
 		"open_time": open_time,
 		"close_time": close_time,
 		"country": country,
@@ -49,7 +59,7 @@ async function Post(context, req) {
 		"observation": observation,
 		"blood_types": blood_types,
 		"header_color": header_color,
-		"banner_link": banner_link
+		"banner_link": blobResult.fileUrl
 	});
 
 	context.res = {
@@ -115,21 +125,65 @@ async function Put(context, req) {
 	const observation = req.body.observation;
 	const blood_types = req.body.blood_types;
 	const header_color = req.body.header_color;
-	const banner_link = req.body.banner_link;
+
+	/* Image stuff */
+	const banner_link = req.body.banner_link; // Null if doesn't exist
+	const image_type = req.body.image_type;
+	let fileName = undefined;
+	if (typeof banner_link == 'string') {
+		fileName = banner_link.split('/')[banner_link.split('/').length - 1];
+	}
+	const deleteImage = req.body.delete_image; // True if user want's to delete current image
+	// Image
+	const image = req.body.image;
+	let blobResult = undefined;
+	if (image != null && deleteImage === false) {
+		blobResult = await saveBlob(image, fileName, image_type);
+	} else if (deleteImage === true && fileName != null) {
+		blobResult = await deleteBlob(fileName);
+	}
+	/* End of image stuff */
 
 	let foundDoc = await campaignCollection.findOne({
 		'_id': ObjectId(id)
 	});
+	if (foundDoc === undefined) {
+		context.res = {
+			status: 400,
+			body: {
+				status: "campaign id not found",
+				notValidData: "campaign id"
+			},
+			headers: header
+		};
+		return;
+	}
 	foundDoc = UpdateCampaign(foundDoc, cnpj, start_date, end_date, open_time, close_time, country, state, city, address, coordinates, phone, creation_date, num_doners, campaign_rating, observation, blood_types, header_color, banner_link);
 
-	campaignCollection.updateOne(
-		{ '_id': ObjectId(id) },
-		{ $set: foundDoc }
-	);
-
-	context.res = {
-		body: { status: "updated" },
-		headers: header
+	if (corp.isValid) {
+		const newCampaignData = {
+			...corp.corpData,
+			start_date: corp.corpData.start_date.toISOString(),
+			end_date: corp.corpData.end_date.toISOString(),
+			creation_date: corp.corpData.creation_date.toISOString(),
+		}
+		campaignCollection.updateOne(
+			{ '_id': ObjectId(id) },
+			{ $set: newCampaignData }
+		);
+		context.res = {
+			body: { status: "updated" },
+			headers: header
+		}
+	} else {
+		context.res = {
+			status: 400,
+			body: {
+				status: "not valid update",
+				notValidData: corp.notValidData
+			},
+			headers: header
+		};
 	}
 }
 

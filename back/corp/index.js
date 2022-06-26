@@ -163,7 +163,7 @@ async function Put(context, req) {
 		context.res = {
 			status: 400,
 			body: {
-				status:"cnpj not found",
+				status: "cnpj not found",
 				notValidData: "cnpj"
 			},
 			headers: header
@@ -173,9 +173,14 @@ async function Put(context, req) {
 	corp = UpdateCorp(corp, cnpj, pass, name, country, city, address, coordinates, phone, email, state, subscription_type, subscription_start, subscription_end, blobResult);
 
 	if (corp.isValid) {
+		const newCorpData = {
+			...corp.corpData,
+			subscription_start: corp.corpData.subscription_start.toISOString(),
+			subscription_end: corp.corpData.subscription_end.toISOString(),
+		}
 		corpCollection.updateOne(
 			{ "cnpj": cnpj },
-			{ $set: corp.corpData }
+			{ $set: newCorpData }
 		);
 
 		context.res = {
@@ -188,7 +193,7 @@ async function Put(context, req) {
 		context.res = {
 			status: 400,
 			body: {
-				status:"not valid update",
+				status: "not valid update",
 				notValidData: corp.notValidData
 			},
 			headers: header

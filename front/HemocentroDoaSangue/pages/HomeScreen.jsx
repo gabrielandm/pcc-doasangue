@@ -78,32 +78,33 @@ export default function HomeScreen({ navigation, route }) {
 
 	/* When page loads */
 	useEffect(() => {
-		console.log('mousse useEffect')
+		// console.log('mousse useEffect')
 		route.params.created = false;
 		getProfileData(route.params);
 		getCampaigns(route.params);
 	}, []);
 
-	/* When page is focused */
-	useFocusEffect(React.useCallback(() => {
-		if (route.params.created === true) {
-			// getProfileData(route.params);
-			getCampaigns(route.params);
-		}
-	}, []));
+	// /* When page is focused */
+	// useFocusEffect(React.useCallback(() => {
+	// 	if (route.params.created === true) {
+	// 		// getProfileData(route.params);
+	// 		getCampaigns(route.params);
+	// 	}
+	// }, []));
 
 	/* When page is focused and route has been changed */
 	useFocusEffect(React.useCallback(() => {
 		if (route.params !== undefined) {
 			if (route.params.message !== undefined) {
-				console.log(route.params.message);
+				// console.log(route.params.message);
 				setSnackbarText(route.params.message);
 				setVisible(true);
 				if (route.params.message === 'Dados atualizados com sucesso!') {
-					route.params.created = false;
 					getProfileData(route.params, false); // !!!Remember to set debug to false!!!
-					// getProfileData(route.params);
-					navigation.setParams({ ...route.params, message: undefined });
+					navigation.setParams({ ...route.params, message: undefined, created: false });
+				} else if (route.params.message === 'Campanha criada com sucesso!') {
+					getCampaigns(route.params);
+					navigation.setParams({ ...route.params, message: undefined, created: false });
 				}
 			}
 		}

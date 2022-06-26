@@ -1,45 +1,62 @@
-import React, { useState } from 'react';
-import { StyleSheet, View, Text, ScrollView, SafeAreaView, Dimensions, Linking } from 'react-native';
-import { Button, Chip } from 'react-native-paper';
+import React, { useState, useEffect } from 'react';
+import { StyleSheet, View, Text, Image, ScrollView, SafeAreaView, Dimensions, Linking } from 'react-native';
+import { Button, Chip, Checkbox } from 'react-native-paper';
 import SmallTextInput from '../components/SmallTextInput';
 import DateTimePicker from '@react-native-community/datetimepicker';
+import * as ImagePicker from 'expo-image-picker';
 
 import { colors } from '../style/colors';
 import { statesList, bloodTypesList } from '../config/data';
 import { config } from '../config/config';
 
 export default function CampaignScreen({ navigation, route }) {
-  /* open - close time */
+  /* Basic variables */
   const options = { year: 'numeric', month: '2-digit', day: '2-digit' };
   const timeOptions = { hour: '2-digit', minute: '2-digit' };
   // Text and Number data
-  const [name, setName] = useState(null)
-  const [city, setCity] = useState(null)
-  const [address, setAddress] = useState(null)
-  const [phone, setPhone] = useState(null)
-  const [observation, setObservation] = useState(null)
+  const [name, setName] = useState('')
+  const [country, setCountry] = useState('')
+  const [city, setCity] = useState('')
+  const [address, setAddress] = useState('')
+  const [phone, setPhone] = useState('')
+  const [observation, setObservation] = useState('')
+  const [changed, setChanged] = useState(false)
 
-  // State dropdown list data
-  const [state, setState] = useState(null);
+  // State data
+  const [state, setState] = useState('');
   const [stateItems, setStateItems] = useState(statesList);
+
+  /* Input validation control */
+  const [nameErrorMessage, setNameErrorMessage] = useState([]);
+  const [nameIsValid, setNameIsValid] = useState(true);
+  const [observationErrorMessage, setObservationErrorMessage] = useState([]);
+  const [observationIsValid, setObservationIsValid] = useState(true);
+  const [phoneErrorMessage, setPhoneErrorMessage] = useState([]);
+  const [phoneIsValid, setPhoneIsValid] = useState(true);
+  const [stateErrorMessage, setStateErrorMessage] = useState([]);
+  const [stateIsValid, setStateIsValid] = useState(true);
+  const [cityErrorMessage, setCityErrorMessage] = useState([]);
+  const [cityIsValid, setCityIsValid] = useState(true);
+  const [addressErrorMessage, setAddressErrorMessage] = useState([]);
+  const [addressIsValid, setAddressIsValid] = useState(true);
+  const [countryErrorMessage, setCountryErrorMessage] = useState([]);
+  const [countryIsValid, setCountryIsValid] = useState(true);
 
   /* Blood stuff */
   // BloodType dropdown list data
   const [bloodTypes, setBloodTypes] = useState(new Array(bloodTypesList.length).fill(false));
   const [bloodTypeItems, setBloodTypeItems] = useState(bloodTypesList);
 
+  // Function to control the blood types selection
   function bloodSelected(index) {
     /* Selects after onPress of a chip, but it only works if the code is like this \'-'/ 
-      setMyArray( arr => [...arr, `${arr.length}`]);
+      setMyArray( arr => [...arr]);
     */
     const newBloodTypes = bloodTypes;
     newBloodTypes[index] = !newBloodTypes[index];
-    if (newBloodTypes.length == bloodTypesList.length) {
-      newBloodTypes.push(3);
-    } else {
-      newBloodTypes.pop();
-    }
-    setBloodTypes(newBloodTypes);
+    // setBloodTypes(newBloodTypes);
+    setBloodTypes(newBloodTypes => [...newBloodTypes]);
+    // console.log(bloodTypes)
   }
 
   /* Date stuff */
@@ -77,82 +94,314 @@ export default function CampaignScreen({ navigation, route }) {
     showMode('time', updatePickerShow);
   };
 
-  // Location variables and functions
-  
+  // Image variables
+  const [image, setImage] = useState(null); // Image that will be selected
+  const [deleteImage, setDeleteImage] = useState(false); // If true, image will be deleted
+  const [imageBase64, setImageBase64] = useState(null); // Image in base64 format
 
-  async function createCampaign() {
+  /* Data stuff */
+  // Function to set values to text variables
+  function onTextInputChange(text, setFunction) {
+    setFunction(text);
+    setChanged(true);
+    // validateUserInputs();
+  }
+
+  // Function to handle image changes
+  async function pickImage() {
+    // No permissions request is necessary for launching the image library
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [1, 1],
+      quality: 0.3,
+      base64: true,
+    });
+
+    if (!result.cancelled) {
+      setImage(result.uri);
+      setImageBase64(result.base64);
+    }
+  };
+
+  // Data validation and manipulation
+  // Function to validate all data inputs
+  function validateUserInputs() {
     const selectedBloodTypes = []
     for (var i in bloodTypes) {
       if (bloodTypes[i] == true) {
         selectedBloodTypes.push(bloodTypeItems[i]['value']);
       }
     }
-    const campaignData = {
-      cnpj: route.params == undefined ? '000' : route.params.data.cnpj,
-      start_date: startDate.toISOString(),
-      end_date: endDate.toISOString(),
-      country: 'BR',
-      state: state,
-      city: city,
-      address: address,
-      phone: phone,
-      observation: observation,
-      banner_color: colors.red,
-      banner_link: null,
-      open_time: `${openTime.getHours() < 10 ? '0' + openTime.getHours() : openTime.getHours()}:${openTime.getMinutes() < 10 ? '0' + openTime.getMinutes() : openTime.getMinutes()}`,
-      close_time: `${closeTime.getHours() < 10 ? '0' + closeTime.getHours() : closeTime.getHours()}:${closeTime.getMinutes() < 10 ? '0' + closeTime.getMinutes() : closeTime.getMinutes()}`,
-      name: name,
-      blood_types: selectedBloodTypes,
-    }
 
-    // POST request to Campaign collection and check if request was successful
-    try {
-      const response = await fetch(config.campaign,
-        {
-          method: 'POST',
-          body: JSON.stringify(campaignData),
-        }
-      )
-      if (response.status == 201) {
-        navigation.navigate('HomeScreen', {
-          created: true,
-          name: route.params.data.cnpj,
-        });
-      } else {
-        throw new Error('Error creating campaign');
+    let status = {
+      validated: true,
+      message: [],
+      data: {
+        cnpj: route.params == undefined ? '000' : route.params.data.cnpj,
+        start_date: startDate.toISOString(),
+        end_date: endDate.toISOString(),
+        country: country.replace(/\s+/g, ' ').trim(),
+        state: state.replace(/\s+/g, ' ').trim(),
+        city: city.replace(/\s+/g, ' ').trim(),
+        address: address,
+        phone: phone.replace(/\s+/g, ' ').trim(),
+        observation: observation,
+        banner_color: colors.red,
+        banner_link: null,
+        open_time: `${openTime.getHours() < 10 ? '0' + openTime.getHours() : openTime.getHours()}:${openTime.getMinutes() < 10 ? '0' + openTime.getMinutes() : openTime.getMinutes()}`,
+        close_time: `${closeTime.getHours() < 10 ? '0' + closeTime.getHours() : closeTime.getHours()}:${closeTime.getMinutes() < 10 ? '0' + closeTime.getMinutes() : closeTime.getMinutes()}`,
+        name: name.replace(/\s+/g, ' ').trim(),
+        blood_types: selectedBloodTypes,
       }
-    } catch (e) {
-      console.log(e);
+    };
+
+    /* NAME */
+    setNameIsValid(true);
+    let tempNameErrorMessages = [];
+    setNameErrorMessage([]);
+    // Check if field is correctly filled
+    if (status.data.name.length < 3) {
+      status.message.push('O nome deve conter pelo menos 3 letras.');
+      status.validated = false;
+      setNameIsValid(false);
+      tempNameErrorMessages.push('O nome deve conter pelo menos 3 letras.');
+    }
+    // Check if has only letters or brazilian letters on data.name
+    if (!/^[a-zA-ZÀ-ÿ ]+$/.test(status.data.name)) {
+      status.message.push('O nome deve conter apenas letras.');
+      status.validated = false;
+      setNameIsValid(false);
+      tempNameErrorMessages.push('O nome deve conter apenas letras.');
+    }
+    setNameErrorMessage(tempNameErrorMessages);
+    /* OBSERVATION */
+    setObservationIsValid(true);
+    let tempObservationErrorMessages = [];
+    setObservationErrorMessage([]);
+    // Check if has only letters or brazilian letters on data.name
+    if (!/^[a-zA-ZÀ-ÿ ]+$/.test(status.data.name)) {
+      status.message.push('O nome deve conter apenas letras.');
+      status.validated = false;
+      setObservationIsValid(false);
+      tempObservationErrorMessages.push('O nome deve conter apenas letras.');
+    }
+    setObservationErrorMessage(tempObservationErrorMessages);
+    /* PHONE */
+    setPhoneIsValid(true);
+    let tempPhoneErrorMessages = [];
+    // Check if has 10 or 11 digits
+    if (status.data.phone.length !== 10 && status.data.phone.length !== 11) {
+      status.message.push('O telefone deve conter 10 ou 11 dígitos.');
+      status.validated = false;
+      setPhoneIsValid(false);
+      tempPhoneErrorMessages.push('O telefone deve conter 10 ou 11 dígitos.');
+    }
+    setPhoneErrorMessage(tempPhoneErrorMessages);
+    /* STATE */
+    setStateIsValid(true);
+    let tempStateErrorMessages = [];
+    // Check if state is set
+    if (status.data.state != null) {
+      // Check if state exists in statesList
+      var stateExists = false;
+      statesList.forEach((state) => {
+        if (state.value.toUpperCase() === status.data.state.toUpperCase() || state.label.toUpperCase() === status.data.state.toUpperCase()) {
+          stateExists = true;
+          // console.log(state.value)
+        }
+      });
+      if (!stateExists) {
+        status.message.push('O estado informado não existe.');
+        status.validated = false;
+        setStateIsValid(false);
+        tempStateErrorMessages.push('O estado informado não existe.');
+      }
+    }
+    setStateErrorMessage(tempStateErrorMessages);
+    /* END */
+    // Return status
+    return status
+  }
+
+  // Function to save the campaign to MongoDB
+  async function createCampaign() {
+    // const selectedBloodTypes = []
+    // for (var i in bloodTypes) {
+    //   if (bloodTypes[i] == true) {
+    //     selectedBloodTypes.push(bloodTypeItems[i]['value']);
+    //   }
+    // }
+    // Validate user inputs before POST
+    const status = validateUserInputs();
+    if (status.validated) {
+      // POST request to Campaign collection and check if request was successful
+      try {
+        const response = await fetch(config.campaign,
+          {
+            method: 'POST',
+            body: JSON.stringify(status.data),
+          }
+        )
+        if (response.status == 201) {
+          navigation.navigate({
+            name: 'HomeScreen',
+            params: {
+              created: true,
+              name: route.params.data.cnpj,
+              message: 'Campanha criada com sucesso!'
+            },
+            merge: true
+          });
+        } else {
+          throw new Error('Error creating campaign');
+        }
+      } catch (e) {
+        console.log(e);
+      }
     }
   }
 
+  // Every time data is changed
+  useEffect(() => {
+    if (changed) {
+      validateUserInputs();
+      setChanged(false);
+    }
+  }, [changed])
 
   return (
     <SafeAreaView style={styles.screen} >
       <ScrollView style={styles.screen}>
         <View style={styles.columnCenter}>
+          {/* Image imput */}
+          <View style={styles.columnCenter}>
+            <View style={styles.rowCenter}>
+              <View style={styles.column}>
+                {image == null ?
+                  <Image source={require('../images/hospital.jpg')} style={styles.profImg} /> :
+                  <Image source={{ uri: image }} style={styles.profImg} />
+                }
+              </View>
+
+              <View style={styles.column}>
+                <View style={styles.row}>
+                  <Button onPress={pickImage} color={colors.red}>ALterar imagem</Button>
+                </View>
+                <View style={styles.row}>
+                  <Checkbox
+                    status={deleteImage == true ? 'checked' : 'unchecked'}
+                    onPress={() => setDeleteImage(!deleteImage)}
+                    color={colors.red}
+                  />
+                  <Text style={styles.text}>Ignorar imagem</Text>
+                </View>
+              </View>
+            </View>
+          </View>
           {/* Basic info inputs */}
           <View style={styles.row}>
             <Text style={styles.boxTitle}>Informações gerais</Text>
           </View>
+          {/* Name input */}
           <View style={styles.rowCenter}>
-            <SmallTextInput label={'Nome'} isPassword={false} updateVar={(text) => setName(text)} style={styles.textInput} invalidInput={false} />
+            <SmallTextInput
+              label="Nome"
+              value={name}
+              updateVar={(text) => onTextInputChange(text, setName)}
+              mode="outlined"
+              activeOutlineColor={colors.blue}
+              outlineColor={colors.gray}
+              invalidInput={!nameIsValid}
+              errorText={nameErrorMessage}
+              style={styles.textInput}
+            />
           </View>
+          {/* Country input */}
           <View style={styles.rowCenter}>
-            <SmallTextInput label={'Estado'} isPassword={false} updateVar={(text) => setState(text)} style={styles.textInput} invalidInput={false} />
+            <SmallTextInput
+              label="País"
+              value={country}
+              updateVar={(text) => onTextInputChange(text, setCountry)}
+              mode="outlined"
+              activeOutlineColor={colors.blue}
+              outlineColor={colors.gray}
+              invalidInput={!countryIsValid}
+              errorText={countryErrorMessage}
+              style={styles.textInput}
+            />
           </View>
+          {/* State input */}
           <View style={styles.rowCenter}>
-            <SmallTextInput label={'Cidade'} isPassword={false} updateVar={(text) => setCity(text)} style={styles.textInput} invalidInput={false} />
+            <SmallTextInput
+              label="Estado"
+              value={state}
+              updateVar={(text) => onTextInputChange(text, setState)}
+              mode="outlined"
+              activeOutlineColor={colors.blue}
+              outlineColor={colors.gray}
+              invalidInput={!stateIsValid}
+              errorText={stateErrorMessage}
+              style={styles.textInput}
+            />
           </View>
+          {/* City input */}
           <View style={styles.rowCenter}>
-            <SmallTextInput label={'Endereço'} isPassword={false} updateVar={(text) => setAddress(text)} style={styles.textInput} invalidInput={false} />
+            <SmallTextInput
+              label="Cidade"
+              value={city}
+              updateVar={(text) => onTextInputChange(text, setCity)}
+              mode="outlined"
+              activeOutlineColor={colors.blue}
+              outlineColor={colors.gray}
+              invalidInput={!cityIsValid}
+              errorText={cityErrorMessage}
+              style={styles.textInput}
+            />
           </View>
+          {/* Address input */}
           <View style={styles.rowCenter}>
-            <SmallTextInput label={'Telefone'} isPassword={false} updateVar={(text) => setPhone(text)} style={styles.textInput} invalidInput={false} />
+            <SmallTextInput
+              label="Endereço"
+              value={address}
+              updateVar={(text) => onTextInputChange(text, setAddress)}
+              mode="outlined"
+              activeOutlineColor={colors.blue}
+              outlineColor={colors.gray}
+              invalidInput={!addressIsValid}
+              errorText={addressErrorMessage}
+              style={styles.textInput}
+            />
           </View>
-
+          {/* Phone input */}
           <View style={styles.rowCenter}>
-            <SmallTextInput label={'Observações'} isPassword={false} updateVar={(text) => setObservation(text)} style={styles.textInput} invalidInput={false} multiline={true} />
+            <SmallTextInput
+              label="Telefone"
+              value={phone}
+              updateVar={(text) => onTextInputChange(text, setPhone)}
+              mode="outlined"
+              activeOutlineColor={colors.blue}
+              outlineColor={colors.gray}
+              invalidInput={!phoneIsValid}
+              errorText={phoneErrorMessage}
+              style={styles.textInput}
+              mask={[' (', /\d/, /\d/, ') ', /\d/, /\d/, /\d/, /\d/, /\d/, '-', /\d/, /\d/, /\d/, /\d/]}
+            />
+          </View>
+          {/* Observation input */}
+          <View style={styles.rowCenter}>
+            <SmallTextInput
+              label="Observações"
+              value={observation}
+              updateVar={(text) => onTextInputChange(text, setObservation)}
+              mode="outlined"
+              activeOutlineColor={colors.blue}
+              outlineColor={colors.gray}
+              multiline={true}
+              invalidInput={!observationIsValid}
+              errorText={observationErrorMessage}
+              style={styles.textInput}
+            />
           </View>
 
           {/* Blood info inputs */}
@@ -247,7 +496,7 @@ export default function CampaignScreen({ navigation, route }) {
           </View>
 
           {/* Submit button */}
-          <View style={styles.row}>
+          <View style={{ ...styles.row, height: 100 }}>
             <Button onPress={() => createCampaign()} mode="outlined" color={colors.blue} icon="check" >
               Salvar
             </Button>
@@ -276,7 +525,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     flexWrap: 'wrap',
     padding: 10,
-    borderWidth: 1,
+    // borderWidth: 1,
   },
   row: {
     flexDirection: 'row',
@@ -321,5 +570,12 @@ const styles = StyleSheet.create({
     marginRight: 10,
     lineHeight: 20,
     alignSelf: 'center',
+  },
+  profImg: {
+    width: 75,
+    height: 75,
+    borderRadius: 75 / 2,
+    borderWidth: 1,
+    borderColor: colors.red,
   },
 });

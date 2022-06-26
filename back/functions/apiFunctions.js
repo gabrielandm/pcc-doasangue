@@ -376,79 +376,84 @@ function UpdateCorp(corpData, cnpj, pass, name, country, city, address, coordina
 }
 
 function UpdateCampaign(foundDoc, cnpj, start_date, end_date, open_time, close_time, country, state, city, address, coordinates, phone, creation_date, num_doners, campaign_rating, observation, blood_types, header_color, banner_link) {
+  // Preparing data for validation
+  foundDoc = {
+    ...foundDoc,
+    name: foundDoc.name.replace(/\s+/g, ' ').trim(),
+    phone: foundDoc.phone.replace(/\s+/g, ' ').trim(),
+    country: foundDoc.country.replace(/\s+/g, ' ').trim(),
+    state: foundDoc.state.replace(/\s+/g, ' ').trim(),
+    city: foundDoc.city.replace(/\s+/g, ' ').trim(),
+    subscription_start: new Date(foundDoc.subscription_start),
+    subscription_end: new Date(foundDoc.subscription_end),
+    profile_link: foundDoc.profile_link.replace(/\s+/g, ' ').trim()
+  }
+  // Variable to check if some change was made
+  const oldCampaignData = JSON.stringify(foundDoc);
+  // Validation check variable
+  let isValid = true;
+  let notValidData = '';
   if (cnpj !== undefined) {
     foundDoc.cnpj = cnpj;
   }
-
   if (start_date !== undefined) {
     foundDoc.start_date = start_date;
   }
-
   if (end_date !== undefined) {
     foundDoc.end_date = end_date;
   }
-
   if (open_time !== undefined) {
     foundDoc.open_time = open_time;
   }
-
   if (close_time !== undefined) {
     foundDoc.close_time = close_time;
   }
-
   if (country !== undefined) {
     foundDoc.country = country;
   }
-
   if (state !== undefined) {
     foundDoc.state = state;
   }
-
   if (city !== undefined) {
     foundDoc.city = city;
   }
-
   if (address !== undefined) {
     foundDoc.address = address;
   }
-
   if (coordinates !== undefined) {
     foundDoc.coordinates = coordinates;
   }
-
   if (phone !== undefined) {
     foundDoc.phone = phone;
   }
-
   if (creation_date !== undefined) {
     foundDoc.creation_date = creation_date;
   }
-
   if (num_doners !== undefined) {
     foundDoc.num_doners = num_doners;
   }
-
   if (campaign_rating !== undefined) {
     foundDoc.campaign_rating = campaign_rating;
   }
-
   if (observation !== undefined) {
     foundDoc.observation = observation;
   }
-
   if (blood_types !== undefined) {
     foundDoc.blood_types = blood_types;
   }
-
   if (header_color !== undefined) {
     foundDoc.header_color = header_color;
   }
-
   if (banner_link !== undefined) {
     foundDoc.banner_link = banner_link;
   }
+  // If no changes were made ✔️
+  if (oldCampaignData === JSON.stringify(foundDoc) && isValid) {
+    isValid = false;
+    notValidData = 'oldCampaignData';
+  }
 
-  return foundDoc;
+  return { corpData: corpData, isValid: isValid, notValidData: notValidData };
 }
 
 function UpdateDonationDate(res, doner_email, corp_cnpj, campaign_code, ammount_date, donation_date) {

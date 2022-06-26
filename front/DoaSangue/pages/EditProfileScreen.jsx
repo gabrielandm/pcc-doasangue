@@ -69,28 +69,29 @@ export default function ProfileThingy({ navigation, route }) {
 
   // Function to define the new type of blood
   function bloodSelected(index, willSetData = true) {
+    console.log("If doesn't work, it is because code is commented, please uncomment and change the setBloodTypes command to only save newBloodTypes")
     const newBloodTypes = new Array(bloodTypes.length).fill(false);
     if (index !== -1) {
       newBloodTypes[index] = !newBloodTypes[index];
-      if (newBloodTypes.length == bloodTypesList.length) {
-        newBloodTypes.push(3);
-      } else {
-        newBloodTypes.pop();
-      }
+      // if (newBloodTypes.length == bloodTypesList.length) {
+      //   newBloodTypes.push(3);
+      // } else {
+      //   newBloodTypes.pop();
+      // }
       if (willSetData) {
         setData({ ...data, blood_type: bloodTypesList[index].value })
       }
     } else if (index === -1) {
-      if (newBloodTypes.length == bloodTypesList.length) {
-        newBloodTypes.push(3);
-      } else {
-        newBloodTypes.pop();
-      }
+      // if (newBloodTypes.length == bloodTypesList.length) {
+      //   newBloodTypes.push(3);
+      // } else {
+      //   newBloodTypes.pop();
+      // }
       if (willSetData) {
         setData({ ...data, blood_type: null })
       }
     }
-    setBloodTypes(newBloodTypes);
+    setBloodTypes(newBloodTypes => [...newBloodTypes]);
   }
 
   // Function to handle image changes
@@ -228,7 +229,8 @@ export default function ProfileThingy({ navigation, route }) {
   // Function to send an API request to save the user data
   async function saveData() {
     const status = validateUserInputs();
-    const data = {...status.data,
+    const data = {
+      ...status.data,
       delete_image: deleteImage,
       image: imageBase64,
       // image_type: image.split('.')[image.split('.').length - 1],
@@ -291,8 +293,8 @@ export default function ProfileThingy({ navigation, route }) {
       {loaded ?
         <SafeAreaView style={styles.screen}>
           <ScrollView style={styles.screen}>
-            {/* Image imput */}
             <View style={styles.columnCenter}>
+              {/* Image imput */}
               <View style={styles.columnCenter}>
                 <View style={styles.rowCenter}>
                   <View style={styles.column}>
@@ -319,7 +321,6 @@ export default function ProfileThingy({ navigation, route }) {
               </View>
 
               <View style={styles.row}>
-
                 <Text style={styles.boxTitle}>Informações gerais</Text>
               </View>
               <View style={styles.rowCenter}>
