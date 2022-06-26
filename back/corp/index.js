@@ -207,9 +207,12 @@ async function Delete(context, req) {
 
 	const cnpj = context.req.params.cnpj;
 
-	const foundDoc = await corpCollection.deleteOne({
-		"cnpj": cnpj
-	});
+	// Get document to be deleted
+	let doc = await corpCollection.findOne({ "cnpj": cnpj });
+	// Delete image from blob storage
+	await deleteBlob(doc.profile_link.split('/')[doc.profile_link.split('/').length-1])
+	// Delete document
+	const foundDoc = await corpCollection.deleteOne({ "cnpj": cnpj });
 
 	context.res = {
 		// status: 200, /* Defaults to 200 */

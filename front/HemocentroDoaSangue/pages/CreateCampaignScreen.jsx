@@ -9,7 +9,7 @@ import { colors } from '../style/colors';
 import { statesList, bloodTypesList } from '../config/data';
 import { config } from '../config/config';
 
-export default function CampaignScreen({ navigation, route }) {
+export default function CreateCampaignScreen({ navigation, route }) {
   /* Basic variables */
   const options = { year: 'numeric', month: '2-digit', day: '2-digit' };
   const timeOptions = { hour: '2-digit', minute: '2-digit' };
@@ -153,6 +153,10 @@ export default function CampaignScreen({ navigation, route }) {
         close_time: `${closeTime.getHours() < 10 ? '0' + closeTime.getHours() : closeTime.getHours()}:${closeTime.getMinutes() < 10 ? '0' + closeTime.getMinutes() : closeTime.getMinutes()}`,
         name: name.replace(/\s+/g, ' ').trim(),
         blood_types: selectedBloodTypes,
+        // Image variables
+        // Sends null if user wants to ignore the selected image
+        image: deleteImage === true ? null : imageBase64,
+        image_type: image.split('.')[image.split('.').length - 1],
       }
     };
 
@@ -226,14 +230,9 @@ export default function CampaignScreen({ navigation, route }) {
 
   // Function to save the campaign to MongoDB
   async function createCampaign() {
-    // const selectedBloodTypes = []
-    // for (var i in bloodTypes) {
-    //   if (bloodTypes[i] == true) {
-    //     selectedBloodTypes.push(bloodTypeItems[i]['value']);
-    //   }
-    // }
     // Validate user inputs before POST
     const status = validateUserInputs();
+    console.log(status.data)
     if (status.validated) {
       // POST request to Campaign collection and check if request was successful
       try {

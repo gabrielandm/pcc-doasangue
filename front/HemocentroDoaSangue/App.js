@@ -9,7 +9,8 @@ import LoginScreen from './pages/LoginScreen';
 import RegistrationScreen from './pages/RegistrationScreen';
 import PasswordSendEmail from './pages/PasswordSendEmail';
 import CampaignScreen from './pages/CampaignScreen';
-import CampaignCreationScreen from './pages/CampaignCreationScreen';
+import CreateCampaignScreen from './pages/CreateCampaignScreen';
+import EditCampaignScreen from './pages/EditCampaignScreen';
 import EditProfileScreen from './pages/EditProfileScreen';
 import {colors} from './style/colors';
 
@@ -75,8 +76,20 @@ function App() {
             }}
           />
           <Stack.Screen
-            name="CampaignCreationScreen"
-            component={CampaignCreationScreen}
+            name="CreateCampaignScreen"
+            component={CreateCampaignScreen}
+            options={{
+              title: 'DoaSangue',
+              headerShown: true,
+              headerStyle: {
+                backgroundColor: colors.red,
+              },
+              headerTintColor: colors.white,
+            }}
+          />
+          <Stack.Screen
+            name="EditCampaignScreen"
+            component={EditCampaignScreen}
             options={{
               title: 'DoaSangue',
               headerShown: true,

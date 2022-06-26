@@ -25,17 +25,19 @@ async function saveBlob(rawImage, fileName, imageType) {
   const connStr = "DefaultEndpointsProtocol=https;AccountName=doasanguefiles;AccountKey=CCwuT+nXra5AxbTjt5M4UZCvqK7vqHU+wfd+NiY0DIPQCBk0sYUac1G6j6CA82/DHutN86FL/nr4+AStloCiSA==;EndpointSuffix=core.windows.net";
   const blobServiceClient = BlobServiceClient.fromConnectionString(connStr);
 
+  let oldImageType = ""
   // let matches = rawImage.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/);
   // let type = matches[1];
   if (fileName === undefined) {
     fileName = uuid.v4().toString() + '.jpg';
+    oldImageType = fileName.split('.')[fileName.split('.').length - 1]
+    imageType = fileName.split('.')[fileName.split('.').length - 1]
   }
   let buffer = new Buffer(rawImage, 'base64');
 
   const containerClient = blobServiceClient.getContainerClient('doasangueblob');
   let blockBlobClient = containerClient.getBlockBlobClient(fileName);
   // Verify if the image has the same type
-  const oldImageType = fileName.split('.')[fileName.split('.').length - 1]
   if (imageType !== oldImageType) {
     // Delete old file
     await blockBlobClient.delete();

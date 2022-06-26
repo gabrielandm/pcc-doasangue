@@ -148,7 +148,7 @@ export default function ProfileThingy({ navigation, route }) {
       ...status.data,
       delete_image: deleteImage,
       image: imageBase64,
-      // image_type: image.split('.')[image.split('.').length - 1],
+      image_type: image.split('.')[image.split('.').length - 1],
     };
     // Removing unnecessary data
     delete data._id;

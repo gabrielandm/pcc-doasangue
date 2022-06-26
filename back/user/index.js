@@ -189,9 +189,12 @@ async function Delete(context, req) {
 
 	const email = context.req.params.email;
 
-	const foundDoc = await donerCollection.deleteOne({
-		"email": email
-	});
+	// Get document to be deleted
+	let doc = await donerCollection.findOne({ "email": email });
+	// Delete image from blob storage
+	await deleteBlob(doc.profile_link.split('/')[doc.profile_link.split('/').length-1])
+	// Delete document
+	const foundDoc = await donerCollection.deleteOne({ "email": email });
 
 	context.res = {
 		// status: 200, /* Defaults to 200 */

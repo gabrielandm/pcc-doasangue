@@ -201,9 +201,12 @@ async function Delete(context, req) {
 		return;
 	}
 
-	const foundDoc = await campaignCollection.deleteOne({
-		"_id": ObjectId(id)
-	});
+	// Get the document that will be deleted
+	let old = await campaignCollection.findOne({ "_id": ObjectId(id) });
+	// Delete the image for the curent document from the blob storage
+	await deleteBlob(old.banner_link.split('/')[old.banner_link.split('/').length-1]);
+	// Delete the document from database
+	const foundDoc = await campaignCollection.deleteOne({ "_id": ObjectId(id) });
 
 	context.res = {
 		// status: 200, /* Defaults to 200 */

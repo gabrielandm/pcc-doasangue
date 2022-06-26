@@ -123,7 +123,7 @@ export default function HomeScreen({ navigation, route }) {
 					/>) : <ActivityIndicator size="large" color="#0000ff" />
 				}
 			</ScrollView>
-			<Button style={styles.buttonStyle} onPress={() => navigateTo('CampaignCreationScreen', { cnpj: profileData.cnpj })}>
+			<Button style={styles.buttonStyle} onPress={() => navigateTo('CreateCampaignScreen', { cnpj: profileData.cnpj })}>
 				<Text style={styles.buttonTextStyle}>+</Text>
 			</Button>
 			<Snackbar
