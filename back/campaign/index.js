@@ -106,9 +106,10 @@ async function Put(context, req) {
 	const collections = await connectDB(['Campaign']);
 	const campaignCollection = collections[0];
 
-	const id = req.body.id;
+	const _id = req.body._id;
 
 	const cnpj = req.body.cnpj;
+	const name = req.body.name;
 	const start_date = req.body.start_date;
 	const end_date = req.body.end_date;
 	const open_time = req.body.open_time;
@@ -126,6 +127,19 @@ async function Put(context, req) {
 	const blood_types = req.body.blood_types;
 	const header_color = req.body.header_color;
 
+	let foundDoc = await campaignCollection.findOne({ '_id': ObjectId(_id) });
+	if (foundDoc === undefined || foundDoc === null) {
+		context.res = {
+			status: 400,
+			body: {
+				status: "campaign id not found",
+				notValidData: "campaign id"
+			},
+			headers: header
+		};
+		return;
+	}
+
 	/* Image stuff */
 	const banner_link = req.body.banner_link; // Null if doesn't exist
 	const image_type = req.body.image_type;
@@ -141,34 +155,23 @@ async function Put(context, req) {
 		blobResult = await saveBlob(image, fileName, image_type);
 	} else if (deleteImage === true && fileName != null) {
 		blobResult = await deleteBlob(fileName);
+	} else {
+		blobResult = {fileUrl: banner_link};
 	}
 	/* End of image stuff */
 
-	let foundDoc = await campaignCollection.findOne({
-		'_id': ObjectId(id)
-	});
-	if (foundDoc === undefined) {
-		context.res = {
-			status: 400,
-			body: {
-				status: "campaign id not found",
-				notValidData: "campaign id"
-			},
-			headers: header
-		};
-		return;
-	}
-	foundDoc = UpdateCampaign(foundDoc, cnpj, start_date, end_date, open_time, close_time, country, state, city, address, coordinates, phone, creation_date, num_doners, campaign_rating, observation, blood_types, header_color, banner_link);
+	foundDoc = UpdateCampaign(foundDoc, cnpj, name, start_date, end_date, open_time, close_time, country, state, city, address, coordinates, phone, creation_date, num_doners, campaign_rating, observation, blood_types, header_color, blobResult.fileUrl);
 
-	if (corp.isValid) {
+	if (foundDoc.isValid) {
+		console.log(foundDoc)
 		const newCampaignData = {
-			...corp.corpData,
-			start_date: corp.corpData.start_date.toISOString(),
-			end_date: corp.corpData.end_date.toISOString(),
-			creation_date: corp.corpData.creation_date.toISOString(),
+			...foundDoc.foundDoc,
+			start_date: foundDoc.foundDoc.start_date.toISOString(),
+			end_date: foundDoc.foundDoc.end_date.toISOString(),
+			creation_date: foundDoc.foundDoc.creation_date.toISOString(),
 		}
 		campaignCollection.updateOne(
-			{ '_id': ObjectId(id) },
+			{ '_id': ObjectId(_id) },
 			{ $set: newCampaignData }
 		);
 		context.res = {
@@ -180,7 +183,7 @@ async function Put(context, req) {
 			status: 400,
 			body: {
 				status: "not valid update",
-				notValidData: corp.notValidData
+				notValidData: foundDoc.notValidData
 			},
 			headers: header
 		};

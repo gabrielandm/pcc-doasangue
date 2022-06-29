@@ -14,16 +14,18 @@ export default function EditCampaignScreen({ navigation, route }) {
   const options = { year: 'numeric', month: '2-digit', day: '2-digit' };
   const timeOptions = { hour: '2-digit', minute: '2-digit' };
   // Text and Number data
-  const [name, setName] = useState(route.params.data.name)
-  const [country, setCountry] = useState(route.params.data.country)
-  const [city, setCity] = useState(route.params.data.city)
-  const [address, setAddress] = useState(route.params.data.address)
-  const [phone, setPhone] = useState(route.params.data.phone)
-  const [observation, setObservation] = useState(route.params.data.observation)
+  const [data, setData] = useState(JSON.parse(route.params.data))
+  const [name, setName] = useState(data.name)
+  const [country, setCountry] = useState(data.country)
+  const [city, setCity] = useState(data.city)
+  const [address, setAddress] = useState(data.address)
+  const [phone, setPhone] = useState(data.phone)
+  const [observation, setObservation] = useState(data.observation.replace('\t',''))
   const [changed, setChanged] = useState(false)
+  const [loaded, setLoaded] = useState(false)
 
   // State data
-  const [state, setState] = useState(route.params.data.state);
+  const [state, setState] = useState(data.state);
   // const [stateItems, setStateItems] = useState(statesList);
 
   /* Input validation control */
@@ -62,19 +64,19 @@ export default function EditCampaignScreen({ navigation, route }) {
   /* Date stuff */
   // Start Date
   const [mode, setMode] = useState('date');
-  const [startDate, setStartDate] = useState(new Date(route.params.data.start_date));
+  const [startDate, setStartDate] = useState(new Date(data.start_date));
   const [showStartDate, setShowStartDate] = useState(false);
 
   // End Date
-  const [endDate, setEndDate] = useState(new Date(route.params.data.end_date));
+  const [endDate, setEndDate] = useState(new Date(data.end_date));
   const [showEndDate, setShowEndDate] = useState(false);
 
   // Open time
-  const [openTime, setOpenTime] = useState(new Date(route.params.data.open_time));
+  const [openTime, setOpenTime] = useState(new Date(`2005-06-12T${data.open_time.length === 5 ? data.open_time : '0' + data.open_time}:00.000-03:00`));
   const [showOpenTime, setShowOpenTime] = useState(false);
 
-  // Close time  
-  const [closeTime, setCloseTime] = useState(new Date(route.params.data.close_time));
+  // Close time 
+  const [closeTime, setCloseTime] = useState(new Date(`2005-06-12T${data.close_time.length === 5 ? data.close_time : '0' + data.close_time}:00.000-03:00`));
   const [showCloseTime, setShowCloseTime] = useState(false);
 
   function onChange(event, selectedDate, updateDate, updateShow) {
@@ -95,7 +97,7 @@ export default function EditCampaignScreen({ navigation, route }) {
   };
 
   // Image variables
-  const [image, setImage] = useState(route.params.data.banner_link); // Image that will be selected
+  const [image, setImage] = useState(data.banner_link); // Image that will be selected
   const [deleteImage, setDeleteImage] = useState(false); // If true, image will be deleted
   const [imageBase64, setImageBase64] = useState(null); // Image in base64 format
 
@@ -138,7 +140,7 @@ export default function EditCampaignScreen({ navigation, route }) {
       validated: true,
       message: [],
       data: {
-        cnpj: route.params == undefined ? '000' : route.params.data.cnpj,
+        cnpj: route.params == undefined ? '000' : data.cnpj,
         start_date: startDate.toISOString(),
         end_date: endDate.toISOString(),
         country: country.replace(/\s+/g, ' ').trim(),
@@ -156,6 +158,7 @@ export default function EditCampaignScreen({ navigation, route }) {
         // Image variables
         delete_image: deleteImage,
         image: imageBase64,
+        _id: data._id,
       }
     };
 
@@ -228,33 +231,35 @@ export default function EditCampaignScreen({ navigation, route }) {
   }
 
   // Function to save the campaign to MongoDB
-  async function saveCampaign() {
+  async function editCampaign() {
     // Validate user inputs before POST
     const status = validateUserInputs();
+    console.log(JSON.stringify(status.data))
     if (status.validated) {
       // POST request to Campaign collection and check if request was successful
       try {
         const response = await fetch(config.campaign,
           {
-            method: 'POST',
+            method: 'PUT',
             body: JSON.stringify(status.data),
           }
         )
-        if (response.status == 201) {
+        if (response.status == 200) {
           navigation.navigate({
             name: 'HomeScreen',
             params: {
               created: true,
-              name: route.params.data.cnpj,
+              name: data.cnpj,
               message: 'Campanha criada com sucesso!'
             },
             merge: true
           });
         } else {
+          console.log(response.status)
           throw new Error('Error creating campaign');
         }
       } catch (e) {
-        console.log(e);
+        // console.log(e);
       }
     }
   }
@@ -273,7 +278,7 @@ export default function EditCampaignScreen({ navigation, route }) {
           name: 'HomeScreen',
           params: {
             created: true,
-            name: route.params.data.cnpj,
+            name: data.cnpj,
             message: 'Campanha deletada com sucesso!'
           },
           merge: true
@@ -286,6 +291,20 @@ export default function EditCampaignScreen({ navigation, route }) {
     }
   }
 
+  // Every time page is focused
+  useEffect(() => {
+    // Setting current active blood types
+    bloodTypesList.map((value, i) => {
+      if (data.blood_types.indexOf(value['value']) !== -1) {
+        console.log(value['value'], data.blood_types.indexOf(value['value']))
+        let newBloodTypes = bloodTypes;
+        newBloodTypes[i] = true;
+        setBloodTypes(newBloodTypes => [...newBloodTypes]);
+      }
+    })
+    setLoaded(true);
+  }, [])
+
   // Every time data is changed
   useEffect(() => {
     if (changed) {
@@ -294,251 +313,246 @@ export default function EditCampaignScreen({ navigation, route }) {
     }
   }, [changed])
 
-  // Every time page is focused
-  useEffect(() => {
-    // Setting current active blood types
-    
-    setLoaded(true);
-  }, [])
-
   return (
     <SafeAreaView style={styles.screen} >
       <ScrollView style={styles.screen}>
-        <View style={styles.columnCenter}>
-          {/* Image imput */}
+        {loaded === true ?
           <View style={styles.columnCenter}>
-            <View style={styles.rowCenter}>
-              <View style={styles.column}>
-                {image == null ?
-                  <Image source={require('../images/hospital.jpg')} style={styles.profImg} /> :
-                  <Image source={{ uri: image }} style={styles.profImg} />
-                }
-              </View>
-
-              <View style={styles.column}>
-                <View style={styles.row}>
-                  <Button onPress={pickImage} color={colors.red}>ALterar imagem</Button>
+            {/* Image imput */}
+            <View style={styles.columnCenter}>
+              <View style={styles.rowCenter}>
+                <View style={styles.column}>
+                  {image == null ?
+                    <Image source={require('../images/hospital.jpg')} style={styles.profImg} /> :
+                    <Image source={{ uri: image }} style={styles.profImg} />
+                  }
                 </View>
-                <View style={styles.row}>
-                  <Checkbox
-                    status={deleteImage == true ? 'checked' : 'unchecked'}
-                    onPress={() => setDeleteImage(!deleteImage)}
-                    color={colors.red}
-                  />
-                  <Text style={styles.text}>Remover imagem</Text>
+
+                <View style={styles.column}>
+                  <View style={styles.row}>
+                    <Button onPress={pickImage} color={colors.red}>ALterar imagem</Button>
+                  </View>
+                  <View style={styles.row}>
+                    <Checkbox
+                      status={deleteImage == true ? 'checked' : 'unchecked'}
+                      onPress={() => setDeleteImage(!deleteImage)}
+                      color={colors.red}
+                    />
+                    <Text style={styles.text}>Remover imagem</Text>
+                  </View>
                 </View>
               </View>
             </View>
-          </View>
-          {/* Basic info inputs */}
-          <View style={styles.row}>
-            <Text style={styles.boxTitle}>Informações gerais</Text>
-          </View>
-          {/* Name input */}
-          <View style={styles.rowCenter}>
-            <SmallTextInput
-              label="Nome"
-              value={name}
-              updateVar={(text) => onTextInputChange(text, setName)}
-              mode="outlined"
-              activeOutlineColor={colors.blue}
-              outlineColor={colors.gray}
-              invalidInput={!nameIsValid}
-              errorText={nameErrorMessage}
-              style={styles.textInput}
-            />
-          </View>
-          {/* Country input */}
-          <View style={styles.rowCenter}>
-            <SmallTextInput
-              label="País"
-              value={country}
-              updateVar={(text) => onTextInputChange(text, setCountry)}
-              mode="outlined"
-              activeOutlineColor={colors.blue}
-              outlineColor={colors.gray}
-              invalidInput={!countryIsValid}
-              errorText={countryErrorMessage}
-              style={styles.textInput}
-            />
-          </View>
-          {/* State input */}
-          <View style={styles.rowCenter}>
-            <SmallTextInput
-              label="Estado"
-              value={state}
-              updateVar={(text) => onTextInputChange(text, setState)}
-              mode="outlined"
-              activeOutlineColor={colors.blue}
-              outlineColor={colors.gray}
-              invalidInput={!stateIsValid}
-              errorText={stateErrorMessage}
-              style={styles.textInput}
-            />
-          </View>
-          {/* City input */}
-          <View style={styles.rowCenter}>
-            <SmallTextInput
-              label="Cidade"
-              value={city}
-              updateVar={(text) => onTextInputChange(text, setCity)}
-              mode="outlined"
-              activeOutlineColor={colors.blue}
-              outlineColor={colors.gray}
-              invalidInput={!cityIsValid}
-              errorText={cityErrorMessage}
-              style={styles.textInput}
-            />
-          </View>
-          {/* Address input */}
-          <View style={styles.rowCenter}>
-            <SmallTextInput
-              label="Endereço"
-              value={address}
-              updateVar={(text) => onTextInputChange(text, setAddress)}
-              mode="outlined"
-              activeOutlineColor={colors.blue}
-              outlineColor={colors.gray}
-              invalidInput={!addressIsValid}
-              errorText={addressErrorMessage}
-              style={styles.textInput}
-            />
-          </View>
-          {/* Phone input */}
-          <View style={styles.rowCenter}>
-            <SmallTextInput
-              label="Telefone"
-              value={phone}
-              updateVar={(text) => onTextInputChange(text, setPhone)}
-              mode="outlined"
-              activeOutlineColor={colors.blue}
-              outlineColor={colors.gray}
-              invalidInput={!phoneIsValid}
-              errorText={phoneErrorMessage}
-              style={styles.textInput}
-              mask={[' (', /\d/, /\d/, ') ', /\d/, /\d/, /\d/, /\d/, /\d/, '-', /\d/, /\d/, /\d/, /\d/]}
-            />
-          </View>
-          {/* Observation input */}
-          <View style={styles.rowCenter}>
-            <SmallTextInput
-              label="Observações"
-              value={observation}
-              updateVar={(text) => onTextInputChange(text, setObservation)}
-              mode="outlined"
-              activeOutlineColor={colors.blue}
-              outlineColor={colors.gray}
-              multiline={true}
-              invalidInput={!observationIsValid}
-              errorText={observationErrorMessage}
-              style={styles.textInput}
-            />
-          </View>
-
-          {/* Blood info inputs */}
-          <View style={styles.row}>
-            <Text style={styles.boxTitle}>Tipos sanguineos em falta</Text>
-          </View>
-          <View style={styles.rowCenter}>
-            {bloodTypeItems.map((bloodTypeItem, index) =>
-              <Chip key={index} style={styles.chip} selected={bloodTypes[index]} onPress={() => bloodSelected(index)}>{bloodTypeItem.label}</Chip>)}
-          </View>
-
-          {/* Date inputs */}
-          <View style={styles.row}>
-            <Text style={styles.boxTitle}>Período da campanha</Text>
-          </View>
-          {/* Starting date */}
-          <View style={styles.row}>
-            <Text style={styles.text}>Início</Text>
-            <Button onPress={() => showDatepicker(setShowStartDate)} color={colors.blue} icon="calendar" >
-              {startDate.toLocaleDateString("pt-BR", options)}
-            </Button>
-            {/* Date Picker */}
-            {showStartDate && (
-              <DateTimePicker
-                testID="startDate"
-                value={startDate}
-                mode={mode}
-                is24Hour={true}
-                onChange={(e, value) => onChange(e, value, setStartDate, setShowStartDate)}
-                timeZoneOffsetInMinutes={-180}
+            {/* Basic info inputs */}
+            <View style={styles.row}>
+              <Text style={styles.boxTitle}>Informações gerais</Text>
+            </View>
+            {/* Name input */}
+            <View style={styles.rowCenter}>
+              <SmallTextInput
+                label="Nome"
+                value={name}
+                updateVar={(text) => onTextInputChange(text, setName)}
+                mode="outlined"
+                activeOutlineColor={colors.blue}
+                outlineColor={colors.gray}
+                invalidInput={!nameIsValid}
+                errorText={nameErrorMessage}
+                style={styles.textInput}
               />
-            )}
-          </View>
-          {/* Ending date */}
-          <View style={styles.row}>
-            <Text style={styles.text}>Término</Text>
-            <Button onPress={() => showDatepicker(setShowEndDate)} color={colors.blue} icon="calendar" >
-              {endDate.toLocaleDateString("pt-BR", options)}
-            </Button>
-            {/* Date Picker */}
-            {showEndDate && (
-              <DateTimePicker
-                testID="endDate"
-                value={endDate}
-                mode={mode}
-                is24Hour={true}
-                onChange={(e, value) => onChange(e, value, setEndDate, setShowEndDate)}
-                timeZoneOffsetInMinutes={-180}
+            </View>
+            {/* Country input */}
+            <View style={styles.rowCenter}>
+              <SmallTextInput
+                label="País"
+                value={country}
+                updateVar={(text) => onTextInputChange(text, setCountry)}
+                mode="outlined"
+                activeOutlineColor={colors.blue}
+                outlineColor={colors.gray}
+                invalidInput={!countryIsValid}
+                errorText={countryErrorMessage}
+                style={styles.textInput}
               />
-            )}
-          </View>
+            </View>
+            {/* State input */}
+            <View style={styles.rowCenter}>
+              <SmallTextInput
+                label="Estado"
+                value={state}
+                updateVar={(text) => onTextInputChange(text, setState)}
+                mode="outlined"
+                activeOutlineColor={colors.blue}
+                outlineColor={colors.gray}
+                invalidInput={!stateIsValid}
+                errorText={stateErrorMessage}
+                style={styles.textInput}
+              />
+            </View>
+            {/* City input */}
+            <View style={styles.rowCenter}>
+              <SmallTextInput
+                label="Cidade"
+                value={city}
+                updateVar={(text) => onTextInputChange(text, setCity)}
+                mode="outlined"
+                activeOutlineColor={colors.blue}
+                outlineColor={colors.gray}
+                invalidInput={!cityIsValid}
+                errorText={cityErrorMessage}
+                style={styles.textInput}
+              />
+            </View>
+            {/* Address input */}
+            <View style={styles.rowCenter}>
+              <SmallTextInput
+                label="Endereço"
+                value={address}
+                updateVar={(text) => onTextInputChange(text, setAddress)}
+                mode="outlined"
+                activeOutlineColor={colors.blue}
+                outlineColor={colors.gray}
+                invalidInput={!addressIsValid}
+                errorText={addressErrorMessage}
+                style={styles.textInput}
+              />
+            </View>
+            {/* Phone input */}
+            <View style={styles.rowCenter}>
+              <SmallTextInput
+                label="Telefone"
+                value={phone}
+                updateVar={(text) => onTextInputChange(text, setPhone)}
+                mode="outlined"
+                activeOutlineColor={colors.blue}
+                outlineColor={colors.gray}
+                invalidInput={!phoneIsValid}
+                errorText={phoneErrorMessage}
+                style={styles.textInput}
+                mask={[' (', /\d/, /\d/, ') ', /\d/, /\d/, /\d/, /\d/, /\d/, '-', /\d/, /\d/, /\d/, /\d/]}
+              />
+            </View>
+            {/* Observation input */}
+            <View style={styles.rowCenter}>
+              <SmallTextInput
+                label="Observações"
+                value={observation}
+                updateVar={(text) => onTextInputChange(text, setObservation)}
+                mode="outlined"
+                activeOutlineColor={colors.blue}
+                outlineColor={colors.gray}
+                multiline={true}
+                invalidInput={!observationIsValid}
+                errorText={observationErrorMessage}
+                style={styles.textInput}
+              />
+            </View>
 
-          {/* Date inputs */}
-          <View style={styles.row}>
-            <Text style={styles.boxTitle}>Horários de functionamento</Text>
-          </View>
-          {/* Starting date */}
-          <View style={styles.row}>
-            <Text style={styles.text}>Início</Text>
-            <Button onPress={() => showTimepicker(setShowOpenTime)} color={colors.blue} icon="clock-outline" >
-              {`${openTime.getHours() < 10 ? '0' + openTime.getHours() : openTime.getHours()}:${openTime.getMinutes() < 10 ? '0' + openTime.getMinutes() : openTime.getMinutes()}`}
-            </Button>
-            {/* Date Picker */}
-            {showOpenTime && (
-              <DateTimePicker
-                testID="openTime"
-                value={openTime}
-                mode={mode}
-                is24Hour={true}
-                onChange={(e, value) => onChange(e, value, setOpenTime, setShowOpenTime)}
-                timeZoneOffsetInMinutes={-180}
-              />
-            )}
-          </View>
-          {/* Ending date */}
-          <View style={styles.row}>
-            <Text style={styles.text}>Término</Text>
-            <Button onPress={() => showTimepicker(setShowCloseTime)} color={colors.blue} icon="clock-outline" >
-              {`${closeTime.getHours() < 10 ? '0' + closeTime.getHours() : closeTime.getHours()}:${closeTime.getMinutes() < 10 ? '0' + closeTime.getMinutes() : closeTime.getMinutes()}`}
-            </Button>
-            {/* Date Picker */}
-            {showCloseTime && (
-              <DateTimePicker
-                testID="closeTime"
-                value={closeTime}
-                mode={mode}
-                is24Hour={true}
-                onChange={(e, value) => onChange(e, value, setCloseTime, setShowCloseTime)}
-                timeZoneOffsetInMinutes={-180}
-              />
-            )}
-          </View>
+            {/* Blood info inputs */}
+            <View style={styles.row}>
+              <Text style={styles.boxTitle}>Tipos sanguineos em falta</Text>
+            </View>
+            <View style={styles.rowCenter}>
+              {bloodTypeItems.map((bloodTypeItem, index) =>
+                <Chip key={index} style={styles.chip} selected={bloodTypes[index]} onPress={() => bloodSelected(index)}>{bloodTypeItem.label}</Chip>)}
+            </View>
 
-          {/* Submit button */}
-          <View style={{ ...styles.row, height: 100 }}>
-            <Button onPress={() => saveCampaign()} mode="outlined" color={colors.blue} icon="content-save" >
-              Salvar
-            </Button>
-          </View>
-          {/* Delete button */}
-          <View style={{ ...styles.row, height: 100 }}>
-            <Button onPress={() => deleteCampaign()} mode="outlined" color={colors.red} icon="trash-can-outline" >
-              Deletar
-            </Button>
-          </View>
-        </View>
+            {/* Date inputs */}
+            <View style={styles.row}>
+              <Text style={styles.boxTitle}>Período da campanha</Text>
+            </View>
+            {/* Starting date */}
+            <View style={styles.row}>
+              <Text style={styles.text}>Início</Text>
+              <Button onPress={() => showDatepicker(setShowStartDate)} color={colors.blue} icon="calendar" >
+                {startDate.toLocaleDateString("pt-BR", options)}
+              </Button>
+              {/* Date Picker */}
+              {showStartDate && (
+                <DateTimePicker
+                  testID="startDate"
+                  value={startDate}
+                  mode={mode}
+                  is24Hour={true}
+                  onChange={(e, value) => onChange(e, value, setStartDate, setShowStartDate)}
+                  timeZoneOffsetInMinutes={-180}
+                />
+              )}
+            </View>
+            {/* Ending date */}
+            <View style={styles.row}>
+              <Text style={styles.text}>Término</Text>
+              <Button onPress={() => showDatepicker(setShowEndDate)} color={colors.blue} icon="calendar" >
+                {endDate.toLocaleDateString("pt-BR", options)}
+              </Button>
+              {/* Date Picker */}
+              {showEndDate && (
+                <DateTimePicker
+                  testID="endDate"
+                  value={endDate}
+                  mode={mode}
+                  is24Hour={true}
+                  onChange={(e, value) => onChange(e, value, setEndDate, setShowEndDate)}
+                  timeZoneOffsetInMinutes={-180}
+                />
+              )}
+            </View>
+
+            {/* Date inputs */}
+            <View style={styles.row}>
+              <Text style={styles.boxTitle}>Horários de functionamento</Text>
+            </View>
+            {/* Starting date */}
+            <View style={styles.row}>
+              <Text style={styles.text}>Início</Text>
+              <Button onPress={() => showTimepicker(setShowOpenTime)} color={colors.blue} icon="clock-outline" >
+                {`${openTime.getHours() < 10 ? '0' + openTime.getHours() : openTime.getHours()}:${openTime.getMinutes() < 10 ? '0' + openTime.getMinutes() : openTime.getMinutes()}`}
+              </Button>
+              {/* Date Picker */}
+              {showOpenTime && (
+                <DateTimePicker
+                  testID="openTime"
+                  value={openTime}
+                  mode={mode}
+                  is24Hour={true}
+                  onChange={(e, value) => onChange(e, value, setOpenTime, setShowOpenTime)}
+                  timeZoneOffsetInMinutes={-180}
+                />
+              )}
+            </View>
+            {/* Ending date */}
+            <View style={styles.row}>
+              <Text style={styles.text}>Término</Text>
+              <Button onPress={() => showTimepicker(setShowCloseTime)} color={colors.blue} icon="clock-outline" >
+                {`${closeTime.getHours() < 10 ? '0' + closeTime.getHours() : closeTime.getHours()}:${closeTime.getMinutes() < 10 ? '0' + closeTime.getMinutes() : closeTime.getMinutes()}`}
+              </Button>
+              {/* Date Picker */}
+              {showCloseTime && (
+                <DateTimePicker
+                  testID="closeTime"
+                  value={closeTime}
+                  mode={mode}
+                  is24Hour={true}
+                  onChange={(e, value) => onChange(e, value, setCloseTime, setShowCloseTime)}
+                  timeZoneOffsetInMinutes={-180}
+                />
+              )}
+            </View>
+
+            {/* Submit button */}
+            <View style={{ ...styles.row, height: 100 }}>
+              <Button onPress={() => editCampaign()} mode="outlined" color={colors.blue} icon="content-save" >
+                Salvar
+              </Button>
+            </View>
+            {/* Delete button */}
+            <View style={{ ...styles.row, height: 100 }}>
+              <Button onPress={() => deleteCampaign()} mode="outlined" color={colors.red} icon="trash-can-outline" >
+                Deletar
+              </Button>
+            </View>
+          </View> : null
+        }
       </ScrollView>
     </SafeAreaView >
   );

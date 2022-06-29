@@ -21,13 +21,17 @@ export default function CampaignScreen({ navigation, route }) {
       observation: `\t${data.observation.replace('\t', '').replace("\n", "\n\t")}`,
     })
     setMapsURL(`http://www.google.com/maps/place/${data.coordinates.latitude},${data.coordinates.longitude}`)
-    console.log(data)
     setLoaded(true);
   }, [])
 
   // Function to go to the edit campaign page
   function goEditCampaign() {
-    console.log('go to page')
+    navigation.navigate({
+      name: 'EditCampaignScreen',
+      params: {
+        data: JSON.stringify(data)
+      },
+    });
   }
 
   // Function to go to Google Maps URL
@@ -99,7 +103,7 @@ export default function CampaignScreen({ navigation, route }) {
 
             {/* Submit button */}
             <View style={{ ...styles.rowCenter, height: 50 }}>
-              <Button onPress={() => saveCampaign()} mode="outlined" color={colors.blue} icon="qrcode" >
+              <Button onPress={() => goReadQRCode()} mode="outlined" color={colors.blue} icon="qrcode" >
                 Ler QR Code
               </Button>
             </View>

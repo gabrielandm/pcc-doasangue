@@ -377,7 +377,7 @@ function UpdateCorp(corpData, cnpj, pass, name, country, city, address, coordina
   return { corpData: corpData, isValid: isValid, notValidData: notValidData };
 }
 
-function UpdateCampaign(foundDoc, cnpj, start_date, end_date, open_time, close_time, country, state, city, address, coordinates, phone, creation_date, num_doners, campaign_rating, observation, blood_types, header_color, banner_link) {
+function UpdateCampaign(foundDoc, cnpj, name, start_date, end_date, open_time, close_time, country, state, city, address, coordinates, phone, creation_date, num_doners, campaign_rating, observation, blood_types, header_color, banner_link) {
   // Preparing data for validation
   foundDoc = {
     ...foundDoc,
@@ -386,9 +386,9 @@ function UpdateCampaign(foundDoc, cnpj, start_date, end_date, open_time, close_t
     country: foundDoc.country.replace(/\s+/g, ' ').trim(),
     state: foundDoc.state.replace(/\s+/g, ' ').trim(),
     city: foundDoc.city.replace(/\s+/g, ' ').trim(),
-    subscription_start: new Date(foundDoc.subscription_start),
-    subscription_end: new Date(foundDoc.subscription_end),
-    profile_link: foundDoc.profile_link.replace(/\s+/g, ' ').trim()
+    start_date: new Date(foundDoc.start_date),
+    end_date: new Date(foundDoc.end_date),
+    banner_link: foundDoc.banner_link.replace(/\s+/g, ' ').trim()
   }
   // Variable to check if some change was made
   const oldCampaignData = JSON.stringify(foundDoc);
@@ -398,11 +398,14 @@ function UpdateCampaign(foundDoc, cnpj, start_date, end_date, open_time, close_t
   if (cnpj !== undefined) {
     foundDoc.cnpj = cnpj;
   }
+  if (name !== undefined) {
+    foundDoc.name = name;
+  }
   if (start_date !== undefined) {
-    foundDoc.start_date = start_date;
+    foundDoc.start_date = new Date(start_date);
   }
   if (end_date !== undefined) {
-    foundDoc.end_date = end_date;
+    foundDoc.end_date = new Date(end_date);
   }
   if (open_time !== undefined) {
     foundDoc.open_time = open_time;
@@ -455,7 +458,7 @@ function UpdateCampaign(foundDoc, cnpj, start_date, end_date, open_time, close_t
     notValidData = 'oldCampaignData';
   }
 
-  return { corpData: corpData, isValid: isValid, notValidData: notValidData };
+  return { foundDoc: foundDoc, isValid: isValid, notValidData: notValidData };
 }
 
 function UpdateDonationDate(res, doner_email, corp_cnpj, campaign_code, ammount_date, donation_date) {
