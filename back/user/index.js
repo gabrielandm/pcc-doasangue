@@ -137,6 +137,10 @@ async function Put(context, req) {
 	const gender = req.body.gender;
 	const birth_date = new Date(req.body.birth_date);
 
+	const res = await donerCollection.find({ "email": email });
+	let user = await res.toArray();
+	user = user[0];
+
 	/* Image stuff */
 	const profile_link = req.body.profile_link; // Null if doesn't exist
 	const image_type = req.body.image_type;
@@ -154,10 +158,7 @@ async function Put(context, req) {
 		blobResult = await deleteBlob(fileName);
 	}
 	/* End of image stuff */
-
-	const res = await donerCollection.find({ "email": email });
-	let user = await res.toArray();
-	user = user[0];
+	
 	result = UpdateUser(user, email, pass, validated, name, last_name, phone, blood_type, last_donation, city, state, country, gender, birth_date, blobResult);
 
 	if (result.isValid == true) {

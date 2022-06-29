@@ -138,6 +138,21 @@ async function Put(context, req) {
 	const subscription_start = new Date(req.body.subscription_start);
 	const subscription_end = new Date(req.body.subscription_end);
 
+	const res = await corpCollection.find({ "cnpj": cnpj });
+	let corp = await res.toArray();
+	corp = corp[0];
+	if (corp === undefined) {
+		context.res = {
+			status: 400,
+			body: {
+				status: "cnpj not found",
+				notValidData: "cnpj"
+			},
+			headers: header
+		};
+		return;
+	}
+
 	/* Image stuff */
 	const profile_link = req.body.profile_link; // Null if doesn't exist
 	const image_type = req.body.image_type;
@@ -155,21 +170,7 @@ async function Put(context, req) {
 		blobResult = await deleteBlob(fileName);
 	}
 	/* End of image stuff */
-
-	const res = await corpCollection.find({ "cnpj": cnpj });
-	let corp = await res.toArray();
-	corp = corp[0];
-	if (corp === undefined) {
-		context.res = {
-			status: 400,
-			body: {
-				status: "cnpj not found",
-				notValidData: "cnpj"
-			},
-			headers: header
-		};
-		return;
-	}
+	
 	corp = UpdateCorp(corp, cnpj, pass, name, country, city, address, coordinates, phone, email, state, subscription_type, subscription_start, subscription_end, blobResult);
 
 	if (corp.isValid) {
