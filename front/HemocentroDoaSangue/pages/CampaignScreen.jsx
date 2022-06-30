@@ -34,6 +34,17 @@ export default function CampaignScreen({ navigation, route }) {
     });
   }
 
+  // Function to go to the QR Reader screen
+  function goReadQRCode() {
+    navigation.navigate({
+      name: 'QRCodeReader',
+      params: {
+        cnpj: data.cnpj,
+        campaignId: data._id,
+      },
+    });
+  }
+
   // Function to go to Google Maps URL
   function VisitMaps(url) {
     Linking.openURL(url)

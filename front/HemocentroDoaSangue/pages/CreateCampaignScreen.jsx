@@ -232,7 +232,6 @@ export default function CreateCampaignScreen({ navigation, route }) {
   async function createCampaign() {
     // Validate user inputs before POST
     const status = validateUserInputs();
-    console.log(status.data)
     if (status.validated) {
       // POST request to Campaign collection and check if request was successful
       try {

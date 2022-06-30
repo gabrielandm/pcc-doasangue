@@ -12,6 +12,7 @@ import CampaignScreen from './pages/CampaignScreen';
 import CreateCampaignScreen from './pages/CreateCampaignScreen';
 import EditCampaignScreen from './pages/EditCampaignScreen';
 import EditProfileScreen from './pages/EditProfileScreen';
+import QRCodeReader from './pages/QRCodeReader';
 import {colors} from './style/colors';
 
 const Stack = createNativeStackNavigator();
@@ -90,6 +91,18 @@ function App() {
           <Stack.Screen
             name="EditCampaignScreen"
             component={EditCampaignScreen}
+            options={{
+              title: 'DoaSangue',
+              headerShown: true,
+              headerStyle: {
+                backgroundColor: colors.red,
+              },
+              headerTintColor: colors.white,
+            }}
+          />
+          <Stack.Screen
+            name="QRCodeReader"
+            component={QRCodeReader}
             options={{
               title: 'DoaSangue',
               headerShown: true,

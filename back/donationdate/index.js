@@ -1,27 +1,66 @@
 const ObjectId = require('mongodb').ObjectId;
-const { connectDB, header } = require("../functions/apiFunctions");
+const { connectDB, header, UpdateDonationDate } = require("../functions/apiFunctions");
 
 async function Post(context, req) {
 	const collections = await connectDB(['DonationDate', 'Campaign', 'Doner', 'Corp']);
 	const donationdateCollection = collections[0];
-	// const campaignCollection = collections[1]; // For future validation
-	// const donerCollection = collections[2]; // For future validation
-	// const corpCollection = collections[3]; // For future validation
+	const campaignCollection = collections[1]; // For campaign validation
+	const donerCollection = collections[2]; // For doner validation
+	const corpCollection = collections[3]; // For corp validation
 
-	const doner_email = req.body.doner_email;
+	const doner_id = req.body.doner_id;
 	const corp_cnpj = req.body.corp_cnpj;
-	const campaign_code = req.body.campaign_code;
-	const ammount_date = req.body.ammount;
+	const campaign_id = req.body.campaign_id;
 	const donation_date = req.body.donation_date;
-	const validated = req.body.validated;
+
+	// Validating
+	const campaign = await campaignCollection.findOne({ '_id': ObjectId(campaign_id) })
+	if (campaign === null) {
+		context.res = {
+			status: 400,
+			body: { "status": "campaign not found" },
+			headers: header
+		};
+		return;
+	}
+	const doner = await donerCollection.findOne({ '_id': ObjectId(donation_date) })
+	if (doner === null) {
+		context.res = {
+			status: 400,
+			body: { "status": "doner not found" },
+			headers: header
+		};
+		return;
+	}
+	const corp = await corpCollection.findOne({ 'cnpj': corp_cnpj })
+	if (corp === null) {
+		context.res = {
+			status: 400,
+			body: { "status": "corp not found" },
+			headers: header
+		};
+		return;
+	}
+
+	const exists = await donationdateCollection.findOne({
+		"doner_id": doner_id,
+		"corp_cnpj": corp_cnpj,
+		"campaign_id": campaign_id,
+	})
+	if (exists !== null) {
+		context.res = {
+			status: 400,
+			body: { "status": "donation already registred" },
+			headers: header
+		};
+		return;
+	}
 
 	const createdDoc = await donationdateCollection.insertOne({
-		"doner_email": doner_email,
+		"doner_id": doner_id,
 		"corp_cnpj": corp_cnpj,
-		"campaign_code": campaign_code,
-		"ammount_date": ammount_date,
+		"campaign_id": campaign_id,
 		"donation_date": donation_date,
-		"validated": validated
 	});
 
 	context.res = {
@@ -51,21 +90,48 @@ async function Get(context, req) {
 async function Put(context, req) {
 	const collections = await connectDB(['DonationDate', 'Campaign', 'Doner', 'Corp']);
 	const donationdateCollection = collections[0];
-	// const campaignCollection = collections[1];
-	// const donerCollection = collections[2];
-	// const corpCollection = collections[3];
+	const campaignCollection = collections[1];
+	const donerCollection = collections[2];
+	const corpCollection = collections[3];
 
 	const id = req.body.id;
-	const doner_email = req.body.doner_email;
+	const doner_id = req.body.doner_id;
 	const corp_cnpj = req.body.corp_cnpj;
-	const campaign_code = req.body.campaign_code;
-	const ammount_date = req.body.ammount;
+	const campaign_id = req.body.campaign_id;
 	const donation_date = req.body.donation_date;
-	const validated = req.body.validated;
 
-	let res = await corpCollection.findOne({ "_id": ObjectId(id) });
-	res = UpdateDonationDate(res, doner_email, corp_cnpj, campaign_code, ammount_date, donation_date, validated);
-	corpCollection.updateOne(
+	// Validating
+	const campaign = await campaignCollection.findOne({ '_id': ObjectId(campaign_id) })
+	if (campaign === null) {
+		context.res = {
+			status: 400,
+			body: { "status": "campaign not found" },
+			headers: header
+		};
+		return;
+	}
+	const doner = await donerCollection.findOne({ '_id': ObjectId(donation_date) })
+	if (doner === null) {
+		context.res = {
+			status: 400,
+			body: { "status": "doner not found" },
+			headers: header
+		};
+		return;
+	}
+	const corp = await corpCollection.findOne({ 'cnpj': corp_cnpj })
+	if (corp === null) {
+		context.res = {
+			status: 400,
+			body: { "status": "corp not found" },
+			headers: header
+		};
+		return;
+	}
+
+	let res = await donationdateCollection.findOne({ "_id": ObjectId(id) });
+	res = UpdateDonationDate(res, doner_id, corp_cnpj, campaign_id, donation_date);
+	await donationdateCollection.updateOne(
 		{ "_id": ObjectId(id) },
 		{ $set: res }
 	);

@@ -94,7 +94,7 @@ function UpdateUser(userData, email, pass, validated, name, last_name, phone, bl
     city: userData.city.replace(/\s+/g, ' ').trim(),
     birth_date: new Date(userData.birth_date),
     last_donation: new Date(userData.last_donation),
-    profile_link: userData.profile_link.replace(/\s+/g, ' ').trim(),
+    profile_link: userData.profile_link !== undefined ? userData.profile_link.replace(/\s+/g, ' ').trim() : undefined,
   }
   // Variable to check if some change was made
   const oldUserData = JSON.stringify(userData);
@@ -239,7 +239,7 @@ function UpdateCorp(corpData, cnpj, pass, name, country, city, address, coordina
     city: corpData.city.replace(/\s+/g, ' ').trim(),
     subscription_start: new Date(corpData.subscription_start),
     subscription_end: new Date(corpData.subscription_end),
-    profile_link: corpData.profile_link.replace(/\s+/g, ' ').trim()
+    profile_link: corpData.profile_link !== undefined ? corpData.profile_link.replace(/\s+/g, ' ').trim() : undefined
   }
   // Variable to check if some change was made
   const oldCorpData = JSON.stringify(corpData);
@@ -388,7 +388,7 @@ function UpdateCampaign(foundDoc, cnpj, name, start_date, end_date, open_time, c
     city: foundDoc.city.replace(/\s+/g, ' ').trim(),
     start_date: new Date(foundDoc.start_date),
     end_date: new Date(foundDoc.end_date),
-    banner_link: foundDoc.banner_link.replace(/\s+/g, ' ').trim()
+    banner_link: foundDoc.banner_link != undefined ? foundDoc.banner_link.replace(/\s+/g, ' ').trim() : undefined
   }
   // Variable to check if some change was made
   const oldCampaignData = JSON.stringify(foundDoc);
@@ -461,7 +461,7 @@ function UpdateCampaign(foundDoc, cnpj, name, start_date, end_date, open_time, c
   return { foundDoc: foundDoc, isValid: isValid, notValidData: notValidData };
 }
 
-function UpdateDonationDate(res, doner_email, corp_cnpj, campaign_code, ammount_date, donation_date) {
+function UpdateDonationDate(res, doner_email, corp_cnpj, campaign_code) {
   if (doner_email !== undefined) {
     res.doner_email = doner_email;
   }
@@ -472,14 +472,6 @@ function UpdateDonationDate(res, doner_email, corp_cnpj, campaign_code, ammount_
 
   if (campaign_code !== undefined) {
     res.campaign_code = campaign_code;
-  }
-
-  if (ammount_date !== undefined) {
-    res.ammount_date = ammount_date;
-  }
-
-  if (donation_date !== undefined) {
-    res.donation_date = donation_date;
   }
 
   return res;

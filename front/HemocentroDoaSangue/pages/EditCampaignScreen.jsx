@@ -234,7 +234,6 @@ export default function EditCampaignScreen({ navigation, route }) {
   async function editCampaign() {
     // Validate user inputs before POST
     const status = validateUserInputs();
-    console.log(JSON.stringify(status.data))
     if (status.validated) {
       // POST request to Campaign collection and check if request was successful
       try {
@@ -250,7 +249,7 @@ export default function EditCampaignScreen({ navigation, route }) {
             params: {
               created: true,
               name: data.cnpj,
-              message: 'Campanha criada com sucesso!'
+              message: 'Campanha editada com sucesso!'
             },
             merge: true
           });

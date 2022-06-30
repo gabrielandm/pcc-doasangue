@@ -105,6 +105,9 @@ export default function HomeScreen({ navigation, route }) {
 				} else if (route.params.message === 'Campanha criada com sucesso!') {
 					getCampaigns(route.params);
 					navigation.setParams({ ...route.params, message: undefined, created: false });
+				} else if (route.params.message === 'Campanha editada com sucesso!') {
+					getCampaigns(route.params);
+					navigation.setParams({ ...route.params, message: undefined, created: false });
 				}
 			}
 		}
