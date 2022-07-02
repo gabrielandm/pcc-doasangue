@@ -13,7 +13,7 @@ export default function QRCodeReader({ navigation, route }) {
     <View style={styles.rowCenter}>
       <LineChart
         data={{
-          labels: ["Domingo","Segunda","Terça","Quarta","Quinta","Sexta","Sabado"],
+          labels: ["D","S","T","Q","Q","S","S"],
           legend: ["Doações"],
           datasets: [
             {
@@ -30,7 +30,7 @@ export default function QRCodeReader({ navigation, route }) {
           ]
         }}
         width={Dimensions.get("window").width*0.95} // from react-native
-        height={300}
+        height={220}
         yAxisLabel=""
         yAxisSuffix=""
         yAxisInterval={1} // optional, defaults to 1
@@ -43,7 +43,6 @@ export default function QRCodeReader({ navigation, route }) {
           labelColor: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
           style: {
             borderRadius: 12,
-            height: 100,
           },
           propsForDots: {
             r: "6",
@@ -57,7 +56,7 @@ export default function QRCodeReader({ navigation, route }) {
           marginVertical: 10,
           borderRadius: 3
         }}
-        verticalLabelRotation={33}
+        verticalLabelRotation={0}
       />
     </View>
   )
