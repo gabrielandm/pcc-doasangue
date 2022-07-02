@@ -74,7 +74,8 @@ async function Get(context, req) {
 	const collections = await connectDB(['DonationDate']);
 	const donationdateollection = collections[0];
 
-	const id = req.query.id;
+	const idValue = req.query.idValue;
+	const idName = req.query.idName;
 	const startDate = new Date(req.query.startDate);
 	const endDate = new Date(req.query.endDate);
 
@@ -89,7 +90,10 @@ async function Get(context, req) {
 		}
 		foundDoc = await donationdateollection.aggregate([
 			{ "$addFields": { "mousse": {"$toDate": "$donation_date"} }},
-			{ "$match": { "mousse": { "$gte": startDate, "$lte": endDate }}},
+			{ "$match": {
+				"mousse": { "$gte": startDate, "$lte": endDate },
+				[idName]: { "$eq": idValue }
+			}},
 			{ "$count": "count" }
 		])
 

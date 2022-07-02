@@ -8,13 +8,13 @@ import { colors } from '../style/colors';
 import { config } from '../config/config';
 
 export default function QRCodeReader({ navigation, route }) {
+  const [weekChartData, setWeekChartData] = useState(null)
 
   return (
     <View style={styles.rowCenter}>
       <LineChart
         data={{
           labels: ["D","S","T","Q","Q","S","S"],
-          legend: ["Doações"],
           datasets: [
             {
               data: [
