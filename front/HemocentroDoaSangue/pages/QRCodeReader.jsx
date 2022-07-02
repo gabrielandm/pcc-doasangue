@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Text, View, StyleSheet } from 'react-native';
-import { Button, Chip, IconButton } from 'react-native-paper';
+import { Button } from 'react-native-paper';
 import { BarCodeScanner } from 'expo-barcode-scanner';
 
 import { colors } from '../style/colors';

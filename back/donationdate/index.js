@@ -74,11 +74,38 @@ async function Get(context, req) {
 	const collections = await connectDB(['DonationDate']);
 	const donationdateollection = collections[0];
 
-	const id = req.body.id;
+	const id = req.query.id;
+	const startDate = new Date(req.query.startDate);
+	const endDate = new Date(req.query.endDate);
 
-	const foundDoc = await donationdateollection.findOne({
-		"_id": ObjectId(id),
-	});
+	let foundDoc = null
+	if (startDate !== undefined && endDate !== undefined) {
+		if (isNaN(startDate) || isNaN(endDate)) {
+			context.res = {
+				status: 400,
+				body: { status: 'invalid dates' },
+				headers: header
+			};
+		}
+		foundDoc = await donationdateollection.aggregate([
+			{ "$addFields": { "mousse": {"$toDate": "$donation_date"} }},
+			{ "$match": { "mousse": { "$gte": startDate, "$lte": endDate }}},
+			{ "$count": "count" }
+		])
+
+		foundDoc = await foundDoc.toArray();
+		foundDoc = foundDoc[0]
+	} else if (id !== undefined) {
+		foundDoc = await donationdateollection.findOne({
+			"_id": ObjectId(id),
+		});
+	} else {
+		context.res = {
+			status: 400,
+			body: { status: 'unknown parameters or just send startDate and endDate' },
+			headers: header
+		};
+	}
 
 	context.res = {
 		status: 200,
