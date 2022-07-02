@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Text, View, StyleSheet } from 'react-native';
+import { Text, View, StyleSheet, Dimensions } from 'react-native';
 import { Button, Chip, IconButton } from 'react-native-paper';
+import { LineChart, BarChart, PieChart, ProgressChart, ContributionGraph, StackedBarChart } from "react-native-chart-kit";
+
 
 import { colors } from '../style/colors';
 import { config } from '../config/config';
@@ -8,7 +10,56 @@ import { config } from '../config/config';
 export default function QRCodeReader({ navigation, route }) {
 
   return (
-    <Text>Mousse report</Text>
+    <View style={styles.rowCenter}>
+      <LineChart
+        data={{
+          labels: ["Domingo","Segunda","Terça","Quarta","Quinta","Sexta","Sabado"],
+          legend: ["Doações"],
+          datasets: [
+            {
+              data: [
+                Math.round(Math.random()*100),
+                Math.round(Math.random()*100),
+                Math.round(Math.random() * 100),
+                Math.round(Math.random() * 100),
+                Math.round(Math.random() * 100),
+                Math.round(Math.random() * 100),
+                Math.round(Math.random() * 100)
+              ]
+            }
+          ]
+        }}
+        width={Dimensions.get("window").width*0.95} // from react-native
+        height={300}
+        yAxisLabel=""
+        yAxisSuffix=""
+        yAxisInterval={1} // optional, defaults to 1
+        chartConfig={{
+          backgroundColor: colors.lightBlue,
+          backgroundGradientFrom: colors.lightBlue,
+          backgroundGradientTo: colors.blue,
+          decimalPlaces: 0, // optional, defaults to 2dp
+          color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
+          labelColor: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
+          style: {
+            borderRadius: 12,
+            height: 100,
+          },
+          propsForDots: {
+            r: "6",
+            strokeWidth: "2",
+            stroke: colors.red
+          }
+        }}
+        // bezier
+        fromZero
+        style={{
+          marginVertical: 10,
+          borderRadius: 3
+        }}
+        verticalLabelRotation={33}
+      />
+    </View>
   )
 }
 

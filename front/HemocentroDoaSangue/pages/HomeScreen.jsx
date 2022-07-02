@@ -7,6 +7,7 @@ import { colors } from '../style/colors';
 import { config } from '../config/config';
 import CampaignThingy from '../components/CampaignThingy';
 import ProfileThingy from '../components/ProfileThingy';
+import MainReport from '../components/MainReport';
 
 export default function HomeScreen({ navigation, route }) {
 	/* Variables and functions */
@@ -138,10 +139,10 @@ export default function HomeScreen({ navigation, route }) {
 			</Snackbar>
 		</SafeAreaView>;
 
-	const AchievementView = () =>
+	const DashboardView = () =>
 		<SafeAreaView style={styles.screen} >
 			<ScrollView style={styles.scrollView}>
-				<Text>Dashboard</Text>
+				<MainReport />
 			</ScrollView>
 		</SafeAreaView>;
 
@@ -172,7 +173,7 @@ export default function HomeScreen({ navigation, route }) {
 	]);
 	const renderScene = BottomNavigation.SceneMap({
 		campaigns: CampaignsView,
-		achievements: AchievementView,
+		achievements: DashboardView,
 		profile: ProfileView,
 	});
 
