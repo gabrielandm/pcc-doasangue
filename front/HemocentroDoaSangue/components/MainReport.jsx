@@ -142,7 +142,7 @@ export default function QRCodeReader({ navigation, route }) {
         <Text style={styles.boxHeader} >Doações do mês</Text>
         <Text style={styles.boxText} >{acumulatedMonthDonations}</Text>
       </View>
-      {/*  Avarage donations per campaign (blue box) */}
+      {/* ❓ Avarage donations per campaign (blue box) */}
       <View style={styles.box} >
         <Text style={styles.boxHeader} >Doações por campanha</Text>
         <Text style={styles.boxText} >{ }</Text>
