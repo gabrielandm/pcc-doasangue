@@ -167,10 +167,19 @@ export default function MainReport(props) {
     <View style={styles.column}>
       {loaded ?
         <View>
+          <View style={styles.firstRow}></View>
           {/* ❓ Storage control (progress bars) */}
-          <View style={styles.rowCenter} >
+          <View style={styles.box} >
+            <Text style={styles.boxHeader} >
+              Estoque
+            </Text>
             {storageData.map((value, index) => {
-              return (<ProgressBar progress={value['value']} key={`mousse${index}`}/>)
+              return (
+                <View style={styles.columnCenter} key={`mousse3${index}`}>
+                  <Text style={styles.boxText}>{value['label']} ({Math.round(value['value']*100)}%)</Text>
+                  <ProgressBar progress={value['value']} color={colors.red} style={styles.progressBar} />
+                </View>
+              )
             })}
           </View>
           {/* ❓ Alerting blood type warning (red box) */}
@@ -196,7 +205,7 @@ export default function MainReport(props) {
           {/* ❓ Avarage donations per campaign (blue box) */}
           <View style={styles.box} >
             <Text style={styles.boxHeader} >Doações por campanha</Text>
-            <Text style={styles.boxText} >{Math.round(Math.random()*200)}</Text>
+            <Text style={styles.boxText} >{Math.round(Math.random() * 200)}</Text>
           </View>
           {/* ❓ Top 3 or 5 campaigns in total donations */}
           <View style={styles.row}>
@@ -209,10 +218,10 @@ export default function MainReport(props) {
                 borderRadius: 3
               }}
               data={perCampaignDonations}
-              width={Dimensions.get("window").width * 0.95}
+              width={Dimensions.get("window").width * 0.9}
               height={220}
               chartConfig={chartStyles.barChart}
-              // verticalLabelRotation={0}
+            // verticalLabelRotation={0}
             />
           </View>
           {/* ❓ Last 7 days donations (Line chart) */}
@@ -222,7 +231,7 @@ export default function MainReport(props) {
           <View style={styles.rowCenter}>
             <LineChart
               data={weekChartData}
-              width={Dimensions.get("window").width * 0.95}
+              width={Dimensions.get("window").width * 0.9}
               height={220}
               yAxisLabel=""
               yAxisSuffix=""
@@ -244,7 +253,7 @@ export default function MainReport(props) {
           <View style={styles.rowCenter}>
             <LineChart
               data={projectionChartData}
-              width={Dimensions.get("window").width * 0.95} // from react-native
+              width={Dimensions.get("window").width * 0.9} // from react-native
               height={220}
               yAxisLabel=""
               yAxisSuffix=""
@@ -259,6 +268,7 @@ export default function MainReport(props) {
               verticalLabelRotation={0}
             />
           </View>
+          <View style={styles.firstRow}></View>
         </View> :
         <ActivityIndicator size="large" color="#0000ff" />}
     </View>
@@ -295,7 +305,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 20,
     fontWeight: 'bold',
-    marginTop: 20,
+    // marginTop: 20,
     marginBottom: 3,
   },
   map: {
@@ -308,6 +318,12 @@ const styles = StyleSheet.create({
   chip: {
     marginTop: 5,
     marginLeft: 5,
+  },
+  progressBar: {
+    height: 12,
+    width: Dimensions.get('window').width * 0.8,
+    borderRadius: 3,
+    marginBottom: 3,
   },
   dataText: {
     fontSize: 16,
@@ -339,12 +355,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     width: Dimensions.get('window').width * 0.9,
     backgroundColor: colors.lightBlue,
-    borderRadius: 3,
-    padding: 5,
+    borderRadius: 6,
+    padding: 6,
+    marginBottom: 10,
   },
   boxHeader: {
     fontSize: 18,
     textAlign: 'center',
+    fontWeight: 'bold',
   },
   boxText: {
     fontSize: 14,
@@ -356,16 +374,21 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     width: Dimensions.get('window').width * 0.9,
     backgroundColor: colors.red,
-    borderRadius: 3,
+    borderRadius: 6,
     padding: 5,
+    marginBottom: 10,
   },
   alertBoxHeader: {
     fontSize: 18,
     color: colors.white,
     textAlign: 'center',
+    fontWeight: 'bold',
   },
   alertBoxText: {
     fontSize: 14,
     color: colors.white,
+  },
+  firstRow: {
+    height: 12,
   },
 });
