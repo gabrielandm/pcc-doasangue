@@ -142,7 +142,9 @@ export default function HomeScreen({ navigation, route }) {
 	const DashboardView = () =>
 		<SafeAreaView style={styles.screen} >
 			<ScrollView style={styles.scrollView}>
-				<MainReport />
+				<MainReport
+					campaigns={campaignData}
+				/>
 			</ScrollView>
 		</SafeAreaView>;
 

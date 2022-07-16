@@ -9,13 +9,20 @@ import { config } from '../config/config';
 import { ActivityIndicator } from 'react-native-paper';
 
 export default function MainReport(props) {
-  const [loaded, setLoaded] = useState(false)
-  const [weekChartData, setWeekChartData] = useState(null)
-  const [projectionChartData, setProjectionChartData] = useState(null)
-  const [storageData, setStorageData] = useState(null)
-  const [acumulatedWeekDonations, setAcumulatedWeekDonations] = useState(null)
-  const [acumulatedMonthDonations, setAcumulatedMonthDonations] = useState(null)
-  const [perCampaignDonations, setPerCampaignDonations] = useState(null)
+  const [loaded, setLoaded] = useState(false);
+  const [weekChartData, setWeekChartData] = useState(null);
+  const [projectionChartData, setProjectionChartData] = useState(null);
+  const [storageData, setStorageData] = useState(null);
+  const [acumulatedWeekDonations, setAcumulatedWeekDonations] = useState(null);
+  const [acumulatedMonthDonations, setAcumulatedMonthDonations] = useState(null);
+  const [perCampaignDonations, setPerCampaignDonations] = useState(null);
+  
+  /* Map variables */
+  const [latitude, setLatitude] = useState(null);
+  const [longitude, setLongitude] = useState(null);
+  const [latitudeDelta, setLatitudeDelta] = useState(null);
+  const [longitudeDelta, setLongitudeDelta] = useState(null);
+  const [markerData, setMarkerData] = useState(null);
 
   /* Plot styles */
   const chartStyles = {
@@ -155,12 +162,58 @@ export default function MainReport(props) {
     ])
   }
 
+  // Function to get all the location info
+  async function setMapLocations(campaigns) {
+    // Set locations Array of JSON
+    let markerDataTemp = [];
+    campaigns.map((value, index) => {
+      markerDataTemp.push({
+        key: index,
+        coordinate: value['coordinates'],
+        title: value['name'],
+        description: value['address'],
+      })
+    })
+    setMarkerData(markerDataTemp);
+
+    /* Set initial position */
+    // Number of campaigns
+    let count = 0;
+    // To get central latitude and longitude points
+    let latitude = 0;
+    let longitude = 0;
+    // To get latitude delta
+    let hLatitude = 0;
+    let lLatitude = 0;
+    // To get longitude delta
+    let hLongitude = 0;
+    let lLongitude = 0;
+    campaigns.map((value, index) => {
+      count+=1;
+      latitude+=value['coordinates']['latitude'];
+      longitude+=value['coordinates']['longitude'];
+      if (value['coordinates']['latitude'] > hLatitude)
+        hLatitude = value['coordinates']['latitude']
+      if (value['coordinates']['latitude'] < lLatitude)
+        lLatitude = value['coordinates']['latitude']
+      if (value['coordinates']['longitude'] > hLongitude)
+        hLongitude = value['coordinates']['longitude']
+      if (value['coordinates']['longitude'] < lLongitude)
+        lLongitude = value['coordinates']['longitude']
+    });
+    setLatitude(latitude/count);
+    setLongitude(longitude/count);
+    setLatitudeDelta(Math.abs(hLatitude - lLatitude) * 1.33);
+    setLongitudeDelta(Math.abs(hLongitude - lLongitude) * 1.33);
+  }
+
   useEffect(() => {
     getWeekDonations();
     getPerCampaignDonations();
     getProjectionDonations('week');
     getStorage();
     setLoaded(true);
+    setMapLocations(props.campaigns);
   }, []);
 
   return (
@@ -176,7 +229,7 @@ export default function MainReport(props) {
             {storageData.map((value, index) => {
               return (
                 <View style={styles.columnCenter} key={`mousse3${index}`}>
-                  <Text style={styles.boxText}>{value['label']} ({Math.round(value['value']*100)}%)</Text>
+                  <Text style={styles.boxText}>{value['label']} ({Math.round(value['value'] * 100)}%)</Text>
                   <ProgressBar progress={value['value']} color={colors.red} style={styles.progressBar} />
                 </View>
               )
@@ -267,6 +320,27 @@ export default function MainReport(props) {
               }}
               verticalLabelRotation={0}
             />
+          </View>
+          {/* Map */}
+          <View style={styles.rowCenter} >
+            <View style={styles.columnCenter} >
+              <MapView style={styles.map}
+                initialRegion={{
+                  latitude: data.coordinates.latitude,
+                  longitude: data.coordinates.longitude,
+                  latitudeDelta: 0.04,
+                  longitudeDelta: 0.04,
+                }}
+              >
+                {}
+                <Marker
+                  key={0}
+                  coordinate={data.coordinates}
+                  title={data.name}
+                  description={data.address}
+                />
+              </MapView>
+            </View>
           </View>
           <View style={styles.firstRow}></View>
         </View> :
