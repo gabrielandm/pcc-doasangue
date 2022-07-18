@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Text, View, StyleSheet, Dimensions } from 'react-native';
 import { ProgressBar } from 'react-native-paper';
 import { LineChart, BarChart, PieChart, ProgressChart, ContributionGraph, StackedBarChart } from "react-native-chart-kit";
+import MapView, { Marker } from 'react-native-maps';
 
 
 import { colors } from '../style/colors';
@@ -16,7 +17,7 @@ export default function MainReport(props) {
   const [acumulatedWeekDonations, setAcumulatedWeekDonations] = useState(null);
   const [acumulatedMonthDonations, setAcumulatedMonthDonations] = useState(null);
   const [perCampaignDonations, setPerCampaignDonations] = useState(null);
-  
+
   /* Map variables */
   const [latitude, setLatitude] = useState(null);
   const [longitude, setLongitude] = useState(null);
@@ -189,9 +190,9 @@ export default function MainReport(props) {
     let hLongitude = 0;
     let lLongitude = 0;
     campaigns.map((value, index) => {
-      count+=1;
-      latitude+=value['coordinates']['latitude'];
-      longitude+=value['coordinates']['longitude'];
+      count += 1;
+      latitude += value['coordinates']['latitude'];
+      longitude += value['coordinates']['longitude'];
       if (value['coordinates']['latitude'] > hLatitude)
         hLatitude = value['coordinates']['latitude']
       if (value['coordinates']['latitude'] < lLatitude)
@@ -201,8 +202,8 @@ export default function MainReport(props) {
       if (value['coordinates']['longitude'] < lLongitude)
         lLongitude = value['coordinates']['longitude']
     });
-    setLatitude(latitude/count);
-    setLongitude(longitude/count);
+    setLatitude(latitude / count);
+    setLongitude(longitude / count);
     setLatitudeDelta(Math.abs(hLatitude - lLatitude) * 1.33);
     setLongitudeDelta(Math.abs(hLongitude - lLongitude) * 1.33);
   }
@@ -326,19 +327,20 @@ export default function MainReport(props) {
             <View style={styles.columnCenter} >
               <MapView style={styles.map}
                 initialRegion={{
-                  latitude: data.coordinates.latitude,
-                  longitude: data.coordinates.longitude,
-                  latitudeDelta: 0.04,
-                  longitudeDelta: 0.04,
+                  latitude: latitude,
+                  longitude: longitude,
+                  latitudeDelta: latitudeDelta,
+                  longitudeDelta: longitudeDelta,
                 }}
               >
-                {}
-                <Marker
-                  key={0}
-                  coordinate={data.coordinates}
-                  title={data.name}
-                  description={data.address}
-                />
+                {markerData.map((value, index) => {
+                  return (<Marker
+                    key={`mousseMap${value.key}`}
+                    coordinate={value.coordinate}
+                    title={value.title}
+                    description={value.description}
+                  />)
+                })}
               </MapView>
             </View>
           </View>
