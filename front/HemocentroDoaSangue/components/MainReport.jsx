@@ -344,6 +344,11 @@ export default function MainReport(props) {
               </MapView>
             </View>
           </View>
+
+          <View style={styles.firstRow}></View>
+          <View style={styles.firstRow}></View>
+          <View style={styles.firstRow}></View>
+          <View style={styles.firstRow}></View>
           <View style={styles.firstRow}></View>
         </View> :
         <ActivityIndicator size="large" color="#0000ff" />}

@@ -24,6 +24,16 @@ export default function CampaignScreen({ navigation, route }) {
     setLoaded(true);
   }, [])
 
+  // Function to go to the corresponding report page
+  function goReportScreen() {
+    navigation.navigate({
+      name: 'CampaignReportScreen',
+      params: {
+        data: JSON.stringify(data)
+      },
+    });
+  }
+
   // Function to go to the edit campaign page
   function goEditCampaign() {
     navigation.navigate({
@@ -112,7 +122,13 @@ export default function CampaignScreen({ navigation, route }) {
               {data.blood_types.map((blood_type, index) => <Chip key={index} style={styles.chip}>{blood_type}</Chip>)}
             </View>
 
-            {/* Submit button */}
+            {/* Report screen */}
+            <View style={{ ...styles.rowCenter, height: 50 }}>
+              <Button onPress={() => goReportScreen()} mode="outlined" color={colors.red} icon="chart-line" >
+                Relatório
+              </Button>
+            </View>
+            {/* QRCode Reader button */}
             <View style={{ ...styles.rowCenter, height: 50 }}>
               <Button onPress={() => goReadQRCode()} mode="outlined" color={colors.blue} icon="qrcode" >
                 Ler QR Code
