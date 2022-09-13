@@ -17,7 +17,8 @@ export default function HomeScreen({ navigation, route }) {
 	const [filters, setFilters] = useState(null);
 	const [campaignData, setCampaignData] = useState(null);
 	const [profileData, setProfileData] = useState(null);
-	const [loaded, setLoaded] = useState(false);
+	const [campaignLoaded, setCampaignLoaded] = useState(false);
+	const [profileLoaded, setProfileLoaded] = useState(false);
 
 	/* Snackbar */
 	const [visible, setVisible] = React.useState(false);
@@ -43,6 +44,7 @@ export default function HomeScreen({ navigation, route }) {
 			if (response.status === 200) {
 				const json = await response.json();
 				setCampaignData(json);
+				setCampaignLoaded(true);
 			} else if (response.status !== 200) {
 				console.log('Error: ', response.status);
 				setSnackbarText('Não foi possível carregar os dados, tente mais tarde.');
@@ -62,6 +64,7 @@ export default function HomeScreen({ navigation, route }) {
 					const json = await response.json();
 					// console.log(json)
 					setProfileData(json['data']);
+					setProfileLoaded(true);
 				} else if (response.status !== 200) {
 					console.log('Error: ', response.status);
 					setSnackbarText('Não foi possível carregar os dados, tente mais tarde.');
@@ -78,14 +81,13 @@ export default function HomeScreen({ navigation, route }) {
 				'email': 'mousseuwu', 'pass': '12345678', 'validated': 1, 'entry_date': new Date(), 'name': 'Mousse Hardcoded', 'last_name': 'de Chocolate', 'phone': '19998049566', 'blood_type': 'O+', 'last_donation': new Date(), 'city': 'Mistério', 'state': 'PE', 'country': 'BR', 'gender': 0, 'birth_date': new Date(), 'profile_link': null, '_id': '628f7c80d18a1daa0050a6d1',
 			})
 		}
-		// console.log(profileData)
+		console.log(profileData)
 	}
 
 	/* When page loads */
 	useEffect(() => {
 		getProfileData(route.params, false); // !!!Remember to set debug to false!!!
 		getCampaigns();
-		setLoaded(true);
 	}, []);
 
 	/* When page is focused */
@@ -126,7 +128,7 @@ export default function HomeScreen({ navigation, route }) {
 	const CampaignsView = () =>
 		<SafeAreaView style={styles.screen} >
 			<ScrollView style={styles.scrollView}>
-				{loaded ?
+				{profileLoaded && campaignLoaded ?
 					(campaignData !== null ? campaignData.map(
 						(campaign, index) => <CampaignThingy
 							key={index}

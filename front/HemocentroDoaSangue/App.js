@@ -4,16 +4,16 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { StyleSheet, Text, View, Button } from 'react-native';
 
-import HomeScreen from './pages/HomeScreen';
-import LoginScreen from './pages/LoginScreen';
-import RegistrationScreen from './pages/RegistrationScreen';
-import PasswordSendEmail from './pages/PasswordSendEmail';
+import CampaignReportScreen from './pages/CampaignReportScreen'
 import CampaignScreen from './pages/CampaignScreen';
 import CreateCampaignScreen from './pages/CreateCampaignScreen';
 import EditCampaignScreen from './pages/EditCampaignScreen';
 import EditProfileScreen from './pages/EditProfileScreen';
+import HomeScreen from './pages/HomeScreen';
+import LoginScreen from './pages/LoginScreen';
+import RegistrationScreen from './pages/RegistrationScreen';
+import PasswordSendEmail from './pages/PasswordSendEmail';
 import QRCodeReader from './pages/QRCodeReader';
-import CampaignReportScreen from './pages/CampaignReportScreen'
 import {colors} from './style/colors';
 
 const Stack = createNativeStackNavigator();

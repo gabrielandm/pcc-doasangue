@@ -9,6 +9,8 @@ import { colors } from '../style/colors';
 import { statesList, bloodTypesList } from '../config/data';
 import { config } from '../config/config';
 
+import SelectLocationScreen from '../components/LocationPicker';
+
 export default function CreateCampaignScreen({ navigation, route }) {
   /* Basic variables */
   const options = { year: 'numeric', month: '2-digit', day: '2-digit' };
@@ -260,6 +262,12 @@ export default function CreateCampaignScreen({ navigation, route }) {
     }
   }
 
+  // Location Picker
+  const [showLocationPicker, setShowLocationPicker] = useState(false);
+  function goToLocationPicker() {
+    setShowLocationPicker(!showLocationPicker)
+  }
+
   // Every time data is changed
   useEffect(() => {
     if (changed) {
@@ -370,6 +378,16 @@ export default function CreateCampaignScreen({ navigation, route }) {
               errorText={addressErrorMessage}
               style={styles.textInput}
             />
+
+            <View style={styles.column}>
+              <Button onPress={() => goToLocationPicker()} mode="outlined" color={colors.blue} icon="map-marker" >
+                Selecionar local
+              </Button>
+
+              {showLocationPicker && (
+                <SelectLocationScreen />
+              )}
+            </View>
           </View>
           {/* Phone input */}
           <View style={styles.rowCenter}>

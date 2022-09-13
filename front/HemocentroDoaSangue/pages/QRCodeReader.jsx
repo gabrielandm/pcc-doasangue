@@ -23,11 +23,11 @@ export default function QRCodeReader({ navigation, route }) {
     try {
       if (typeof qrData !== typeof {}) {
         setError('QR Code inválido');
-        throw new Error('Invalid QR code - Invalid data')
+        return('QR Code inválido');
       }
       if (qrData.campaignId !== campaignId) {
-        setError('QR Code inválido\nCampanha incorreta\nVerifique se você ou o doador estão na campanha correta');
-        throw new Error('Invalid QR code - wrong campaign id')
+        setError('QR Code inválido\n\nCampanha incorreta\n\nVerifique se você ou o doador estão na campanha correta');
+        return('Invalid QR code - wrong campaign id');
       }
       setValidated(true)
     } catch (e) {
@@ -39,19 +39,20 @@ export default function QRCodeReader({ navigation, route }) {
   async function registerDonation() {
     // Validate user inputs before POST
     const data = {
-      user_id: qrData.userId,
+      doner_id: qrData.userId,
       corp_cnpj: cnpj,
-      campaign_code: campaignId,
+      campaign_id: campaignId,
       donation_date: new Date(),
     }
-    try {
-      const response = await fetch(config.campaign,
+      try {
+      const response = await fetch(config.donation,
         {
           method: 'POST',
           body: JSON.stringify(data),
         }
       )
       if (response.status == 201) {
+        setError('A doação foi salva com sucesso!');
         navigation.navigate({
           name: 'HomeScreen',
           params: {
@@ -61,14 +62,15 @@ export default function QRCodeReader({ navigation, route }) {
           },
           merge: true
         });
+        console.log('201')
       } else if (response.status == 400) {
-        setError('Doação já foi registrada');
+        setError('QR Code inválido, verifique:\n\n - Se você ou o doador estão na mesma campanha correta.\n - Se o passo anterior não der certo, tente novamente.');
         setValidated(false);
-        throw new Error('Donation already made');
+        console.log('400 - Error registering donation');
       } else {
         setError('Um erro selvagem apareceu!');
         setValidated(false);
-        throw new Error('Error registering donation');
+        console.log('500 - Error registering donation');
       }
     } catch (e) {
       console.log(e);

@@ -13,9 +13,12 @@ async function Post(context, req) {
 	const campaign_id = req.body.campaign_id;
 	const donation_date = req.body.donation_date;
 
+	console.log(req.body)
+
 	// Validating
 	const campaign = await campaignCollection.findOne({ '_id': ObjectId(campaign_id) })
 	if (campaign === null) {
+		console.log('campaign not found')
 		context.res = {
 			status: 400,
 			body: { "status": "campaign not found" },
@@ -23,8 +26,9 @@ async function Post(context, req) {
 		};
 		return;
 	}
-	const doner = await donerCollection.findOne({ '_id': ObjectId(donation_date) })
+	const doner = await donerCollection.findOne({ '_id': ObjectId(doner_id) })
 	if (doner === null) {
+		console.log('doner not found')
 		context.res = {
 			status: 400,
 			body: { "status": "doner not found" },
@@ -34,23 +38,10 @@ async function Post(context, req) {
 	}
 	const corp = await corpCollection.findOne({ 'cnpj': corp_cnpj })
 	if (corp === null) {
+		console.log('corp not found')
 		context.res = {
 			status: 400,
 			body: { "status": "corp not found" },
-			headers: header
-		};
-		return;
-	}
-
-	const exists = await donationdateCollection.findOne({
-		"doner_id": doner_id,
-		"corp_cnpj": corp_cnpj,
-		"campaign_id": campaign_id,
-	})
-	if (exists !== null) {
-		context.res = {
-			status: 400,
-			body: { "status": "donation already registred" },
 			headers: header
 		};
 		return;

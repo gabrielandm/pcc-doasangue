@@ -79,7 +79,7 @@ export default function CampaignScreen({ navigation, route }) {
                   />
                   {route.params.data.location !== null ?
                     <Marker
-                      key={0}
+                      key={1}
                       coordinate={{
                         latitude: route.params.data.location['coords']['latitude'],
                         longitude: route.params.data.location['coords']['longitude']}}
@@ -113,7 +113,7 @@ export default function CampaignScreen({ navigation, route }) {
 
             <View style={styles.rowCenter}>
               <Text style={styles.dataText}>Tipos sanguineos:</Text>
-              {data.blood_types.map((blood_type, index) => <Chip key={index} style={styles.chip}>{blood_type}</Chip>)}
+              {data.blood_types.map((blood_type, index) => <Chip key={`bloodType${index}`} style={styles.chip}>{blood_type}</Chip>)}
             </View>
 
             <View style={styles.column}>
@@ -138,6 +138,9 @@ export default function CampaignScreen({ navigation, route }) {
                 />
               </View>) : null
             }
+
+            <View style={styles.lasRow}>
+            </View>
 
           </View> : null
         }
@@ -221,5 +224,9 @@ const styles = StyleSheet.create({
   },
   iconButton: {
     margin: 0,
+  },
+  lasRow: {
+    marginBottom: 20,
+    height: 133,
   },
 });
