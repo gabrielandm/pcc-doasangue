@@ -7,6 +7,7 @@ import { colors } from '../style/colors';
 import { config } from '../config/config';
 import CampaignThingy from '../components/CampaignThingy';
 import ProfileThingy from '../components/ProfileThingy';
+import MainReport from '../components/MainReport';
 
 export default function HomeScreen({ navigation, route }) {
 	/* Variables and functions */
@@ -45,7 +46,7 @@ export default function HomeScreen({ navigation, route }) {
 				setVisible(true);
 			}
 		} catch (error) {
-			console.log(error);
+			console.log(JSON.stringify(error));
 		}
 	}
 
@@ -56,6 +57,7 @@ export default function HomeScreen({ navigation, route }) {
 				const response = await fetch(`${config.corp}?type=data&cnpj=${filter.name}`)
 				if (response.status === 200) {
 					const json = await response.json();
+					// console.log(json)
 					setProfileData(json['data']);
 				} else if (response.status !== 200) {
 					console.log('Error: ', response.status);
@@ -63,7 +65,7 @@ export default function HomeScreen({ navigation, route }) {
 					setVisible(true);
 				}
 			} catch (error) {
-				console.log(error);
+				console.log(JSON.stringify(error));
 			}
 		}
 		if (debug) {
@@ -77,22 +79,43 @@ export default function HomeScreen({ navigation, route }) {
 
 	/* When page loads */
 	useEffect(() => {
-		console.log('mousse useEffect')
+		// console.log('mousse useEffect')
 		route.params.created = false;
 		getProfileData(route.params);
 		getCampaigns(route.params);
 	}, []);
-	/* When page is focused */
+
+	// /* When page is focused */
+	// useFocusEffect(React.useCallback(() => {
+	// 	if (route.params.created === true) {
+	// 		// getProfileData(route.params);
+	// 		getCampaigns(route.params);
+	// 	}
+	// }, []));
+
+	/* When page is focused and route has been changed */
 	useFocusEffect(React.useCallback(() => {
-		if (route.params.created === true) {
-			console.log('mousse useFocusEffect')
-			// getProfileData(route.params);
-			getCampaigns(route.params);
+		if (route.params !== undefined) {
+			if (route.params.message !== undefined) {
+				// console.log(route.params.message);
+				setSnackbarText(route.params.message);
+				setVisible(true);
+				if (route.params.message === 'Dados atualizados com sucesso!') {
+					getProfileData(route.params, false); // !!!Remember to set debug to false!!!
+					navigation.setParams({ ...route.params, message: undefined, created: false });
+				} else if (route.params.message === 'Campanha criada com sucesso!') {
+					getCampaigns(route.params);
+					navigation.setParams({ ...route.params, message: undefined, created: false });
+				} else if (route.params.message === 'Campanha editada com sucesso!') {
+					getCampaigns(route.params);
+					navigation.setParams({ ...route.params, message: undefined, created: false });
+				}
+			}
 		}
-	}, []));
+	}, [route]));
 
 	/* Views */
-	// Definir variável q vai ser uma bool e salva se os dados já foram coletados e só coletar se ainda não foram :)
+	// Definir variável q vai ser uma bool. Salva se os dados já foram coletados e só coletar se ainda não foram :)
 	const CampaignsView = () =>
 		<SafeAreaView style={styles.screen} >
 			<ScrollView style={styles.scrollView}>
@@ -104,7 +127,7 @@ export default function HomeScreen({ navigation, route }) {
 					/>) : <ActivityIndicator size="large" color="#0000ff" />
 				}
 			</ScrollView>
-			<Button style={styles.buttonStyle} onPress={() => navigateTo('CampaignCreationScreen', { cnpj: profileData.cnpj })}>
+			<Button style={styles.buttonStyle} onPress={() => navigateTo('CreateCampaignScreen', { cnpj: profileData.cnpj })}>
 				<Text style={styles.buttonTextStyle}>+</Text>
 			</Button>
 			<Snackbar
@@ -116,18 +139,31 @@ export default function HomeScreen({ navigation, route }) {
 			</Snackbar>
 		</SafeAreaView>;
 
-	const AchievementView = () =>
+	const DashboardView = () =>
 		<SafeAreaView style={styles.screen} >
 			<ScrollView style={styles.scrollView}>
-				<Text>Dashboard</Text>
+				<MainReport
+					campaigns={campaignData}
+				/>
 			</ScrollView>
 		</SafeAreaView>;
 
 	const ProfileView = () =>
 		<SafeAreaView style={styles.screen} >
 			<ScrollView style={styles.scrollView}>
-				<ProfileThingy data={profileData} />
+				<ProfileThingy
+					data={profileData}
+					updateData={setProfileData}
+					navigateTo={(pageName, props) => navigateTo(pageName, props)}
+				/>
 			</ScrollView>
+			<Snackbar
+				visible={visible}
+				onDismiss={onDismissSnackBar}
+				duration={3000}
+			>
+				{snackbarText}
+			</Snackbar>
 		</SafeAreaView>;
 
 	/* View controller */
@@ -139,7 +175,7 @@ export default function HomeScreen({ navigation, route }) {
 	]);
 	const renderScene = BottomNavigation.SceneMap({
 		campaigns: CampaignsView,
-		achievements: AchievementView,
+		achievements: DashboardView,
 		profile: ProfileView,
 	});
 
@@ -181,6 +217,12 @@ const styles = StyleSheet.create({
 		position: 'absolute',
 		bottom: 15,
 		right: 20,
+		// Shadow
+		shadowColor: colors.black,
+		shadowOffset: { width: 2, height: 2 },
+		shadowOpacity: 1,
+		shadowRadius: 2,
+		elevation: 8,
 	},
 	buttonTextStyle: {
 		color: colors.white,

@@ -9,6 +9,8 @@ import LoginScreen from './pages/LoginScreen';
 import RegistrationScreen from './pages/RegistrationScreen';
 import PasswordSendEmail from './pages/PasswordSendEmail';
 import CampaignScreen from './pages/CampaignScreen';
+import AchievementsScreen from './pages/AchievementsScreen';
+import EditProfileScreen from './pages/EditProfileScreen';
 import {colors} from './style/colors';
 
 const Stack = createNativeStackNavigator();
@@ -63,6 +65,30 @@ function App() {
           <Stack.Screen
             name="CampaignScreen"
             component={CampaignScreen}
+            options={{
+              title: 'DoaSangue',
+              headerShown: true,
+              headerStyle: {
+                backgroundColor: colors.red,
+              },
+              headerTintColor: colors.white,
+            }}
+          />
+          <Stack.Screen
+            name="AchievementsScreen"
+            component={AchievementsScreen}
+            options={{
+              title: 'DoaSangue',
+              headerShown: true,
+              headerStyle: {
+                backgroundColor: colors.red,
+              },
+              headerTintColor: colors.white,
+            }}
+          />
+          <Stack.Screen
+            name="EditProfileScreen"
+            component={EditProfileScreen}
             options={{
               title: 'DoaSangue',
               headerShown: true,

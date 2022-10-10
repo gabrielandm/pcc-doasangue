@@ -9,8 +9,8 @@ import { colors } from '../style/colors';
 import { config } from '../config/config';
 
 export default function LoginScreen({ navigation, route }) {
-	const [nameMain, setNameMain] = useState('');
-	const [passMain, setPassMain] = useState('');
+	const [email, setEmail] = useState('');
+	const [pass, setPass] = useState('');
 	const [passWrong, setPassWrong] = useState(false);
 	const [snackbarText, setSnackbarText] = useState('');
 	const [checkedReaseon, setCheckedReaseon] = useState(route.params.checkedReaseon);
@@ -44,18 +44,19 @@ export default function LoginScreen({ navigation, route }) {
 	async function validateUser() {
 		// email and password validation
 		try {
-			var response = await fetch(`${config.user}?email=${nameMain}&pass=${passMain}&type=login`)
+			var response = await fetch(`${config.user}?email=${email}&pass=${pass}&type=login`)
 			var json = await response.json();
 			// console.log(json);
 		} catch (error) {
-			console.log(error);
+			console.log(JSON.stringify(response));
+			console.log(JSON.stringify(error));
 			return null;
 		}
 		// If value exists
 		if (json.status === 'success') {
 			navigation.dispatch(
 				StackActions.replace('HomeScreen', {
-					name: `${nameMain}`,
+					email: `${email}`,
 				})
 			)
 		} else if (json.status === 'fail') {
@@ -80,13 +81,13 @@ export default function LoginScreen({ navigation, route }) {
 			<Text style={styles.header}>Bem vindo(a)!</Text>
 			<Text style={styles.subHeader}>Entre na sua conta</Text>
 
-			<SmallTextInput label={'Usuário'} isPassword={false} updateVar={(text) => setNameMain(text)} style={styles.textInput} invalidInput={passWrong} />
-			<SmallTextInput label={'Senha'} isPassword={true} updateVar={(text) => setPassMain(text)} style={styles.textInput} invalidInput={passWrong} />
+			<SmallTextInput label={'Usuário'} isPassword={false} updateVar={(text) => setEmail(text)} style={styles.textInput} invalidInput={passWrong} />
+			<SmallTextInput label={'Senha'} isPassword={true} updateVar={(text) => setPass(text)} style={styles.textInput} invalidInput={passWrong} />
 
 			<View style={styles.secView}>
 				{!passWrong ? null : <Text>Email ou senha incorretos</Text>}
 
-				<Button mode="text" color={colors.lightRed} onPress={() => navigation.navigate('PasswordSendEmail', { name: nameMain, updateCheckedReason: () => setCheckedReaseon() })} style={styles.buttonBig}>Esqueci a senha</Button>
+				<Button mode="text" color={colors.lightRed} onPress={() => navigation.navigate('PasswordSendEmail', { name: email, updateCheckedReason: () => setCheckedReaseon() })} style={styles.buttonBig}>Esqueci a senha</Button>
 
 				<Button mode="text" color={colors.lightRed} onPress={() => navigation.navigate('RegistrationScreen')} style={styles.buttonBig}>Registrar</Button>
 

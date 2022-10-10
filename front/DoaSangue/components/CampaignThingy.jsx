@@ -1,15 +1,38 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { StyleSheet, View, Text, Image } from 'react-native';
 import { Button, Chip } from 'react-native-paper';
 
 import { colors } from '../style/colors';
+import distanceCalculator from '../functions/geoDistance';
 
 export default function CampaignThingy(props) {
   const data = props.data;
   data.start_date = new Date(data.start_date);
   data.end_date = new Date(data.end_date);
-  const banner_link = typeof data.banner_link == 'string' ?	 { uri: data.banner_link } : require('../images/hospital.jpg')
+  const banner_link = typeof data.banner_link == 'string' ? { uri: data.banner_link } : require('../images/hospital.jpg')
   const options = { year: '2-digit', month: '2-digit', day: '2-digit' };
+  const [distance, setDistance] = useState(null)
+
+  function navigateTo() {
+    props.navigateTo('CampaignScreen', {
+      data: JSON.stringify(data),
+      userId: props.userId,
+      distance: distance,
+      location: props.location,
+    });
+  }
+
+  useEffect(() => {
+    try {
+    setDistance(
+      (Math.round(distanceCalculator(props.location['coords']['latitude'],
+        data['coordinates']['latitude'],
+        props.location['coords']['longitude'],
+        data['coordinates']['longitude']
+      )*10)/10).toString().replace('.', ',').replace(/\B(?=(\d{3})+(?!\d))/g, "."));
+    }
+    catch (e) {}
+  }, [props.location])
 
   return (
     <View style={styles.outerBox}>
@@ -34,10 +57,12 @@ export default function CampaignThingy(props) {
       </View>
 
       {/* Code to calculate the distance */}
-      <Text style={styles.campaignText}>A 3Km de você</Text>
+      {distance != null ?
+        <Text style={styles.campaignText}>Está a {distance} Km de você</Text> : null
+      }
 
       <View style={styles.rowInverse}>
-        <Button mode="text" icon="arrow-right" contentStyle={{flexDirection: 'row-reverse'}} color={colors.lightRed} onPress={() => props.navigateTo('CampaignScreen', data)}>Detalhes</Button>
+        <Button mode="text" icon="arrow-right" contentStyle={{ flexDirection: 'row-reverse' }} color={colors.lightRed} onPress={() => navigateTo()}>Detalhes</Button>
         <Button mode="text" icon="star" color={colors.lightBlue} disabled={true}>{data.campaign_rating}</Button>
       </View>
     </View>
@@ -57,7 +82,6 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     // borderRadius: 10,
     // Shadow
-    shadowColor: '#000000',
     shadowColor: '#000000',
     shadowOffset: { width: 0, height: 3 },
     shadowOpacity: 1,

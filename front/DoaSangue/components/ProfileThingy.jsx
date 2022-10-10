@@ -1,106 +1,155 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { StyleSheet, View, Text, Image } from 'react-native';
-import { Button, Chip, IconButton } from 'react-native-paper';
+import { IconButton } from 'react-native-paper';
 
 import { colors } from '../style/colors';
 
 export default function ProfileThingy(props) {
-  const data = props.data;
-  data.birth_date = new Date(data.birth_date);
-  data.last_donation = new Date(data.last_donation);
-  const userAge = Math.abs(new Date(new Date() - data.birth_date).getUTCFullYear()) - 1970
-  const daysFromDonate = Math.ceil((new Date() - data.last_donation) / (1000 * 60 * 60 * 24));
-  const daysToDonate = data.gender == 0 ? 90 - daysFromDonate : 60 - daysFromDonate;
+  const [loaded, setLoaded] = useState(false);
+  const [data, setData] = useState(props.data);
+  const [userAge, setUserAge] = useState(null);
+  const [daysFromDonate, setDaysFromDonate] = useState(null);
+  const [daysToDonate, setDaysToDonate] = useState(null);
+  const [profileLink, setProfileLink] = useState(null);
   const options = { year: '2-digit', month: '2-digit', day: '2-digit' };
-  const profile_link = typeof data.profile_link == 'string' ?	 {uri: data.profile_link} : {uri: 'https://doasanguefiles.blob.core.windows.net/doasangueblob/default-profile-pic.png'}
-  
-  function openEditPage(screenName) {
-    console.log(screenName);
-    // props.navigateTo(screenName, props.data);
+
+  /* Function to calculate difference between dates*/
+  function calcDate(date1, date2) {
+    const diff = Math.floor(date1.getTime() - date2.getTime());
+    const day = 1000 * 60 * 60 * 24;
+
+    // Days remaining
+    const days = Math.floor(diff / day);
+    const days_left = Math.floor((days / 365 - Math.floor(days / 365)) * 365);
+
+    // Months remaining
+    const months = Math.floor(days / 31);
+    const months_left = Math.floor((months / 12 - Math.floor(months / 12)) * 12);
+
+    // Years remaining
+    const years_left = Math.floor(months / 12);
+
+    let message = "";
+    if (days_left > 0) {
+      message += days_left + " dias ";
+    }
+    if (months_left > 0) {
+      message += months_left + " meses ";
+    }
+    if (years_left > 0) {
+      message += years_left + " anos";
+    }
+
+    return message;
   }
+
+  function openEditPage(screenName) {
+    props.navigateTo(screenName,
+      {
+        data: JSON.stringify(data),
+      }
+    );
+  }
+
+  useEffect(() => {
+    setData({
+      ...data,
+      birth_date: new Date(data.birth_date),
+      last_donation: new Date(data.last_donation),
+    });
+    setUserAge(Math.abs(new Date(new Date() - data.birth_date).getUTCFullYear()) - 1970);
+    setDaysFromDonate(Math.ceil((new Date() - data.last_donation) / (1000 * 60 * 60 * 24)));
+    setDaysToDonate(data.gender == 0 ? 90 - daysFromDonate : 60 - daysFromDonate)
+    setProfileLink(typeof data.profile_link == 'string' ? { uri: data.profile_link } : { uri: 'https://doasanguefiles.blob.core.windows.net/doasangueblob/default-profile-pic.png' })
+    setLoaded(true);
+  }, [])
 
   return (
     <View style={styles.column}>
       {/* Basic info */}
-      <View style={styles.outerBox}>
-        <View style={styles.rowHeader}>
-          <Text style={styles.title}>Informações básicas:</Text>
-          <IconButton icon="square-edit-outline" size={textSize} onPress={() => openEditPage('EditBasicInfoScreen')} />
-        </View>
-        <View style={styles.row}>
-          <View style={styles.column}>
-            <Image style={styles.profImg}
-              // source={{ uri: 'https://doasanguefiles.blob.core.windows.net/doasangueblob/doner-333.jpg' }}
-              source={profile_link}
-            />
+      {loaded ?
+        <View>
+          <View style={styles.outerBox}>
+            <View style={styles.rowHeader}>
+              <Text style={styles.title}>Informações básicas:</Text>
+              <IconButton icon="square-edit-outline" size={textSize} onPress={() => openEditPage('EditProfileScreen')} />
+            </View>
+            <View style={styles.row}>
+              <View style={styles.column}>
+                <Image style={styles.profImg}
+                  // source={{ uri: 'https://doasanguefiles.blob.core.windows.net/doasangueblob/doner-333.jpg' }}
+                  source={profileLink}
+                />
+              </View>
+              <View style={styles.column}>
+                <View style={styles.rowCenter}>
+                  <Text style={styles.infoHeader}>Nome:</Text>
+                  <Text style={styles.infoText}>{data.name} {data.last_name}</Text>
+                </View>
+                <View style={styles.rowCenter}>
+                  <Text style={styles.infoHeader}>Tipo sanguineo:</Text>
+                  <Text style={styles.infoText}>{data.blood_type}</Text>
+                </View>
+                <View style={styles.rowCenter}>
+                  <Text style={styles.infoHeader}>Dias para poder doar:</Text>
+                  <Text style={styles.infoText}>{daysToDonate > 0 ? `${daysToDonate} dias` : 'já pode doar!'}</Text>
+                </View>
+              </View>
+            </View>
           </View>
-          <View style={styles.column}>
-            <View style={styles.rowCenter}>
-              <Text style={styles.infoHeader}>Nome:</Text>
-              <Text style={styles.infoText}>{data.name} {data.last_name}</Text>
-            </View>
-            <View style={styles.rowCenter}>
-              <Text style={styles.infoHeader}>Tipo sanguineo:</Text>
-              <Text style={styles.infoText}>{data.blood_type}</Text>
-            </View>
-            <View style={styles.rowCenter}>
-              <Text style={styles.infoHeader}>Dias para poder doar:</Text>
-              <Text style={styles.infoText}>{daysToDonate > 0 ? `${daysToDonate} dias` : 'já pode doar!'}</Text>
-            </View>
-          </View>
-        </View>
-      </View>
 
-      {/* Other info */}
-      <View style={styles.outerBox}>
-        <View style={styles.rowHeader}>
-          <Text style={styles.title}>Outras informações:</Text>
-          <IconButton icon="square-edit-outline" size={textSize} onPress={() => openEditPage('EditOtherInfoScreen')} />
-        </View>
-        <View style={styles.row}>
-          <View style={styles.column}>
-            <View style={styles.rowCenter}>
-              <Text style={styles.infoHeader}>Última doação:</Text>
-              <Text style={styles.infoText}>{data.last_donation.toLocaleDateString("pt-BR", options)}</Text>
+          {/* Other info */}
+          <View style={styles.outerBox}>
+            <View style={styles.rowHeader}>
+              <Text style={styles.title}>Outras informações:</Text>
+              <IconButton icon="square-edit-outline" size={textSize} onPress={() => openEditPage('EditProfileScreen')} />
             </View>
-            <View style={styles.rowCenter}>
-              <Text style={styles.infoHeader}>Genêro:</Text>
-              <Text style={styles.infoText}>{data.gender === 0 ? 'Feminino' : 'Masculino'}</Text>
-            </View>
-            <View style={styles.rowCenter}>
-              <Text style={styles.infoHeader}>Data de nscimento:</Text>
-              <Text style={styles.infoText}>{data.birth_date.toLocaleDateString("pt-BR", options)}</Text>
-            </View>
-            <View style={styles.rowCenter}>
-              <Text style={styles.infoHeader}>Idade:</Text>
-              <Text style={styles.infoText}>{userAge}</Text>
+            <View style={styles.row}>
+              <View style={styles.column}>
+                <View style={styles.rowCenter}>
+                  <Text style={styles.infoHeader}>Última doação:</Text>
+                  <Text style={styles.infoText}>{data.last_donation.toLocaleDateString("pt-BR", options)}</Text>
+                </View>
+                <View style={styles.rowCenter}>
+                  <Text style={styles.infoHeader}>Genêro:</Text>
+                  <Text style={styles.infoText}>{data.gender === 0 ? 'Feminino' : 'Masculino'}</Text>
+                </View>
+                <View style={styles.rowCenter}>
+                  <Text style={styles.infoHeader}>Data de nscimento:</Text>
+                  <Text style={styles.infoText}>{data.birth_date.toLocaleDateString("pt-BR", options)}</Text>
+                </View>
+                <View style={styles.rowCenter}>
+                  <Text style={styles.infoHeader}>Idade:</Text>
+                  <Text style={styles.infoText}>{userAge}</Text>
+                </View>
+              </View>
             </View>
           </View>
-        </View>
-      </View>
 
-      {/* Statistical info */}
-      <View style={styles.outerBox}>
-        <View style={styles.row}>
-          <Text style={styles.title}>Estatísticas:</Text>
-        </View>
-        <View style={styles.row}>
-          <View style={styles.column}>
-            <View style={styles.rowCenter}>
-              <Text style={styles.infoHeader}>Total de doações:</Text>
-              <Text style={styles.infoText}>3</Text>
+          {/* Statistical info */}
+          <View style={styles.outerBox}>
+            <View style={styles.row}>
+              <Text style={styles.title}>Estatísticas:</Text>
             </View>
-            <View style={styles.rowCenter}>
-              <Text style={styles.infoHeader}>Postos diferentes:</Text>
-              <Text style={styles.infoText}>3</Text>
-            </View>
-            <View style={styles.rowCenter}>
-              <Text style={styles.infoHeader}>Volume total doado:</Text>
-              <Text style={styles.infoText}>3.000 ml</Text>
+            <View style={styles.row}>
+              <View style={styles.column}>
+                <View style={styles.rowCenter}>
+                  <Text style={styles.infoHeader}>Total de doações:</Text>
+                  <Text style={styles.infoText}>3</Text>
+                </View>
+                <View style={styles.rowCenter}>
+                  <Text style={styles.infoHeader}>Postos diferentes:</Text>
+                  <Text style={styles.infoText}>3</Text>
+                </View>
+                <View style={styles.rowCenter}>
+                  <Text style={styles.infoHeader}>Volume total doado:</Text>
+                  <Text style={styles.infoText}>3.000 ml</Text>
+                </View>
+              </View>
             </View>
           </View>
         </View>
-      </View>
+        : null}
     </View>
   )
 }

@@ -1,68 +1,24 @@
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, View, Text, ScrollView, SafeAreaView, StatusBar, ActivityIndicator } from 'react-native';
 import { BottomNavigation, Snackbar } from 'react-native-paper';
+import { useFocusEffect } from '@react-navigation/native';
+import * as Location from 'expo-location';
 
 import { colors } from '../style/colors';
 import { config } from '../config/config';
 import CampaignThingy from '../components/CampaignThingy';
 import ProfileThingy from '../components/ProfileThingy';
+import AchievementThingy from '../components/AchievementThingy';
 
-const m_campaigns = [
-	{
-		"name": "Camapnha Doa Mais",
-		"cnpj": '34.876.876/0001-00',
-		"start_date": '2022-06-12T15:33:33.000000-03:00',
-		"end_date": '2023-06-12T15:33:33.000-03:00',
-		"open_time": "3:33",
-		"close_time": "15:33",
-		"country": 'BR',
-		"state": 'PE',
-		"city": 'Xvs',
-		"address": 'R. do Alfinetes, 33',
-		"coordinates": {
-			"latitude": -7.033889,
-			"longitude": -39.408889,
-		},
-		"phone": '(33) 3333-3333',
-		"creation_date": '2022-12-06 15:33:33.000-03:00',
-		"num_doners": 12,
-		"campaign_rating": 5,
-		"observation": 'Estamos recebendo qualquer tipo de sangue, porém os mais importantes são os que foram listados abaixo.',
-		"blood_types": ['A+', 'AB+', 'O'],
-		"header_color": '#F0D',
-		"banner_link": 'www.mousse.com',
-	},
-	{
-		"name": "Camapnha Doa Mais 33",
-		"cnpj": '34.876.876/0001-00',
-		"start_date": '2022-06-12T15:33:33.000-03:00',
-		"end_date": '2023-06-12T15:33:33.000-03:00',
-		"open_time": "3:33",
-		"close_time": "15:33",
-		"country": 'BR',
-		"state": 'PE',
-		"city": 'Xvs',
-		"address": 'R. do Alfinetes, 33',
-		"coordinates": {
-			"latitude": -8.05,
-			"longitude": -34.05
-		},
-		"phone": '(33) 3333-3333',
-		"creation_date": '2022-12-06 15:33:33.000-03:00',
-		"num_doners": 12,
-		"campaign_rating": 5,
-		"observation": 'Estamos recebendo qualquer tipo de sangue, porém os mais importantes são os que foram listados abaixo.',
-		"blood_types": ['A+', 'AB+', 'O'],
-		"header_color": '#F0D',
-		"banner_link": 'www.mousse.com'
-	},
-]
+import { m_achievements } from '../config/mousse';
 
 export default function HomeScreen({ navigation, route }) {
 	/* Variables and functions */
 	const [filters, setFilters] = useState(null);
 	const [campaignData, setCampaignData] = useState(null);
 	const [profileData, setProfileData] = useState(null);
+	const [campaignLoaded, setCampaignLoaded] = useState(false);
+	const [profileLoaded, setProfileLoaded] = useState(false);
 
 	/* Snackbar */
 	const [visible, setVisible] = React.useState(false);
@@ -84,16 +40,18 @@ export default function HomeScreen({ navigation, route }) {
 		}
 		try {
 			const response = await fetch(`${config.campaign}?${query}`)
+			// console.log(JSON.stringify(response))
 			if (response.status === 200) {
 				const json = await response.json();
 				setCampaignData(json);
+				setCampaignLoaded(true);
 			} else if (response.status !== 200) {
 				console.log('Error: ', response.status);
 				setSnackbarText('Não foi possível carregar os dados, tente mais tarde.');
 				setVisible(true);
 			}
 		} catch (error) {
-			console.log(error);
+			console.log(JSON.stringify(error));
 		}
 	}
 
@@ -101,24 +59,26 @@ export default function HomeScreen({ navigation, route }) {
 		if (filter != undefined || !debug) {
 			// Get data from MongoDB
 			try {
-				const response = await fetch(`${config.user}?type=data&email=${filter.name}`)
+				const response = await fetch(`${config.user}?type=data&email=${filter.email}`)
 				if (response.status === 200) {
 					const json = await response.json();
 					// console.log(json)
 					setProfileData(json['data']);
+					setProfileLoaded(true);
 				} else if (response.status !== 200) {
 					console.log('Error: ', response.status);
 					setSnackbarText('Não foi possível carregar os dados, tente mais tarde.');
 					setVisible(true);
 				}
 			} catch (error) {
-				console.log(error);
+				console.log(JSON.stringify(error));
 			}
 		}
 		if (debug) {
 			// Only for debug
 			// Create default user
-			setProfileData({'email': 'mousseuwu','pass': '12345678','validates': 1,'entry_date': new Date(),'name': 'Mousse Hardcoded','last_name': 'de Chocolate','phone': '+5519998049566','blood_type': 'O+','last_donation': new Date(),'city': 'Mistério 2','state': 'PE','country': 'BR','gender': 0,'birth_date': new Date(),'profile_link': null,'_id': '333',
+			setProfileData({
+				'email': 'mousseuwu', 'pass': '12345678', 'validated': 1, 'entry_date': new Date(), 'name': 'Mousse Hardcoded', 'last_name': 'de Chocolate', 'phone': '19998049566', 'blood_type': 'O+', 'last_donation': new Date(), 'city': 'Mistério', 'state': 'PE', 'country': 'BR', 'gender': 0, 'birth_date': new Date(), 'profile_link': null, '_id': '628f7c80d18a1daa0050a6d1',
 			})
 		}
 		console.log(profileData)
@@ -126,21 +86,58 @@ export default function HomeScreen({ navigation, route }) {
 
 	/* When page loads */
 	useEffect(() => {
-		getProfileData(route.params);
+		getProfileData(route.params, false); // !!!Remember to set debug to false!!!
 		getCampaigns();
 	}, []);
+
+	/* When page is focused */
+	useFocusEffect(React.useCallback(() => {
+		if (route.params !== undefined) {
+			if (route.params.message !== undefined) {
+				// console.log(route.params.message);
+				setSnackbarText(route.params.message);
+				setVisible(true);
+				if (route.params.message === 'Dados atualizados com sucesso!') {
+					getProfileData(route.params, false); // !!!Remember to set debug to false!!!
+					// getProfileData(route.params);
+					navigation.setParams({ ...route.params, message: undefined });
+				}
+			}
+		}
+	}, [route]));
+
+	/* Geolocation */
+	const [location, setLocation] = useState(null);
+	const [errorMsg, setErrorMsg] = useState(null);
+
+	useEffect(() => {
+		(async () => {
+			let { status } = await Location.requestForegroundPermissionsAsync();
+			if (status !== 'granted') {
+				setErrorMsg('Permission to access location was denied');
+				return;
+			}
+			let location = await Location.getCurrentPositionAsync({});
+			setLocation(location);
+		})();
+	}, []);
+
 
 	/* Views */
 	// Definir variável q vai ser uma bool e salva se os dados já foram coletados e só coletar se ainda não foram :)
 	const CampaignsView = () =>
 		<SafeAreaView style={styles.screen} >
 			<ScrollView style={styles.scrollView}>
-				{campaignData !== null ? campaignData.map(
-					(campaign, index) => <CampaignThingy
-						key={index}
-						data={campaign}
-						navigateTo={(pageName, props) => navigateTo(pageName, props)}
-					/>) : <ActivityIndicator size="large" color="#0000ff" />
+				{profileLoaded && campaignLoaded ?
+					(campaignData !== null ? campaignData.map(
+						(campaign, index) => <CampaignThingy
+							key={index}
+							data={campaign}
+							userId={profileData._id}
+							location={location}
+							navigateTo={(pageName, props) => navigateTo(pageName, props)}
+						/>)
+						: <ActivityIndicator size="large" color="#0000ff" />) : <ActivityIndicator size="large" color="#0000ff" />
 				}
 			</ScrollView>
 			<Snackbar
@@ -152,18 +149,43 @@ export default function HomeScreen({ navigation, route }) {
 			</Snackbar>
 		</SafeAreaView>;
 
+	function renderAchievements() {
+		return m_achievements.map((achievement, index) =>
+			<AchievementThingy key={index} navigateTo={(pageName, props) => navigateTo(pageName, props)} data={achievement} />);
+	}
+
 	const AchievementView = () =>
 		<SafeAreaView style={styles.screen} >
 			<ScrollView style={styles.scrollView}>
-				<Text>Achievements</Text>
+				<View style={styles.rowWrap}>
+					{renderAchievements()}
+				</View>
 			</ScrollView>
+			<Snackbar
+				visible={visible}
+				onDismiss={onDismissSnackBar}
+				duration={3000}
+			>
+				{snackbarText}
+			</Snackbar>
 		</SafeAreaView>;
 
 	const ProfileView = () =>
 		<SafeAreaView style={styles.screen} >
 			<ScrollView style={styles.scrollView}>
-				<ProfileThingy data={profileData} />
+				<ProfileThingy
+					data={profileData}
+					updateData={setProfileData}
+					navigateTo={(pageName, props) => navigateTo(pageName, props)}
+				/>
 			</ScrollView>
+			<Snackbar
+				visible={visible}
+				onDismiss={onDismissSnackBar}
+				duration={3000}
+			>
+				{snackbarText}
+			</Snackbar>
 		</SafeAreaView>;
 
 	/* View controller */
@@ -206,5 +228,14 @@ const styles = StyleSheet.create({
 	},
 	bottom: {
 		flexBasis: 50,
+	},
+	row: {
+		flexDirection: 'row',
+		justifyContent: 'space-around',
+	},
+	rowWrap: {
+		flexDirection: 'row',
+		justifyContent: 'space-around',
+		flexWrap: 'wrap',
 	},
 });

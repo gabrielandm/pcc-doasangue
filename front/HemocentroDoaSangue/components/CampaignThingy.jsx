@@ -11,6 +11,10 @@ export default function CampaignThingy(props) {
   const banner_link = typeof data.banner_link == 'string' ?	 { uri: data.banner_link } : require('../images/hospital.jpg')
   const options = { year: '2-digit', month: '2-digit', day: '2-digit' };
 
+  function navigateTo() {
+    props.navigateTo('CampaignScreen', JSON.stringify(data));
+  }
+
   return (
     <View style={styles.outerBox}>
       <View style={styles.row}>
@@ -37,7 +41,7 @@ export default function CampaignThingy(props) {
       <Text style={styles.campaignText}>{data.address}</Text>
 
       <View style={styles.rowInverse}>
-        <Button mode="text" icon="arrow-right" contentStyle={{flexDirection: 'row-reverse'}} color={colors.lightRed} onPress={() => props.navigateTo('CampaignScreen', data)}>Detalhes</Button>
+        <Button mode="text" icon="arrow-right" contentStyle={{flexDirection: 'row-reverse'}} color={colors.lightRed} onPress={() => navigateTo()}>Detalhes</Button>
         <Button mode="text" icon="star" color={colors.lightBlue} disabled={true}>{data.campaign_rating}</Button>
       </View>
     </View>
