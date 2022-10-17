@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
+    <link rel="stylesheet" href="./style.css">
+    <title>Side Bar Menu</title>
+</head>
+<body>
+    
+    <div class="side">
+        <h1>
+            <img src="./images/cat-prof.jpg" alt="imagem logo">
+            <a href="login.html">DoaSangue</a>
+        </h1>
+
+        <ul>
+            <li><i class="fas fa-home"></i><a href="Home.html">Home</a></li>
+            <li><i class="fas fa-solid fa-circle-plus"></i><a href="Campanha.html">Campanha</a></li>
+            <li class="active"><i class="fas fa-solid fa-share"></i>Divulgar Campanha</li>
+            <li><i class="fas fa-duotone fa-chart-simple"></i><a href="Dashboard.html">Dashboard</a></li>
+        </ul>
+
+        <button id="toggleBtn">
+            <i class="fas fa-chevron-right"></i>
+            <i class="fas fa-chevron-left"></i>
+        </button>
+    </div>
+
+    <div class="main">
+
+        <h1>Página de divulgação</h1>
+        <!-- Colocar aqui as path para as páginas diferentes-->
+
+    </div>
+
+    <script>
+        var side = document.querySelector('.side')
+        var toggleBtn = document.getElementById('toggleBtn')
+        toggleBtn.addEventListener('click', () => {
+            side.classList.toggle('closed')
+        })
+    </script>
+</body>
+</html>
