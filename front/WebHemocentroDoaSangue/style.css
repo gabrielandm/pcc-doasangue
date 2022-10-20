@@ -12,11 +12,15 @@ body {
 }
 
 .main {
+    width: 100vw;
     padding: 48px;
     color: #333;
 }
 
 .main h1 {
+    text-align: center;
+    border: 3px solid #333;
+    justify-self: center;
     margin: 24px;
 }
 
@@ -73,7 +77,7 @@ body {
 
 .side li.active {
     background-color: #FF4242;
-    border-left: 5px solid #58a6ff;
+    border-left: 5px solid #95d2ec;
     font-weight: bold;
 }
 
@@ -83,7 +87,7 @@ body {
     right: 0;
     transform: translateX(100%);
     box-shadow: 0 2px 123px -3px rgba(0, 0, 0, 0.3);
-    background-color: #58a6ff;
+    background-color: #95d2ec;
     color: #fff;
     outline: none;
     border: none;
@@ -186,13 +190,13 @@ form .txt-field {
     left: 0;
     width: 100%;
     height: 2px;
-    background: #58a6ff;
+    background: #95d2ec;
 }
 
 .txt-field input:focus ~ label,
 .txt-field input:valid ~ label {
     top: -5px;
-    color: #58a6ff;
+    color: #95d2ec;
 }
 
 .txt-field input:focus ~ span::before,
@@ -223,7 +227,7 @@ input[type="submit"] {
 }
 
 input[type="submit"]:hover{
-    border-color: #58a6ff;
+    border-color: #95d2ec;
     transition: .5s;
 }
 
@@ -235,10 +239,36 @@ input[type="submit"]:hover{
 }
 
 .signup-link a {
-    color: #58a6ff;
+    color: #95d2ec;
     text-decoration: none;
 }
 
 .signup-link a:hover {
     text-decoration: underline;
+}
+
+/* ------------------ Dashboard ------------------- */
+
+.dash h1 {
+    align-self: center;
+    position: relative;
+    width: 95%;
+    margin: none;
+}
+.linha1, .linha2 {
+    display:flex;
+    justify-content: space-evenly;
+    align-items: center;
+    padding: 5px;
+}
+.graph {    
+    min-width: 35vw;
+    background: linear-gradient(#95d2ec, #47abd8);
+    border-radius: 10px;
+    border: 2px solid #D01B1B;
+    
+}
+
+#lineChartProjeção {
+    background: linear-gradient(#ff4242, #d01b1b);
 }
