@@ -7,7 +7,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Montserrat&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
     <link rel="stylesheet" href="./style.css">
-    <title>Side Bar Menu</title>
+    <title>Nova Campanha</title>
 </head>
 <body>
     
@@ -30,10 +30,79 @@
         </button>
     </div>
 
-    <div class="main">
+    <div >
 
-        <h1>Criar campanha</h1>
-        <!-- Colocar aqui as path para as páginas diferentes-->
+        <div class="campanha">
+
+            <h1>Nova Campanha</h1>
+            <form method="post">
+                <div class="txt-field">
+                    <h3>Nome da campanha</h3>
+                    <input type="text" required>
+                    
+                    <label></label>
+                </div>
+                
+                <div >
+                <h3>Sangue preferencial</h3>
+                 </div>
+                
+                
+                <div>
+                <input type="checkbox" id="sanguea+" name="sanguea+" value="tipoa+">
+                <label for="sanguea+"> a+</label><br>
+                <input type="checkbox" id="sanguea-" name="sanguea-" value="tipoa-">
+                <label for="sanguea-"> a-</label><br>
+                <input type="checkbox" id="sangueb+" name="sangueb+" value="tipob+">
+                <label for="sangueb+"> b+</label><br>
+                <input type="checkbox" id="sangueb-" name="sangueb-" value="tipob-">
+                <label for="sangueb-"> b-</label><br>
+                <input type="checkbox" id="sangueab+" name="sangueab+" value="tipoab+">
+                <label for="sangueab+"> ab+</label><br>
+                <input type="checkbox" id="sangueab-" name="sangueab-" value="tipoab-">
+                <label for="sangueab-"> ab-</label><br>
+                <input type="checkbox" id="sangueo+" name="sangueo+" value="tipoo+">
+                <label for="sangueo+"> o+</label><br>
+                <input type="checkbox" id="sangueo-" name="sangueo-" value="tipoo-">
+                <label for="sangueo-"> o-</label><br>
+                </div>
+    
+                <div class="txt-field">
+                    <h3>Data inicial</h3>
+                    <input type="date" required>
+                    
+                    <label></label>
+                </div>
+    
+                <div class="txt-field">
+                    <h3>Data final</h3>
+                    <input type="date" required>
+                   
+                    <label></label>
+                </div>
+    
+                <div class="txt-field">
+                    <h3>Endereço</h3>
+                    <input type="text" required>
+                    <label></label>
+                </div>
+
+                <div class="txt-field">
+                    <h3>Selecione a foto</h3>
+                    <label for="myfile"></label>
+                    <input type="file" id="myfile" name="myfile"> 
+                </div>
+    
+                
+    
+                
+            
+                <input type="submit" value="criar">
+                <h1></h1>
+                
+                
+            </form>
+        </div>
 
     </div>
 
