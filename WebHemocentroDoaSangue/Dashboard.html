@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
+    <link rel="stylesheet" href="./style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <title>Side Bar Menu</title>
+</head>
+<body>
+    
+    <div class="side">
+        <h1>
+            <img src="./images/cat-prof.jpg" alt="imagem logo">
+            <a href="login.html">DoaSangue</a>
+        </h1>
+
+        <ul>
+            <li><i class="fas fa-solid fa-info"></i><a href="InfoHemocentro.html">Info Hemocentro</a></li>
+            <li><i class="fas fa-solid fa-circle-plus"></i><a href="Campanha.html">Campanha</a></li>
+            <li><i class="fas fa-solid fa-share"></i><a href="DivulgarCampanha.html">Divulgar Campanha</a></li>
+            <li class="active"><i class="fas fa-duotone fa-chart-simple"></i>Dashboard</li>
+        </ul>
+
+        <button id="toggleBtn">
+            <i class="fas fa-chevron-right"></i>
+            <i class="fas fa-chevron-left"></i>
+        </button>
+    </div>
+
+    <div class="main">
+        <div class="dash">
+            <h1>Nome do dash</h1>
+            <div class="linha1">
+                <div class="graph">
+                    <canvas id="barChartEstoque"></canvas>
+                </div>
+                <div class="graph">
+                    <canvas id="barChartCampanha"></canvas>
+                </div>
+            </div>
+            <div class="linha2">
+                <div class="graph">
+                    <canvas id="lineChartSemana"></canvas>
+                </div>
+                <div class="graph">
+                    <canvas id="lineChartProjeção"></canvas>
+                </div>
+            </div>
+            <div class="linha3"></div>
+        </div>
+
+
+    </div>
+
+    <script>
+        var side = document.querySelector('.side')
+        var toggleBtn = document.getElementById('toggleBtn')
+        toggleBtn.addEventListener('click', () => {
+            side.classList.toggle('closed')
+        })
+    </script>
+
+    <!-- Bar chart para o estoque dos hemocentros -->
+    <script>
+        const ctxEstoque = document.getElementById('barChartEstoque').getContext('2d');
+
+
+        const labelsEstoque = ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'];
+
+        const dataEstoque = {
+            labels: labelsEstoque,
+            datasets: [{
+                backgroundColor: 'rgb(208, 27, 27)',
+                borderColor: 'rgb(208, 27, 27)',
+                data: [0.13, 0.1, 0.05, 0.02, 0.2, 0.3, 0.45, 0.8],
+            }]
+        };
+    
+        const configEstoque = {
+            type: 'bar',
+            data: dataEstoque,
+            options: {
+                plugins: {
+                    title: {
+                        display: true,
+                        text:'Estoque'
+                    },
+                    legend: {
+                        display: false
+                    } 
+                },
+                indexAxis: 'y',
+                scales: {
+                    x: {
+                        min: 0,
+                        max: 1,
+                    }
+                },
+            },
+        };
+
+        const barChartEstoque = new Chart(ctxEstoque, configEstoque);
+    </script>
+  
+    <!-- Bar chart para a campanha mais doada -->
+    <script>
+        const ctxCampanha = document.getElementById('barChartCampanha').getContext('2d');
+
+
+        const labelsCampanha = ['DoaMais', 'Amigável', 'Mousse'];
+
+        const dataCampanha = {
+            labels: labelsCampanha,
+            datasets: [{
+                backgroundColor: 'rgb(231, 249, 255, 0.7)',
+                borderColor: 'rgb(208, 27, 27)',
+                data: [241, 333, 279],
+            }]
+        };
+    
+        const configCampanha = {
+            type: 'bar',
+            data: dataCampanha,
+            options: {
+                plugins: {
+                    title: {
+                        display: true,
+                        text:'Campanhas com mais doações'
+                    },
+                    legend: {
+                        display: false
+                    } 
+                },
+            },
+        };
+
+        const barChartCampanha = new Chart(ctxCampanha, configCampanha);
+    </script>
+
+    <!-- Line chart para o dia da semana mais doado -->
+    <script>
+        const ctxSemana = document.getElementById('lineChartSemana').getContext('2d');
+
+        const labelSemana = ['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'];
+
+        const dataSemana = {
+            labels: labelSemana,
+            datasets: [{
+                data: [24, 5, 12, 11, 14, 16, 19],
+                fill: false,
+            }]
+        };
+    
+        const configSemana = {
+            type: 'line',
+            data: dataSemana,
+            options: {
+                plugins: {
+                    title: {
+                        display: true,
+                        text:'Doações nos últimos 7 dias'
+                    },
+                    legend: false
+                },
+                elements: {
+                    point: {
+                        borderColor: 'rgb(208, 27, 27)'
+                    },
+                    line: {
+                        borderColor: 'rgb(231, 249, 255)',
+                    }
+                }
+            }
+        };
+
+        const barChartSemana = new Chart(ctxSemana, configSemana);
+    </script>
+  
+    <!-- Line chart para a projeção -->
+    <script>
+        const ctxProjecao = document.getElementById('lineChartProjeção').getContext('2d');
+
+        const labelProjecao = ['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'];
+
+        const dataProjecao = {
+            labels: labelProjecao,
+            datasets: [{
+                data: [25, 4, 10, 12, 15, 19, 21],
+                fill: false,
+            }]
+        };
+    
+        const configProjecao = {
+            type: 'line',
+            data: dataProjecao,
+            options: {
+                fontColor: 'rgb(0, 0, 0)',
+                plugins: {
+                    title: {
+                        display: true,
+                        text:'Doações nos últimos 7 dias'
+                    },
+                    legend: false
+                },
+                elements: {
+                    point: {
+                        borderColor: 'rgb(71, 171, 216)',
+                        backgroundColor: 'rgb(231, 249, 255)'
+                    },
+                    line: {
+                        borderColor: 'rgb(255, 99, 99)',
+                    }
+                }
+            }
+        };
+
+        const barChartProjecao = new Chart(ctxProjecao, configProjecao);
+    </script>
+
+</body>
+</html>
