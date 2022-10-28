@@ -146,7 +146,57 @@ export default function CampaignReportScreen({ navigation, route }) {
     }
   }
 
+  async function apiCall() {
+    let currentDay = new Date();
+    let currentDate = currentDay.toISOString();
+    let current = {
+      year: currentDate.slice(0, 4),
+      month: currentDate.slice(5, 7),
+      day: currentDate.slice(8, 10),
+    }
+    // Set day (get to yesterday date)
+    currentDay.setDate(currentDay.getDate() - 1);
+    let idValue = '6277c41632b4f7308bb02d55';
+    let idName = 'campaign_id';
+    let endDate = `${current[year]}-${current[month]}-${current[day]}T00:00:00.000Z`;
+    let startDate = `${current[year]}-${current[month]}-${current[day]}T00:00:00.000Z`;
+    console.log(route)
+    // try {
+    //   const response = await fetch(`${config.donation}&`,
+    //     {
+    //       method: 'GET',
+    //       body: JSON.stringify(data),
+    //     }
+    //   )
+    //   // var status = 200
+    //   if (response.status === 200) {
+    //     // Go back to HomeScreen screen
+    //     navigation.navigate({
+    //       name: 'HomeScreen',
+    //       params: {
+    //         message: 'Dados atualizados com sucesso!',
+    //         name: data.cnpj
+    //       },
+    //       merge: true,
+    //     });
+    //   } else {
+    //     // Make an error appear for the user
+    //     console.log(response.status);
+    //     try {
+    //       const json = await response.json();
+    //       console.log(json)
+    //     } catch (e) {
+    //       console.log(e)
+    //     }
+    //   }
+    // } catch (e) {
+    //   // Make an error appear for the user
+    //   console.log(e);
+    // }
+  }
+
   useEffect(() => {
+    apiCall();
     getWeekDonations();
     getPerCampaignDonations();
     getProjectionDonations('week');
