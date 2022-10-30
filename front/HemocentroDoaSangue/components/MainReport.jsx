@@ -17,6 +17,7 @@ export default function MainReport(props) {
   const [acumulatedWeekDonations, setAcumulatedWeekDonations] = useState(null);
   const [acumulatedMonthDonations, setAcumulatedMonthDonations] = useState(null);
   const [perCampaignDonations, setPerCampaignDonations] = useState(null);
+  const [apiData, setApiData] = useState(null);
 
   /* Map variables */
   const [latitude, setLatitude] = useState(null);
@@ -208,7 +209,42 @@ export default function MainReport(props) {
     setLongitudeDelta(Math.abs(hLongitude - lLongitude) * 1.33);
   }
 
+  async function apiCall() {
+    const data = {
+      idValue: props.cnpj,
+      idName: 'corp_cnpj',
+    }
+
+    // Get API data
+    try {
+      const response = await fetch(`${config.donation}?idValue=${data.idValue}&idName=${data.idName}`,
+        {
+          method: 'GET',
+        }
+      )
+      console.log(response.status);
+      if (response.status === 200) {
+        const json = await response.json();
+        setApiData(json)
+        console.log(JSON.stringify(json))
+      } else {
+        // Make an error appear for the user
+        try {
+          const json = await response.json();
+          console.log(JSON.stringify(json))
+        } catch (e) {
+          console.log(JSON.stringify(e))
+        }
+      }
+    } catch (e) {
+      // Make an error appear for the user
+      console.log(JSON.stringify(e));
+    }
+    console.log(json)
+  }
+
   useEffect(() => {
+    apiCall();
     getWeekDonations();
     getPerCampaignDonations();
     getProjectionDonations('week');
@@ -261,7 +297,7 @@ export default function MainReport(props) {
             <Text style={styles.boxHeader} >Doações por campanha</Text>
             <Text style={styles.boxText} >{Math.round(Math.random() * 200)}</Text>
           </View>
-          {/* ❓ Top 3 or 5 campaigns in total donations */}
+          {/* ❓ Top 3 or 5 campaigns in total donations
           <View style={styles.row}>
             <Text style={styles.title}>Campanhas com mais doações</Text>
           </View>
@@ -277,7 +313,7 @@ export default function MainReport(props) {
               chartConfig={chartStyles.barChart}
             // verticalLabelRotation={0}
             />
-          </View>
+          </View> */}
           {/* ❓ Last 7 days donations (Line chart) */}
           <View style={styles.row}>
             <Text style={styles.title}>Doações dos últimos 7 dias</Text>

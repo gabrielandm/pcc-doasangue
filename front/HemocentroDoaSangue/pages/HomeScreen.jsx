@@ -90,7 +90,7 @@ export default function HomeScreen({ navigation, route }) {
 		// getProfileData(route.params, true);
 
 		getProfileData(params, true);
-		
+
 		// getCampaigns(route.params);
 		getCampaigns(params);
 	}, []);
@@ -154,6 +154,7 @@ export default function HomeScreen({ navigation, route }) {
 			<ScrollView style={styles.scrollView}>
 				<MainReport
 					campaigns={campaignData}
+					cnpj={profileData.cnpj}
 				/>
 			</ScrollView>
 		</SafeAreaView>;
