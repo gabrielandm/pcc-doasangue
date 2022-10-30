@@ -67,44 +67,103 @@ async function Get(context, req) {
 
 	const idValue = req.query.idValue;
 	const idName = req.query.idName;
-	const startDate = new Date(req.query.startDate);
-	const endDate = new Date(req.query.endDate);
 
-	let foundDoc = null
-	if (startDate !== undefined && endDate !== undefined) {
-		if (isNaN(startDate) || isNaN(endDate)) {
-			context.res = {
-				status: 400,
-				body: { status: 'invalid dates' },
-				headers: header
-			};
-		}
-		foundDoc = await donationdateollection.aggregate([
-			{ "$addFields": { "mousse": {"$toDate": "$donation_date"} }},
-			{ "$match": {
-				"mousse": { "$gte": startDate, "$lte": endDate },
+	/* MONTHLY DATA */
+	var currentDate = new Date();
+	let lastMonth = new Date(currentDate);
+	lastMonth.setDate(currentDate.getDate() - 30);
+	var foundDoc = null;
+	foundDoc = await donationdateollection.aggregate([
+		{ "$addFields": { "mousse": { "$toDate": "$donation_date" } } },
+		{
+			"$match": {
+				"mousse": { "$gte": lastMonth, "$lte": currentDate },
 				[idName]: { "$eq": idValue }
-			}},
-			{ "$count": "count" }
-		])
-
-		foundDoc = await foundDoc.toArray();
-		foundDoc = foundDoc[0]
-	} else if (id !== undefined) {
-		foundDoc = await donationdateollection.findOne({
-			"_id": ObjectId(id),
-		});
-	} else {
-		context.res = {
-			status: 400,
-			body: { status: 'unknown parameters or just send startDate and endDate' },
-			headers: header
-		};
+			}
+		},
+		{ "$count": "count" }
+	]);
+	// Saving data
+	foundDoc = await foundDoc.toArray();
+	foundDoc = foundDoc[0];
+	let monthData = 0;
+	if (foundDoc == null) {
+		monthData = 0;
 	}
+	console.log(foundDoc)
+	monthData = foundDoc['count'];
+
+	/* WEEKLY DATA */
+	let weekData = [];
+	var currentDate = new Date();
+	for (var i = 1; i < 8; i++) {
+		// Reducing day of current date
+		if (i > 1) {
+			currentDate.setDate(currentDate.getDate() - 1);
+		}
+		// Getting day before date
+		var yDate = new Date(currentDate);
+		yDate.setDate(currentDate.getDate() - 1);
+		// Fetching data from DB
+		var foundDoc = null;
+		foundDoc = await donationdateollection.aggregate([
+			{ "$addFields": { "mousse": { "$toDate": "$donation_date" } } },
+			{
+				"$match": {
+					"mousse": { "$gte": yDate, "$lte": currentDate },
+					[idName]: { "$eq": idValue }
+				}
+			},
+			{ "$count": "count" }
+		]);
+		// Saving data
+		foundDoc = await foundDoc.toArray();
+		foundDoc = foundDoc[0];
+		if (foundDoc == null) {
+			weekData.push({
+				count: 0,
+				weekDay: currentDate.getDay(),
+			});
+		} else {
+			weekData.push({
+				count: foundDoc['count'],
+				weekDay: currentDate.getDay(),
+			});
+		}
+	}
+
+	/* WEEK TOTAL DATA */
+	var currentDate = new Date();
+	let lastWeek = new Date(currentDate);
+	lastWeek.setDate(currentDate.getDate() - 30);
+	var foundDoc = null;
+	foundDoc = await donationdateollection.aggregate([
+		{ "$addFields": { "mousse": { "$toDate": "$donation_date" } } },
+		{
+			"$match": {
+				"mousse": { "$gte": lastWeek, "$lte": currentDate },
+				[idName]: { "$eq": idValue }
+			}
+		},
+		{ "$count": "count" }
+	]);
+	// Saving data
+	foundDoc = await foundDoc.toArray();
+	foundDoc = foundDoc[0];
+	let weekTotalData = 0;
+	if (foundDoc == null) {
+		weekTotalData = 0;
+	}
+	weekTotalData = foundDoc['count'];
 
 	context.res = {
 		status: 200,
-		body: foundDoc,
+		body: {
+			// First element is current day
+			weekCount: weekData,
+			monthCount: monthData,
+			weekTotalCount: weekTotalData,
+		},
 		headers: header
 	};
 }

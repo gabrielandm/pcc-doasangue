@@ -15,6 +15,10 @@ export default function CampaignReportScreen({ navigation, route }) {
   const [acumulatedWeekDonations, setAcumulatedWeekDonations] = useState(null);
   const [acumulatedMonthDonations, setAcumulatedMonthDonations] = useState(null);
   const [perCampaignDonations, setPerCampaignDonations] = useState(null);
+  const [apiData, setApiData] = useState(null)
+
+  // Date stuff
+  const wday2nwday = ['D', 'S', 'T', 'Q', 'Q', 'S', 'S'];
 
   /* Plot styles */
   const chartStyles = {
@@ -67,28 +71,38 @@ export default function CampaignReportScreen({ navigation, route }) {
   async function getWeekDonations() {
     /* Send today date and maybe consider using moment lib to get the date from 7 days before today */
     const data = {
-      labels: ["D", "S", "T", "Q", "Q", "S", "S"],
+      labels: [
+        wday2nwday[apiData['weekCount'][6]['weekDay']],
+        wday2nwday[apiData['weekCount'][5]['weekDay']],
+        wday2nwday[apiData['weekCount'][4]['weekDay']],
+        wday2nwday[apiData['weekCount'][3]['weekDay']],
+        wday2nwday[apiData['weekCount'][2]['weekDay']],
+        wday2nwday[apiData['weekCount'][1]['weekDay']],
+        wday2nwday[apiData['weekCount'][0]['weekDay']],
+      ],
       datasets: [
         {
           data: [
-            Math.round(Math.random() * 50),
-            Math.round(Math.random() * 50),
-            Math.round(Math.random() * 50),
-            Math.round(Math.random() * 50),
-            Math.round(Math.random() * 50),
-            Math.round(Math.random() * 50),
-            Math.round(Math.random() * 50)]
+            apiData['weekCount'][6]['count'],
+            apiData['weekCount'][5]['count'],
+            apiData['weekCount'][4]['count'],
+            apiData['weekCount'][3]['count'],
+            apiData['weekCount'][2]['count'],
+            apiData['weekCount'][1]['count'],
+            apiData['weekCount'][0]['count'],
+          ]
         }
       ]
     }
     // Set last 7 days daily donations
     setWeekChartData(data);
     // Set last 7 days donations
-    setAcumulatedWeekDonations(data['datasets'][0]['data'].reduce((partialSum, a) => partialSum + a, 0));
+    setAcumulatedWeekDonations(apiData['weekTotalCount']);
     // Set last 30 days donations
-    setAcumulatedMonthDonations(data['datasets'][0]['data'].reduce((partialSum, a) => partialSum + a, 0) * 4)
+    setAcumulatedMonthDonations(apiData['monthCount'])
   }
 
+  /*
   async function getPerCampaignDonations() {
     setPerCampaignDonations({
       labels: ["O+", "O-", "A+", "A-", "B+", "B-", "AB+", "AB-"],
@@ -108,6 +122,7 @@ export default function CampaignReportScreen({ navigation, route }) {
       ]
     });
   }
+  */
 
   async function getProjectionDonations(period) {
     if (period === 'week') {
@@ -147,61 +162,54 @@ export default function CampaignReportScreen({ navigation, route }) {
   }
 
   async function apiCall() {
-    let currentDay = new Date();
-    let currentDate = currentDay.toISOString();
-    let current = {
-      year: currentDate.slice(0, 4),
-      month: currentDate.slice(5, 7),
-      day: currentDate.slice(8, 10),
+    const routeParamsData = JSON.parse(route.params.data)
+    console.log(routeParamsData['_id'])
+    // 6277c41632b4f7308bb02d55
+    const data = {
+      idValue: routeParamsData['_id'],
+      idName: 'campaign_id',
     }
-    // Set day (get to yesterday date)
-    currentDay.setDate(currentDay.getDate() - 1);
-    let idValue = '6277c41632b4f7308bb02d55';
-    let idName = 'campaign_id';
-    let endDate = `${current[year]}-${current[month]}-${current[day]}T00:00:00.000Z`;
-    let startDate = `${current[year]}-${current[month]}-${current[day]}T00:00:00.000Z`;
-    console.log(route)
-    // try {
-    //   const response = await fetch(`${config.donation}&`,
-    //     {
-    //       method: 'GET',
-    //       body: JSON.stringify(data),
-    //     }
-    //   )
-    //   // var status = 200
-    //   if (response.status === 200) {
-    //     // Go back to HomeScreen screen
-    //     navigation.navigate({
-    //       name: 'HomeScreen',
-    //       params: {
-    //         message: 'Dados atualizados com sucesso!',
-    //         name: data.cnpj
-    //       },
-    //       merge: true,
-    //     });
-    //   } else {
-    //     // Make an error appear for the user
-    //     console.log(response.status);
-    //     try {
-    //       const json = await response.json();
-    //       console.log(json)
-    //     } catch (e) {
-    //       console.log(e)
-    //     }
-    //   }
-    // } catch (e) {
-    //   // Make an error appear for the user
-    //   console.log(e);
-    // }
+
+    // Get API data
+    try {
+      const response = await fetch(`${config.donation}?idValue=${data.idValue}&idName=${data.idName}`,
+        {
+          method: 'GET',
+        }
+      )
+      console.log(response.status);
+      if (response.status === 200) {
+        const json = await response.json();
+        setApiData(json)
+        console.log(JSON.stringify(json))
+      } else {
+        // Make an error appear for the user
+        try {
+          const json = await response.json();
+          console.log(JSON.stringify(json))
+        } catch (e) {
+          console.log(JSON.stringify(e))
+        }
+      }
+    } catch (e) {
+      // Make an error appear for the user
+      console.log(JSON.stringify(e));
+    }
   }
 
   useEffect(() => {
     apiCall();
-    getWeekDonations();
-    getPerCampaignDonations();
-    getProjectionDonations('week');
-    setLoaded(true);
   }, []);
+
+  useEffect(() => {
+    console.log(`useEffect ${apiData}`);
+    if (apiData != null) {
+      getWeekDonations();
+      // getPerCampaignDonations();
+      getProjectionDonations('week');
+      setLoaded(true);
+    }
+  }, [apiData])
 
   return (
     <SafeAreaView style={styles.screen} >
@@ -220,7 +228,7 @@ export default function CampaignReportScreen({ navigation, route }) {
                 <Text style={styles.boxHeader} >Doações do mês</Text>
                 <Text style={styles.boxText} >{acumulatedMonthDonations}</Text>
               </View>
-              {/* ❓ Blood type donations count */}
+              {/* ❓ Blood type donations count
               <View style={styles.row}>
                 <Text style={styles.title}>Doações por tipos sanguíneos</Text>
               </View>
@@ -236,7 +244,7 @@ export default function CampaignReportScreen({ navigation, route }) {
                   chartConfig={chartStyles.barChart}
                 // verticalLabelRotation={0}
                 />
-              </View>
+              </View> */}
               {/* ❓ Last 7 days donations (Line chart) */}
               <View style={styles.row}>
                 <Text style={styles.title}>Doações dos últimos 7 dias</Text>
