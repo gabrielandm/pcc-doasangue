@@ -68,6 +68,53 @@ async function Get(context, req) {
 	const idValue = req.query.idValue;
 	const idName = req.query.idName;
 
+	/* TRI AND QUADRI DATA */
+	var currentDate = new Date();
+	let lastTriMonth = new Date(currentDate);
+	lastTriMonth.setDate(currentDate.getDate() - 90);
+	let lastQuadriMonth = new Date(currentDate);
+	lastQuadriMonth.setDate(currentDate.getDate() - 120);
+	var foundDoc = null;
+	foundDoc = await donationdateollection.aggregate([
+		{ "$addFields": { "mousse": { "$toDate": "$donation_date" } } },
+		{
+			"$match": {
+				"mousse": { "$gte": lastTriMonth, "$lte": currentDate },
+				[idName]: { "$eq": idValue }
+			}
+		},
+		{ "$count": "count" }
+	]);
+	// Saving data
+	foundDoc = await foundDoc.toArray();
+	foundDoc = foundDoc[0];
+	let triData = 0;
+	if (foundDoc == null) {
+		triData = 0;
+	}
+	console.log(foundDoc)
+	triData = foundDoc['count'];
+	var foundDoc = null;
+	foundDoc = await donationdateollection.aggregate([
+		{ "$addFields": { "mousse": { "$toDate": "$donation_date" } } },
+		{
+			"$match": {
+				"mousse": { "$gte": lastQuadriMonth, "$lte": currentDate },
+				[idName]: { "$eq": idValue }
+			}
+		},
+		{ "$count": "count" }
+	]);
+	// Saving data
+	foundDoc = await foundDoc.toArray();
+	foundDoc = foundDoc[0];
+	let quadriData = 0;
+	if (foundDoc == null) {
+		quadriData = 0;
+	}
+	console.log(foundDoc)
+	quadriData = foundDoc['count'];
+
 	/* MONTHLY DATA */
 	var currentDate = new Date();
 	let lastMonth = new Date(currentDate);
@@ -163,6 +210,8 @@ async function Get(context, req) {
 			weekCount: weekData,
 			monthCount: monthData,
 			weekTotalCount: weekTotalData,
+			triData: triData,
+			quadriData: quadriData,
 		},
 		headers: header
 	};
