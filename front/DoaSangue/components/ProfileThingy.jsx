@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { StyleSheet, View, Text, Image } from 'react-native';
 import { IconButton } from 'react-native-paper';
 
+import { config } from '../config/config';
 import { colors } from '../style/colors';
 
 export default function ProfileThingy(props) {
@@ -11,6 +12,7 @@ export default function ProfileThingy(props) {
   const [daysFromDonate, setDaysFromDonate] = useState(null);
   const [daysToDonate, setDaysToDonate] = useState(null);
   const [profileLink, setProfileLink] = useState(null);
+  const [apiData, setApiData] = useState(null)
   const options = { year: '2-digit', month: '2-digit', day: '2-digit' };
 
   /* Function to calculate difference between dates*/
@@ -43,6 +45,42 @@ export default function ProfileThingy(props) {
     return message;
   }
 
+  async function apiCall() {
+    console.log(props.data['_id'])
+    // 6277c41632b4f7308bb02d55
+    const reqData = {
+      idValue: props.data['_id'],
+      idName: 'doner_id',
+    }
+
+    // Get API data
+    try {
+      const response = await fetch(`${config.donation}?idValue=${reqData.idValue}&idName=${reqData.idName}`,
+        {
+          method: 'GET',
+        }
+      )
+      console.log(response.status);
+      if (response.status === 200) {
+        const json = await response.json();
+        setApiData(json)
+        console.log(JSON.stringify(json))
+      } else {
+        // Make an error appear for the user
+        try {
+          const json = await response.json();
+          console.log(JSON.stringify(json))
+        } catch (e) {
+          console.log(JSON.stringify(e))
+        }
+      }
+    } catch (e) {
+      // Make an error appear for the user
+      console.log('a');
+      console.log(JSON.stringify(e));
+    }
+  }
+
   function openEditPage(screenName) {
     props.navigateTo(screenName,
       {
@@ -52,17 +90,28 @@ export default function ProfileThingy(props) {
   }
 
   useEffect(() => {
-    setData({
-      ...data,
-      birth_date: new Date(data.birth_date),
-      last_donation: new Date(data.last_donation),
-    });
-    setUserAge(Math.abs(new Date(new Date() - data.birth_date).getUTCFullYear()) - 1970);
-    setDaysFromDonate(Math.ceil((new Date() - data.last_donation) / (1000 * 60 * 60 * 24)));
-    setDaysToDonate(data.gender == 0 ? 90 - daysFromDonate : 60 - daysFromDonate)
-    setProfileLink(typeof data.profile_link == 'string' ? { uri: data.profile_link } : { uri: 'https://doasanguefiles.blob.core.windows.net/doasangueblob/default-profile-pic.png' })
-    setLoaded(true);
+    apiCall();
   }, [])
+
+  useEffect(() => {
+    if (apiData != null) {
+      setData({
+        ...data,
+        birth_date: new Date(data.birth_date),
+        last_donation: new Date(data.last_donation),
+      });
+      setUserAge(Math.abs(new Date(new Date() - data.birth_date).getUTCFullYear()) - 1970);
+      const todayDate = new Date()
+      let lastDonationTri = new Date(apiData['triData']);
+      let fromTri = Math.ceil((todayDate.getTime() - lastDonationTri.getTime())/1000/60/60/24)
+      let lastDonationQuadri = new Date(apiData['quadriData']);
+      let fromQuadri = Math.ceil((todayDate.getTime() - lastDonationQuadri.getTime())/1000/60/60/24)
+      setDaysFromDonate(Math.ceil((new Date() - data.last_donation) / (1000 * 60 * 60 * 24)));
+      setDaysToDonate(data.gender == 0 ? 90 - fromQuadri : 60 - fromTri);
+      setProfileLink(typeof data.profile_link == 'string' ? { uri: data.profile_link } : { uri: 'https://doasanguefiles.blob.core.windows.net/doasangueblob/default-profile-pic.png' });
+      setLoaded(true);
+    }
+  }, [apiData])
 
   return (
     <View style={styles.column}>
@@ -108,7 +157,7 @@ export default function ProfileThingy(props) {
               <View style={styles.column}>
                 <View style={styles.rowCenter}>
                   <Text style={styles.infoHeader}>Última doação:</Text>
-                  <Text style={styles.infoText}>{data.last_donation.toLocaleDateString("pt-BR", options)}</Text>
+                  <Text style={styles.infoText}>{new Date(apiData.quadriData).toLocaleDateString("pt-BR", options)}</Text>
                 </View>
                 <View style={styles.rowCenter}>
                   <Text style={styles.infoHeader}>Genêro:</Text>
@@ -134,17 +183,17 @@ export default function ProfileThingy(props) {
             <View style={styles.row}>
               <View style={styles.column}>
                 <View style={styles.rowCenter}>
-                  <Text style={styles.infoHeader}>Total de doações:</Text>
-                  <Text style={styles.infoText}>3</Text>
+                  <Text style={styles.infoHeader}>Doações realizadas:</Text>
+                  <Text style={styles.infoText}>{apiData.overallCount}</Text>
                 </View>
-                <View style={styles.rowCenter}>
+                {/* <View style={styles.rowCenter}>
                   <Text style={styles.infoHeader}>Postos diferentes:</Text>
                   <Text style={styles.infoText}>3</Text>
-                </View>
-                <View style={styles.rowCenter}>
+                </View> */}
+                {/* <View style={styles.rowCenter}>
                   <Text style={styles.infoHeader}>Volume total doado:</Text>
                   <Text style={styles.infoText}>3.000 ml</Text>
-                </View>
+                </View> */}
               </View>
             </View>
           </View>

@@ -68,52 +68,46 @@ async function Get(context, req) {
 	const idValue = req.query.idValue;
 	const idName = req.query.idName;
 
-	/* TRI AND QUADRI DATA */
+	/* TRI DATA */
 	var currentDate = new Date();
 	let lastTriMonth = new Date(currentDate);
 	lastTriMonth.setDate(currentDate.getDate() - 90);
+	var foundDoc = null;
+	var foundDoc = await donationdateollection.find({ [idName]: { "$eq": idValue } }).sort({ _id: -1 }).limit(1);
+	// Saving data
+	foundDoc = await foundDoc.toArray()
+	let triData = null;
+	if (foundDoc == null) {
+		var temp = new Date('2005-06-12T03:33:00');
+		triData = temp.toISOString();
+	}
+	triData = foundDoc[0]['donation_date'];
+
+	/* QUADRI DATA */
+	var currentDate = new Date();
 	let lastQuadriMonth = new Date(currentDate);
 	lastQuadriMonth.setDate(currentDate.getDate() - 120);
 	var foundDoc = null;
-	foundDoc = await donationdateollection.aggregate([
-		{ "$addFields": { "mousse": { "$toDate": "$donation_date" } } },
-		{
-			"$match": {
-				"mousse": { "$gte": lastTriMonth, "$lte": currentDate },
-				[idName]: { "$eq": idValue }
-			}
-		},
-		{ "$count": "count" }
-	]);
+	var foundDoc = await donationdateollection.find({ [idName]: { "$eq": idValue } }).sort({ _id: -1 }).limit(1);
 	// Saving data
 	foundDoc = await foundDoc.toArray();
-	foundDoc = foundDoc[0];
-	let triData = 0;
+	let quadriData = null;
 	if (foundDoc == null) {
-		triData = 0;
+		var temp = new Date('2005-06-12T03:33:00');
+		quadriData = temp.toISOString();
 	}
-	console.log(foundDoc)
-	triData = foundDoc['count'];
+	quadriData = foundDoc[0]['donation_date'];
+
+	/* OVERALL DATA */
 	var foundDoc = null;
-	foundDoc = await donationdateollection.aggregate([
-		{ "$addFields": { "mousse": { "$toDate": "$donation_date" } } },
-		{
-			"$match": {
-				"mousse": { "$gte": lastQuadriMonth, "$lte": currentDate },
-				[idName]: { "$eq": idValue }
-			}
-		},
-		{ "$count": "count" }
-	]);
+	var foundDoc = await donationdateollection.find({ [idName]: { "$eq": idValue } });
 	// Saving data
 	foundDoc = await foundDoc.toArray();
-	foundDoc = foundDoc[0];
-	let quadriData = 0;
+	let overallCount = null;
 	if (foundDoc == null) {
-		quadriData = 0;
+		overallCount = 0
 	}
-	console.log(foundDoc)
-	quadriData = foundDoc['count'];
+	overallCount = foundDoc.length;
 
 	/* MONTHLY DATA */
 	var currentDate = new Date();
@@ -212,6 +206,7 @@ async function Get(context, req) {
 			weekTotalCount: weekTotalData,
 			triData: triData,
 			quadriData: quadriData,
+			overallCount: overallCount,
 		},
 		headers: header
 	};
