@@ -86,7 +86,7 @@ https://doasangue2.azurewebsites.net/api/campaign
 |status|Situação da requisição, será "updated" se der certo|
 |notValidData*|Motivo pelo qual a requisição não funcionou|
 
-\* Nem sempre retorna esse atributo.
+\* Retorna esse atributo quando a requisição da errado.
 
 ### Requisição Delete
 
