@@ -3,6 +3,12 @@
 Todas as APIs recebem requisições GET (coleta de dados), POST (criação), PUT (Atualização) e DELETE
 (Remoção dos dados).
 
+
+- campaign: https://doasangue2.azurewebsites.net/api/campaign
+- corp: https://doasangue2.azurewebsites.net/api/corp
+- donation: https://doasangue2.azurewebsites.net/api/donationdate
+- user: https://doasangue2.azurewebsites.net/api/user
+
 ## Campanhas (campaigns)
 
 ### Atributos
@@ -34,6 +40,10 @@ Todas as APIs recebem requisições GET (coleta de dados), POST (criação), PUT
 
 ### Requisição POST
 
+Parametros deverão ser enviados no corpo da requisição no formato JSON.
+
+https://doasangue2.azurewebsites.net/api/campaign
+
 Os parametros são os mesmos que existem nos registros do banco de dados (com exceção de alguns):
 
 - ***creation_date***: por padrão é a data de quando a requisição foi realizada;
@@ -50,6 +60,10 @@ Porém mais alguns parametros devem ser enviados:
 
 ### Requisição GET
 
+Os filtros deverão ser enviados na URL da requisição, o método GET não aceita parametros no corpo da requisição, exemplo:
+
+https://doasangue2.azurewebsites.net/api/campaign?no_Filter=true
+
 |Parametro|Tipo|Descrição|
 |---|---|---|
 |no_Filter|bool|Define se a busca será relizada com algum filtro, retorna todas as campanhas caso não haja filtros (busca sem filtro é utilizada para coletar as campanhas para o usuário)|
@@ -63,6 +77,8 @@ Porém mais alguns parametros devem ser enviados:
 
 Mesmos parametros que a requisição POST, pórem, o **ObjectId** do documento deve ser enviado para que seja modificado.
 
+https://doasangue2.azurewebsites.net/api/campaign
+
 **Retorno**: status da requisição, se funcionou, retorna o motivo, caso der certo, apenas retorna que a requisição funcionou.
 
 |Atributo|Descrição|
@@ -74,7 +90,9 @@ Mesmos parametros que a requisição POST, pórem, o **ObjectId** do documento d
 
 ### Requisição Delete
 
-Somente o **ObjectId** do documento, para que seja deletado.
+Somente o **ObjectId** do documento, para que seja deletado. O id deve ser enviado na URL da seguinte forma:
+
+https://doasangue2.azurewebsites.net/api/campaign/{id}
 
 **Retorno**: retorna o status da requisição. **status** vai ser "deleted" se der certo.
 
@@ -90,11 +108,15 @@ Somente o **ObjectId** do documento, para que seja deletado.
 
 Mesmos parametros que a requisição POST, pórem, o **ObjectId** do documento deve ser enviado para que seja modificado.
 
-### Requisição DELETE
+### Requisição Delete
 
-Somente o **ObjectId** do documento, para que seja deletado.
+Somente o **ObjectId** do documento, para que seja deletado. O id deve ser enviado na URL da seguinte forma:
 
-## Doações (donationdare)
+https://doasangue2.azurewebsites.net/api/corp/{id}
+
+**Retorno**: retorna o status da requisição. **status** vai ser "deleted" se der certo.
+
+## Doações (donationdate)
 
 ### Atributos
 
@@ -102,15 +124,17 @@ Somente o **ObjectId** do documento, para que seja deletado.
 
 ### Requisição GET
 
-
-
 ### Requisição PUT
 
 Mesmos parametros que a requisição POST, pórem, o **ObjectId** do documento deve ser enviado para que seja modificado.
 
-### Requisição DELETE
+### Requisição Delete
 
-Somente o **ObjectId** do documento, para que seja deletado.
+Somente o **ObjectId** do documento, para que seja deletado. O id deve ser enviado na URL da seguinte forma:
+
+https://doasangue2.azurewebsites.net/api/donationdate/{id}
+
+**Retorno**: retorna o status da requisição. **status** vai ser "deleted" se der certo.
 
 ## Usuários (user)
 
@@ -124,6 +148,10 @@ Somente o **ObjectId** do documento, para que seja deletado.
 
 Mesmos parametros que a requisição POST, pórem, o **ObjectId** do documento deve ser enviado para que seja modificado.
 
-### Requisição DELETE
+### Requisição Delete
 
-Somente o **ObjectId** do documento, para que seja deletado.
+Somente o **ObjectId** do documento, para que seja deletado. O id deve ser enviado na URL da seguinte forma:
+
+https://doasangue2.azurewebsites.net/api/doner/{id}
+
+**Retorno**: retorna o status da requisição. **status** vai ser "deleted" se der certo.
