@@ -94,13 +94,13 @@ Somente o **ObjectId** do documento, para que seja deletado. O id deve ser envia
 
 https://doasangue2.azurewebsites.net/api/campaign/{id}
 
-**Retorno**: retorna o status da requisição. **status** vai ser "deleted" se der certo.
+**Retorno**: retorna o status da requisição. **status** será "deleted" se der certo.
 
 ## Hemocentros (corp) ✅
 
 ### Atributos ✅
 
-|Parametro|Tipo|Descrição|
+|Atributo|Tipo|Descrição|
 |---|---|---|
 |_id|ObjectId|Identificador do documento no MongoDB|
 |cnpj|string|CNPJ do hemocentro (login de acesso)|
@@ -157,21 +157,33 @@ Porém também são enviados os dados sobre a imagem do hemocentro através dos 
 
 ### Requisição Delete ✅
 
-Somente o **ObjectId** do documento, para que seja deletado. O id deve ser enviado na URL da seguinte forma:
+Somente o **CNPJ** do hemocentro, para que seja deletado. O id deve ser enviado na URL da seguinte forma:
 
-https://doasangue2.azurewebsites.net/api/corp/{id}
+https://doasangue2.azurewebsites.net/api/corp/{cnpj}
 
-**Retorno**: retorna o status da requisição. **status** vai ser "deleted" se der certo.
+**Retorno**: retorna o status da requisição. **status** será "deleted" se der certo.
 
 ## Doações (donationdate)
 
-### Atributos
+### Atributos ✅
+
+|Atributo|Tipo|Descrição|
+|---|---|---|
+|_id|ObjectId|Identificador do documento no MongoDB|
+|doner_id|string|Id do doador|
+|corp_cnpj|string|Id do hemocentro|
+|campaign_id|string|Id da campanha|
+|donation_date|ISODateString|Data em que a doação foi realizada|
 
 ### Requisição POST
 
+
+
 ### Requisição GET
 
-### Requisição PUT
+
+
+### Requisição PUT ✅
 
 Mesmos parametros que a requisição POST, pórem, o **ObjectId** do documento deve ser enviado para que seja modificado.
 
@@ -181,7 +193,7 @@ Somente o **ObjectId** do documento, para que seja deletado. O id deve ser envia
 
 https://doasangue2.azurewebsites.net/api/donationdate/{id}
 
-**Retorno**: retorna o status da requisição. **status** vai ser "deleted" se der certo.
+**Retorno**: retorna o status da requisição. **status** será "deleted" se der certo.
 
 ## Usuários (user)
 
@@ -209,4 +221,4 @@ Somente o **ObjectId** do documento, para que seja deletado. O id deve ser envia
 
 https://doasangue2.azurewebsites.net/api/doner/{id}
 
-**Retorno**: retorna o status da requisição. **status** vai ser "deleted" se der certo.
+**Retorno**: retorna o status da requisição. **status** será "deleted" se der certo.
