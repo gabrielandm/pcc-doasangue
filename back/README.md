@@ -81,7 +81,7 @@ https://doasangue2.azurewebsites.net/api/campaign
 
 **Retorno**: status da requisição, se funcionou, retorna o motivo, caso der certo, apenas retorna que a requisição funcionou.
 
-|Atributo|Descrição|
+|Parametro|Descrição|
 |---|---|
 |status|Situação da requisição, será "updated" se der certo|
 |notValidData*|Motivo pelo qual a requisição não funcionou|
@@ -125,9 +125,23 @@ Os parametros devem ser enviados pelo corpo da requisição no formato JSON. Sã
 
 - ***entry_date***: não deve ser enviado, ele é automaticamente definido
 
-**Retorno**: o **ObjectId** (***_id***) do objeto criado.
+**Retorna**: o **ObjectId** (***_id***) do objeto criado.
 
 ### Requisição GET
+
+Os parametros deverão ser enviados na URL da requisição, exemplo:
+
+https://doasangue2.azurewebsites.net/api/corp?cnpj=000&password=12345678&type=login
+
+A URL acima é um exemplo de como realizar a requisição de login do hemocentro.
+
+**Parametros**:
+
+|Parametro|Tipo|Descrição|
+|---|---|---|
+|cnpj|string|CNPJ do hemocentro|
+|type|string|Tipo da requisição, pode ser: "check", "login", "data" ou "id". **"check"** é para verificar se o usuário existe. **"login"** é para realizar o login do usuário. **"data"** é para apenas coletar os dados do usuário desejado. **"id"** é para retornar o ***_id*** do usuário|
+|password|string|Senha do usuário para realizar o login|
 
 ### Requisição PUT
 
