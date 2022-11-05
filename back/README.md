@@ -192,9 +192,12 @@ Para realizar a requisição é necessário enviar através da URL da requisiç�
 
 |Atributo|Tipo|Descrição|
 |---|---|---|
-||||
-||||
-||||
+|weekCount|Array|Lista que contem o número do dia da semana e a quantidade de doações naquele dia|
+|monthCount|number|Número de doações naquele mês|
+|weekTotalCount|number|Número de doações naquela semana|
+|triData|ISODateString|Data da última doação do trimestre|
+|quadriData|ISODateString|Data da última doação do quadrimestre|
+|overallCount|number|Número total de doações realizadas (ou recebidas)|
 
 ### Requisição PUT ✅
 
