@@ -121,6 +121,12 @@ https://doasangue2.azurewebsites.net/api/campaign/{id}
 
 ### Requisição POST
 
+Os parametros devem ser enviados pelo corpo da requisição no formato JSON. São os mesmos parametros que os atributos, com uma exceção.
+
+- ***entry_date***: não deve ser enviado, ele é automaticamente definido
+
+**Retorno**: o **ObjectId** (***_id***) do objeto criado.
+
 ### Requisição GET
 
 ### Requisição PUT
