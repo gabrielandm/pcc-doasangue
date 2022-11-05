@@ -213,11 +213,50 @@ https://doasangue2.azurewebsites.net/api/donationdate/{id}
 
 ## Usuários (user)
 
-### Atributos
+### Atributos ✅
 
-### Requisição POST
+|Atributo|Tipo|Descrição|
+|---|---|---|
+|_id|ObjectId|Identificador do documento no MongoDB|
+|email|string|E-mail do doador (login de acesso)|
+|pass|string|Senha de acesso para o portal do doador|
+|validated|bool|Verdadeiro se o usuário for validado (por padrão é verdadeiro)|
+|entry_date|ISODateString|Data em que o doador entrou para o sistema|
+|name|string|Nome do doador|
+|last_name|string|Sobrenome do doador|
+|phone|string|Número de telefone do hemocentro|
+|blood_type|string|Tipo sanguíneo do doador|
+|last_donation|ISODateTime|Última doação realizada|
+|city|string|Nome da cidade onde o doador está localizado|
+|state|string|Abreviação de 2 caracteres que identifica o estado do doador|
+|country|string|Abreviação de 2 caracteres que identifica o país do doador|
+|gender|number|0 para Feminino, 1 para Masculino|
+|birth_date|ISODateString|Data de nascimento do doador|
+|profile_link|string|URL para a imagem do hemocentro|
 
-### Requisição GET
+### Requisição POST ✅
+
+Os parametros devem ser enviados pelo corpo da requisição no formato JSON. São os mesmos parametros que os atributos, com uma exceção.
+
+- ***entry_date***: não deve ser enviado, ele é automaticamente definido
+
+**Retorna**: o **ObjectId** (***_id***) do objeto criado.
+
+### Requisição GET ✅
+
+Os parametros deverão ser enviados na URL da requisição, exemplo:
+
+https://doasangue2.azurewebsites.net/api/corp?cnpj=000&password=12345678&type=login
+
+A URL acima é um exemplo de como realizar a requisição de login do hemocentro.
+
+**Parametros**:
+
+|Parametro|Tipo|Descrição|
+|---|---|---|
+|cnpj|string|CNPJ do hemocentro|
+|type|string|Tipo da requisição, pode ser: "check", "login", "data" ou "id". **"check"** é para verificar se o usuário existe. **"login"** é para realizar o login do usuário. **"data"** é para apenas coletar os dados do usuário desejado. **"id"** é para retornar o ***_id*** do usuário|
+|password|string|Senha do usuário para realizar o login|
 
 ### Requisição PUT ✅
 
@@ -231,10 +270,10 @@ Porém também são enviados os dados sobre a imagem do hemocentro através dos 
 |image_type|string|Formato da imagem enviada (jpg, jpeg, etc.|
 |deleteImage|bool|True caso seja solicitado que a imagem seja deletada|
 
-### Requisição Delete
+### Requisição Delete ✅
 
-Somente o **ObjectId** do documento, para que seja deletado. O id deve ser enviado na URL da seguinte forma:
+Somente o **email** do documento, para que seja deletado. O id deve ser enviado na URL da seguinte forma:
 
-https://doasangue2.azurewebsites.net/api/doner/{id}
+https://doasangue2.azurewebsites.net/api/doner/{email}
 
 **Retorno**: retorna o status da requisição. **status** será "deleted" se der certo.
