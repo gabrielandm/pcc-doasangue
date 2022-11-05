@@ -163,7 +163,7 @@ https://doasangue2.azurewebsites.net/api/corp/{cnpj}
 
 **Retorno**: retorna o status da requisição. **status** será "deleted" se der certo.
 
-## Doações (donationdate)
+## Doações (donationdate) ✅
 
 ### Atributos ✅
 
@@ -175,11 +175,11 @@ https://doasangue2.azurewebsites.net/api/corp/{cnpj}
 |campaign_id|string|Id da campanha|
 |donation_date|ISODateString|Data em que a doação foi realizada|
 
-### Requisição POST
+### Requisição POST ✅
 
+Enviar todos os atributos do documento no corpo da requisição no formato JSON.
 
-
-### Requisição GET
+### Requisição GET ✅
 
 Para realizar a requisição é necessário enviar através da URL da requisição os seguintes dados:
 
