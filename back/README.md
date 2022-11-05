@@ -181,7 +181,20 @@ https://doasangue2.azurewebsites.net/api/corp/{cnpj}
 
 ### Requisição GET
 
+Para realizar a requisição é necessário enviar através da URL da requisição os seguintes dados:
 
+|Parametros|Tipo|Descrição|
+|---|---|---|
+|idName|string|nome do atributo que deverá ser filtrado, é possível escolher entre: **"doner_id"** (para buscar as informações de doações do doador), **"corp_cnpj"** (para buscar as informações de doações do hemocentro, dashboard global do hemocentro), **"campaign_id"** (para buscar as informações de doações da campanha, dashboard da campanha)|
+|idValue|string|Valor correto para o filtro escolhido|
+
+**Retorna**:
+
+|Atributo|Tipo|Descrição|
+|---|---|---|
+||||
+||||
+||||
 
 ### Requisição PUT ✅
 
