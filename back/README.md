@@ -9,9 +9,9 @@ Todas as APIs recebem requisições GET (coleta de dados), POST (criação), PUT
 - donation: https://doasangue2.azurewebsites.net/api/donationdate
 - user: https://doasangue2.azurewebsites.net/api/user
 
-## Campanhas (campaigns)
+## Campanhas (campaigns) ✅
 
-### Atributos
+### Atributos ✅
 
 |Parametro|Tipo|Descrição|
 |---|---|---|
@@ -38,7 +38,7 @@ Todas as APIs recebem requisições GET (coleta de dados), POST (criação), PUT
 
 \* não é utilizado.
 
-### Requisição POST
+### Requisição POST ✅
 
 Parametros deverão ser enviados no corpo da requisição no formato JSON.
 
@@ -58,7 +58,7 @@ Porém mais alguns parametros devem ser enviados:
 
 **Retorno**: ***ObjectId*** do documento gerado.
 
-### Requisição GET
+### Requisição GET ✅
 
 Os filtros deverão ser enviados na URL da requisição, o método GET não aceita parametros no corpo da requisição, exemplo:
 
@@ -73,7 +73,7 @@ https://doasangue2.azurewebsites.net/api/campaign?no_Filter=true
 
 **Retorno**: o valor retornado é a lista de campanhas.
 
-### Requisição Put
+### Requisição Put ✅
 
 Mesmos parametros que a requisição POST, pórem, o **ObjectId** do documento deve ser enviado para que seja modificado.
 
@@ -88,7 +88,7 @@ https://doasangue2.azurewebsites.net/api/campaign
 
 \* Retorna esse atributo quando a requisição da errado.
 
-### Requisição Delete
+### Requisição Delete ✅
 
 Somente o **ObjectId** do documento, para que seja deletado. O id deve ser enviado na URL da seguinte forma:
 
@@ -96,9 +96,9 @@ https://doasangue2.azurewebsites.net/api/campaign/{id}
 
 **Retorno**: retorna o status da requisição. **status** vai ser "deleted" se der certo.
 
-## Hemocentros (corp)
+## Hemocentros (corp) ✅
 
-### Atributos
+### Atributos ✅
 
 |Parametro|Tipo|Descrição|
 |---|---|---|
@@ -119,7 +119,7 @@ https://doasangue2.azurewebsites.net/api/campaign/{id}
 |subscription_type|number|Indicador de qual nível de inscrição o hemocentro paga|
 |profile_link|string|URL para a imagem do hemocentro|
 
-### Requisição POST
+### Requisição POST ✅
 
 Os parametros devem ser enviados pelo corpo da requisição no formato JSON. São os mesmos parametros que os atributos, com uma exceção.
 
@@ -127,7 +127,7 @@ Os parametros devem ser enviados pelo corpo da requisição no formato JSON. Sã
 
 **Retorna**: o **ObjectId** (***_id***) do objeto criado.
 
-### Requisição GET
+### Requisição GET ✅
 
 Os parametros deverão ser enviados na URL da requisição, exemplo:
 
@@ -143,11 +143,19 @@ A URL acima é um exemplo de como realizar a requisição de login do hemocentro
 |type|string|Tipo da requisição, pode ser: "check", "login", "data" ou "id". **"check"** é para verificar se o usuário existe. **"login"** é para realizar o login do usuário. **"data"** é para apenas coletar os dados do usuário desejado. **"id"** é para retornar o ***_id*** do usuário|
 |password|string|Senha do usuário para realizar o login|
 
-### Requisição PUT
+### Requisição PUT ✅
 
 Mesmos parametros que a requisição POST, pórem, o **ObjectId** do documento deve ser enviado para que seja modificado.
 
-### Requisição Delete
+Porém também são enviados os dados sobre a imagem do hemocentro através dos seguintes parametros:
+
+|Parametro|Tipo|Descrição|
+|---|---|---|
+|profile_link|string|URL para a imagem, deve ser *null* caso a imagem ainda não tenha sido salva em nenhum local|
+|image_type|string|Formato da imagem enviada (jpg, jpeg, etc.|
+|deleteImage|bool|True caso seja solicitado que a imagem seja deletada|
+
+### Requisição Delete ✅
 
 Somente o **ObjectId** do documento, para que seja deletado. O id deve ser enviado na URL da seguinte forma:
 
@@ -167,7 +175,7 @@ https://doasangue2.azurewebsites.net/api/corp/{id}
 
 Mesmos parametros que a requisição POST, pórem, o **ObjectId** do documento deve ser enviado para que seja modificado.
 
-### Requisição Delete
+### Requisição Delete ✅
 
 Somente o **ObjectId** do documento, para que seja deletado. O id deve ser enviado na URL da seguinte forma:
 
@@ -183,9 +191,17 @@ https://doasangue2.azurewebsites.net/api/donationdate/{id}
 
 ### Requisição GET
 
-### Requisição PUT
+### Requisição PUT ✅
 
 Mesmos parametros que a requisição POST, pórem, o **ObjectId** do documento deve ser enviado para que seja modificado.
+
+Porém também são enviados os dados sobre a imagem do hemocentro através dos seguintes parametros:
+
+|Parametro|Tipo|Descrição|
+|---|---|---|
+|profile_link|string|URL para a imagem, deve ser *null* caso a imagem ainda não tenha sido salva em nenhum local|
+|image_type|string|Formato da imagem enviada (jpg, jpeg, etc.|
+|deleteImage|bool|True caso seja solicitado que a imagem seja deletada|
 
 ### Requisição Delete
 
