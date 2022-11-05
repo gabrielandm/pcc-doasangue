@@ -100,6 +100,25 @@ https://doasangue2.azurewebsites.net/api/campaign/{id}
 
 ### Atributos
 
+|Parametro|Tipo|Descrição|
+|---|---|---|
+|_id|ObjectId|Identificador do documento no MongoDB|
+|cnpj|string|CNPJ do hemocentro (login de acesso)|
+|pass|string|Senha de acesso para o portal do hemocentro|
+|name|string|Nome do hemocentro|
+|country|string|Abreviação de 2 caracteres que identifica o país do hemocentro|
+|state|string|Abreviação de 2 caracteres que identifica o estado do hemocentro|
+|city|string|Nome da cidade onde o hemocentro está localizado|
+|coordinates|Object|Contem a latitude (**latitude**) e longitude (**longitude**) do hemocentro|
+|address|string|Endereço do hemocentro|
+|phone|string|Número de telefone do hemocentro|
+|email|string|E-mail do hemocentro|
+|entry_date|ISODateString|Data em que o hemocentro entrou para o sistema|
+|subsciption_start|ISODateString|Data em que o hemocentro teve sua inscrição iniciada|
+|subsciption_end|ISODateString|Data em que o hemocentro terá sua inscrição finalizada|
+|subscription_type|number|Indicador de qual nível de inscrição o hemocentro paga|
+|profile_link|string|URL para a imagem do hemocentro|
+
 ### Requisição POST
 
 ### Requisição GET
