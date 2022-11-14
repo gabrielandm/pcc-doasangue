@@ -1,0 +1,25 @@
+/* ------------------ Dashboard ------------------- */
+
+.dash h1 {
+    align-self: center;
+    position: relative;
+    width: 95%;
+    margin: none;
+}
+.linha1, .linha2 {
+    display:flex;
+    justify-content: space-evenly;
+    align-items: center;
+    padding: 5px;
+}
+.graph {    
+    min-width: 35vw;
+    background: linear-gradient(#95d2ec, #47abd8);
+    border-radius: 10px;
+    border: 2px solid #D01B1B;
+    
+}
+
+#lineChartProjeção {
+    background: linear-gradient(#ff4242, #d01b1b);
+}
