@@ -79,7 +79,8 @@ const header = {
   'Content-Type': 'application/json',
   "Access-Control-Allow-Methods": "PUT, GET, POST, DELETE",
   "Access-Control-Allow-Headers": "*",
-  "Access-Control-Max-Age": "86400"
+  "Access-Control-Max-Age": "86400",
+  "Connection": "keep-alive"
 }
 
 function UpdateUser(userData, email, pass, validated, name, last_name, phone, blood_type, last_donation, city, state, country, gender, birth_date, profile_link) {

@@ -13,13 +13,10 @@ export default function HomeScreen({ navigation, route }) {
   const [data, setData] = useState(route.params.data);
   const options = { year: '2-digit', month: '2-digit', day: '2-digit' };
   let dateObtained = false
-  if (data.date_obtained != undefined) {
-    dateObtained = new Date(data.date_obtained);
-  }
 
   function setColors(style, inputType) {
     switch (data.level) {
-      case 0:
+      case 1:
         if (inputType == 'image') {
           return {
             ...style,
@@ -33,7 +30,7 @@ export default function HomeScreen({ navigation, route }) {
         } else if (inputType == 'progressBar') {
           return colors.red;
         }
-      case 1:
+      case 2:
         if (inputType == 'image') {
           return {
             ...style,
@@ -47,7 +44,7 @@ export default function HomeScreen({ navigation, route }) {
         } else if (inputType == 'progressBar') {
           return colors.red;
         }
-      case 2:
+      case 3:
         if (inputType == 'image') {
           return {
             ...style,
@@ -82,13 +79,13 @@ export default function HomeScreen({ navigation, route }) {
     <SafeAreaView style={styles.screen} >
       <ScrollView style={styles.scrollView}>
         <View style={styles.container}>
-          <Text style={styles.achievementTitle}>{data.base_name}</Text>
-          <Image source={require('../images/no-level-bw.png')} style={setColors(styles.achievementIcon, 'image')} />
+          <Text style={styles.achievementTitle}>{data.name}</Text>
+          <Image source={{uri: data.badgeLink}} style={setColors(styles.achievementIcon, 'image')} />
           <Text style={setColors(styles.chipLike, 'chipLike')}>Nível {data.level}</Text>
           <Text style={styles.achievementDescription}>{data.description}</Text>
 
           <View style={styles.progressContainer}>
-            <Text style={styles.progressLabel}>{data.level_description}</Text>
+            {/* <Text style={styles.progressLabel}>{data.level_description}</Text> */}
             <ProgressBar style={styles.progressBar} progress={data.current_progress / data.progress_required} color={setColors(null, 'progressBar')} />
             <Text style={styles.progressLabel}>{data.current_progress} / {data.progress_required}</Text>
           </View>
@@ -138,11 +135,8 @@ const styles = StyleSheet.create({
   },
   achievementIcon: {
     margin: 3,
-    width: 225,
-    height: 225,
-    borderRadius: 225 / 2,
-    borderColor: colors.gray,
-    borderWidth: 2,
+    width: 293 / 5,
+    height: 550 / 5,
     resizeMode: 'cover',
   },
   chipLike: {

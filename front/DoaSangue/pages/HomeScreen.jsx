@@ -10,8 +10,6 @@ import CampaignThingy from '../components/CampaignThingy';
 import ProfileThingy from '../components/ProfileThingy';
 import AchievementThingy from '../components/AchievementThingy';
 
-import { m_achievements } from '../config/mousse';
-
 export default function HomeScreen({ navigation, route }) {
 	/* Variables and functions */
 	const [filters, setFilters] = useState(null);
@@ -19,6 +17,8 @@ export default function HomeScreen({ navigation, route }) {
 	const [profileData, setProfileData] = useState(null);
 	const [campaignLoaded, setCampaignLoaded] = useState(false);
 	const [profileLoaded, setProfileLoaded] = useState(false);
+	const [achievementsData, setAchievementsData] = useState(null);
+	const [achievementsLoaded, setAchievementsLoaded] = useState(false);
 
 	/* Snackbar */
 	const [visible, setVisible] = React.useState(false);
@@ -74,20 +74,40 @@ export default function HomeScreen({ navigation, route }) {
 				console.log(JSON.stringify(error));
 			}
 		}
-		if (debug) {
-			// Only for debug
-			// Create default user
-			setProfileData({
-				'email': 'mousseuwu', 'pass': '12345678', 'validated': 1, 'entry_date': new Date(), 'name': 'Mousse Hardcoded', 'last_name': 'de Chocolate', 'phone': '19998049566', 'blood_type': 'O+', 'last_donation': new Date(), 'city': 'Mistério', 'state': 'PE', 'country': 'BR', 'gender': 0, 'birth_date': new Date(), 'profile_link': null, '_id': '628f7c80d18a1daa0050a6d1',
-			})
-		}
+		// if (debug) {
+		// 	// Only for debug
+		// 	// Create default user
+		// 	setProfileData({
+		// 		'email': 'login3', 'pass': '12345678', 'validated': 1, 'entry_date': new Date(), 'name': 'Mousse Hardcoded', 'last_name': 'de Chocolate', 'phone': '19998049566', 'blood_type': 'O+', 'last_donation': new Date(), 'city': 'Mistério', 'state': 'PE', 'country': 'BR', 'gender': 0, 'birth_date': new Date(), 'profile_link': null, '_id': '628f7c80d18a1daa0050a6d1',
+		// 	})
+		// }
 		console.log(profileData)
+	}
+
+	async function getAchievements() {
+		try {
+			const response = await fetch(`${config.achievements}`)
+			// console.log(JSON.stringify(response))
+			if (response.status === 200) {
+				const json = await response.json();
+				console.log(json)
+				setAchievementsData(json);
+				setAchievementsLoaded(true);
+			} else if (response.status !== 200) {
+				console.log('Error: ', response.status);
+				setSnackbarText('Não foi possível carregar os dados, tente mais tarde.');
+			}
+		} catch (error) {
+			console.log(JSON.stringify(error));
+		}
 	}
 
 	/* When page loads */
 	useEffect(() => {
-		getProfileData(route.params, false); // !!!Remember to set debug to false!!!
+		getProfileData({email: 'login3'}, true); // !!!Remember to set debug to false!!!
+		// getProfileData(route.params, false); // !!!Remember to set debug to false!!!
 		getCampaigns();
+		getAchievements();
 	}, []);
 
 	/* When page is focused */
@@ -150,8 +170,8 @@ export default function HomeScreen({ navigation, route }) {
 		</SafeAreaView>;
 
 	function renderAchievements() {
-		return m_achievements.map((achievement, index) =>
-			<AchievementThingy key={index} navigateTo={(pageName, props) => navigateTo(pageName, props)} data={achievement} />);
+		return achievementsData.map((achievement, index) =>
+			<AchievementThingy key={index} achievementData={achievement} navigateTo={(pageName, props) => navigateTo(pageName, props)} profileData={profileData} />);
 	}
 
 	const AchievementView = () =>

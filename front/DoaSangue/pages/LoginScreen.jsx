@@ -68,7 +68,7 @@ export default function LoginScreen({ navigation, route }) {
 		else if (json.exist == false) {
 			setSnackbarText('Usuário não existe');
 			setVisible(true);
-			setNameWrong(true);
+			// setNameWrong(true);
 		} else {
 			setSnackbarText('Erro desconhecido O_O');
 			setVisible(true);
