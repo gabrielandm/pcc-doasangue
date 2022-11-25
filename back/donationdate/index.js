@@ -176,7 +176,7 @@ async function Get(context, req) {
 	/* WEEK TOTAL DATA */
 	var currentDate = new Date();
 	let lastWeek = new Date(currentDate);
-	lastWeek.setDate(currentDate.getDate() - 30);
+	lastWeek.setDate(currentDate.getDate() - 7);
 	var foundDoc = null;
 	foundDoc = await donationdateollection.aggregate([
 		{ "$addFields": { "mousse": { "$toDate": "$donation_date" } } },
