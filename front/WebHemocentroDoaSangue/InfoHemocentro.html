@@ -7,10 +7,11 @@
     <link href="https://fonts.googleapis.com/css2?family=Montserrat&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
     <link rel="stylesheet" href="./style.css">
+    <script type="text/javascript" src="Navigation.js"></script>
+    <script type="text/javascript" src="InfoHemocentro.js"></script>
     <title>Informações do Hemocentro</title>
 </head>
 <body>
-    
     <div class="side">
         <h1>
             <img src="./images/cat-prof.jpg" alt="imagem logo">
@@ -19,9 +20,9 @@
 
         <ul>
             <li class="active"><i class="fas fa-solid fa-circle-info"></i>Info Hemocentro</li>
-            <li><i class="fas fa-solid fa-circle-plus"></i><a href="Campanha.html">Campanha</a></li>
-            <li><i class="fas fa-solid fa-share"></i><a href="DivulgarCampanha.html">Divulgar Campanha</a></li>
-            <li><i class="fas fa-duotone fa-chart-simple"></i><a href="Dashboard.html">Dashboard</a></li>
+            <li><i class="fas fa-solid fa-circle-plus"></i><a onclick="screenNavigation('Campanha')">Criar Campanha</a></li>
+            <li><i class="fas fa-solid fa-share"></i><a onclick="screenNavigation('DivulgarCampanha')">Minhas Campanhas</a></li>
+            <li><i class="fas fa-duotone fa-chart-simple"></i><a onclick="screenNavigation('Dashboard')">Dashboard</a></li>
         </ul>
 
         <button id="toggleBtn">
@@ -31,10 +32,8 @@
     </div>
 
     <div class="main">
-
-        <h1>Home</h1>
-        <!-- Colocar aqui as path para as páginas diferentes-->
-
+        <h1>Informações básicas</h1>
+        <div data-js="userInfo" class="userbox"></div>
     </div>
 
     <script>

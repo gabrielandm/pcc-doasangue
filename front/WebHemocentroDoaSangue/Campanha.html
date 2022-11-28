@@ -8,6 +8,8 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="./Campanha/css/Campanha.css">
+    <script type="text/javascript" src="Navigation.js"></script>
+    <script type="text/javascript" src="Campanha.js"></script>
     <title>Nova Campanha</title>
 </head>
 <body>
@@ -19,10 +21,10 @@
         </h1>
 
         <ul>
-            <li><i class="fas fa-solid fa-circle-info"></i><a href="InfoHemocentro.html">Info Hemocentro</a></li>
-            <li class="active"><i class="fas fa-solid fa-circle-plus"></i>Campanha</li>
-            <li><i class="fas fa-solid fa-share"></i><a href="DivulgarCampanha.html">Divulgar Campanha</a></li>
-            <li><i class="fas fa-duotone fa-chart-simple"></i><a href="Dashboard.html">Dashboard</a></li>
+            <li><i class="fas fa-solid fa-circle-info"></i><a onclick="screenNavigation('InfoHemocentro')">Info Hemocentro</a></li>
+            <li class="active"><i class="fas fa-solid fa-circle-plus"></i>Criar Campanha</li>
+            <li><i class="fas fa-solid fa-share"></i><a onclick="screenNavigation('DivulgarCampanha')">Minhas Campanhas</a></li>
+            <li><i class="fas fa-duotone fa-chart-simple"></i><a onclick="screenNavigation('Dashboard')">Dashboard</a></li>
         </ul>
 
         <button id="toggleBtn">
@@ -39,7 +41,7 @@
             <form method="post">
                 <div class="txt-field">
                     <h3>Nome da campanha</h3>
-                    <input type="text" required>
+                    <input type="text" id="name" required>
                     
                     <label></label>
                 </div>
@@ -95,21 +97,33 @@
     
                 <div class="txt-field">
                     <h3>Data inicial</h3>
-                    <input type="date" required>
+                    <input type="date" id="start_date" required>
                     
                     <label></label>
                 </div>
     
                 <div class="txt-field">
                     <h3>Data final</h3>
-                    <input type="date" required>
+                    <input type="date" id="end_date"required>
                    
                     <label></label>
                 </div>
-    
+                
+                <div class="txt-field">
+                    <h3>Cidade</h3>
+                    <input type="text" id="city" required>
+                    <label></label>
+                </div>
+
                 <div class="txt-field">
                     <h3>Endereço</h3>
-                    <input type="text" required>
+                    <input type="text" id="address" required>
+                    <label></label>
+                </div>
+                
+                <div class="txt-field">
+                    <h3>Telefone</h3>
+                    <input type="number" id="phone" required>
                     <label></label>
                 </div>
 
@@ -119,7 +133,7 @@
                     <input type="file" id="myfile" name="myfile"> 
                 </div>
     
-                <input type="submit" value="criar">
+                <input type="submit" value="criar" onclick="createCampaign(); return false">
                 
             </form>
         </div>
@@ -133,5 +147,9 @@
             side.classList.toggle('closed')
         })
     </script>
+
+
+
+
 </body>
 </html>

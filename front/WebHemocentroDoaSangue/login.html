@@ -17,25 +17,62 @@
         <h1>Login</h1>
         <form method="post">
             <div class="txt-field">
-                <input type="text" required>
+                <input id='Login' type="text" required>
                 <span></span>
                 <label>Username</label>
             </div>
             
             <div class="txt-field">
-                <input type="password" required>
+                <input id='Senha' type="password" required>
                 <span></span>
                 <label>Senha</label>
             </div>
 
             <div class="pass"> Esqueceu a senha?</div>
         
-            <input type="submit" value="Login">
+            <input type="submit" value="Login" onclick="validateUser(); return false" >
             
             <div class="signup-link">
                 Não cadastrado? <a href="./Cadastro.html">Clique aqui</a>
             </div> 
         </form>
+
+        <script>
+
+            async function validateUser () {
+                
+                try{
+                    var login = document.getElementById('Login').value;
+                    var senha = document.getElementById('Senha').value;
+                    var response = await fetch(`https://doasangue2.azurewebsites.net/api/corp?cnpj=${login}&pass=${senha}&type=login`)
+			        var json = await response.json();
+                    console.log(json)
+                } catch (error) {
+                    console.log(error)
+                    return null;
+                }
+                if (json.status === 'success') {
+                    const param = { cnpj: login };
+
+                    const searchParams = new URLSearchParams(param);
+                    const queryString = searchParams.toString();
+
+                    window.location.href = './InfoHemocentro.html?' + queryString;
+
+                } else if (json.status === 'fail') {
+                    alert(json.message);
+                }
+                // Else Doesn't exist
+                else if (json.exist == false) {
+                    alert('Usuário não existe');
+                } else {
+                    alert('Erro desconhecido O_O');
+                }
+            }
+
+        </script>
+
+
     </div>
 </body>
 </html>
