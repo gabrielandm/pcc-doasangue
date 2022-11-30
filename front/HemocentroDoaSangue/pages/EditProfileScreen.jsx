@@ -144,11 +144,15 @@ export default function ProfileThingy({ navigation, route }) {
   // Function to send an API request to save the user data
   async function saveData() {
     const status = validateUserInputs();
+    let image_type = '';
+    if (image != null) {
+      image_type = image.split('.')[image.split('.').length - 1];
+    }
     const data = {
       ...status.data,
       delete_image: deleteImage,
       image: imageBase64,
-      image_type: image.split('.')[image.split('.').length - 1],
+      image_type: image_type,
     };
     // Removing unnecessary data
     delete data._id;

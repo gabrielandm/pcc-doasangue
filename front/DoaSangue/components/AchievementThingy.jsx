@@ -34,12 +34,13 @@ export default function CampaignThingy(props) {
       }
     }
     for (var i = 0; i < achievementData['levels'].length; i++) {
-      if (currentProgress >= achievementData['levels'][i]['progress']) {
+      if (currentProgress >= achievementData['levels'][i]['progress'] || i == 0) {
         // setLevel(achievementData['levels'][i]['level_name'])
         setName(`${achievementData.name} ${achievementData['levels'][i]['level_name']}`)
-        setLevel(i + 1)
+        // setLevel(i + 1)
         currentName = `${achievementData.name} ${achievementData['levels'][i]['level_name']}`
         currentLevel = i + 1
+        setLevel(currentLevel)
         setBadgeLink(achievementData['levels'][i]['img_url'])
         badgeLink = achievementData['levels'][i]['img_url']
       }
@@ -48,6 +49,7 @@ export default function CampaignThingy(props) {
         setProgress(currentProgress / goalProgress)
       }
     }
+    console.log(badgeLink)
     setAchievementDataT({
       level: currentLevel,
       name: currentName,
@@ -130,7 +132,7 @@ const styles = StyleSheet.create({
   },
   outerBox: {
     alignItems: 'center',
-    width: '33%',
+    // width: '33%',
   },
   chipLike: {
     marginTop: 3,

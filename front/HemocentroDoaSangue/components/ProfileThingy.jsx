@@ -4,9 +4,11 @@ import { Button, Chip, IconButton } from 'react-native-paper';
 
 import { colors } from '../style/colors';
 import { subLevels } from '../config/config';
+import { config } from '../config/config';
 
 export default function ProfileThingy(props) {
   const [data, setData] = useState(props.data);
+  const [apiData, setApiData] = useState(null);
   const [loaded, setLoaded] = useState(false);
   const [subValidDate, setSubValidDate] = useState('')
   const options = { year: '2-digit', month: '2-digit', day: '2-digit' };
@@ -42,6 +44,39 @@ export default function ProfileThingy(props) {
     return message;
   }
 
+  async function apiCall() {
+    const apicalldata = {
+      idValue: data.cnpj,
+      idName: 'corp_cnpj',
+    }
+
+    // Get API data
+    try {
+      const response = await fetch(`${config.donation}?idValue=${apicalldata.idValue}&idName=${apicalldata.idName}`,
+        {
+          method: 'GET',
+        }
+      )
+      console.log(response.status);
+      if (response.status === 200) {
+        const json = await response.json();
+        setApiData(json)
+        console.log(JSON.stringify(json))
+      } else {
+        // Make an error appear for the user
+        try {
+          const json = await response.json();
+          console.log(JSON.stringify(json))
+        } catch (e) {
+          console.log(JSON.stringify(e))
+        }
+      }
+    } catch (e) {
+      // Make an error appear for the user
+      console.log(JSON.stringify(e));
+    }
+  }
+
   function openEditPage(screenName) {
     props.navigateTo(screenName,
       {
@@ -52,6 +87,7 @@ export default function ProfileThingy(props) {
 
   /* When page loads */
   useEffect(() => {
+    apiCall()
     // console.log(data)
     setData({
       ...data,
@@ -131,32 +167,33 @@ export default function ProfileThingy(props) {
               </View>
             </View>
           </View>
-
-          {/* Statistical info */}
-          <View style={styles.outerBox}>
-            <View style={styles.row}>
-              <Text style={styles.title}>Estatísticas:</Text>
-            </View>
-            <View style={styles.row}>
-              <View style={styles.column}>
-                <View style={styles.rowCenter}>
-                  <Text style={styles.infoHeader}>Total de doações:</Text>
-                  <Text style={styles.infoText}>300</Text>
-                </View>
-                <View style={styles.rowCenter}>
-                  <Text style={styles.infoHeader}>Campanhas ativas:</Text>
-                  <Text style={styles.infoText}>6</Text>
-                </View>
-                <View style={styles.rowCenter}>
-                  <Text style={styles.infoHeader}>Volume total recebido:</Text>
-                  <Text style={styles.infoText}>12.000 ml</Text>
+          {apiData != null ?
+            < View style={styles.outerBox}>
+              <View style={styles.row}>
+                <Text style={styles.title}>Estatísticas:</Text>
+              </View>
+              <View style={styles.row}>
+                <View style={styles.column}>
+                  <View style={styles.rowCenter}>
+                    <Text style={styles.infoHeader}>Total de doações:</Text>
+                    <Text style={styles.infoText}>{apiData.overallCount}</Text>
+                  </View>
+                  <View style={styles.rowCenter}>
+                    <Text style={styles.infoHeader}>Campanhas ativas:</Text>
+                    <Text style={styles.infoText}>{props.campaignData.length}</Text>
+                  </View>
+                  <View style={styles.rowCenter}>
+                    <Text style={styles.infoHeader}>Volume total recebido:</Text>
+                    <Text style={styles.infoText}>12.000 ml</Text>
+                  </View>
                 </View>
               </View>
-            </View>
-          </View>
+            </View> : null
+          }
         </View >
-        : <ActivityIndicator size="large" color="#0000ff" />}
-    </View>)
+        : <ActivityIndicator size="large" color="#0000ff" />
+      }
+    </View >)
 }
 const textSize = 14;
 const styles = StyleSheet.create({

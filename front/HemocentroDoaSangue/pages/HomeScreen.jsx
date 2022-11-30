@@ -164,6 +164,7 @@ export default function HomeScreen({ navigation, route }) {
 			<ScrollView style={styles.scrollView}>
 				<ProfileThingy
 					data={profileData}
+					campaignData = {campaignData}
 					updateData={setProfileData}
 					navigateTo={(pageName, props) => navigateTo(pageName, props)}
 				/>
