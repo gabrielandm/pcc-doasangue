@@ -10,6 +10,11 @@ import ProfileThingy from '../components/ProfileThingy';
 import MainReport from '../components/MainReport';
 
 export default function HomeScreen({ navigation, route }) {
+	// Temp
+	const params = {
+		name: '000',
+	}
+
 	/* Variables and functions */
 	const [filters, setFilters] = useState(null);
 	const [campaignData, setCampaignData] = useState(null);
@@ -51,6 +56,13 @@ export default function HomeScreen({ navigation, route }) {
 	}
 
 	async function getProfileData(filter = null, debug = false) {
+		if (debug) {
+			// Only for debug
+			// Create default user
+			setProfileData({
+				'cnpj': '000', 'pass': '12345678', 'entry_date': new Date(), 'name': 'Hemocentro Unicamp', 'phone': '+5519998049566', 'city': 'Campinas 2', 'state': 'SP', 'country': 'BR', 'birth_date': new Date(), 'profile_link': null, '_id': '6276d8b7df48a84c9610ece4',
+			})
+		}
 		if (filter != undefined || !debug) {
 			// Get data from MongoDB
 			try {
@@ -68,21 +80,19 @@ export default function HomeScreen({ navigation, route }) {
 				console.log(JSON.stringify(error));
 			}
 		}
-		if (debug) {
-			// Only for debug
-			// Create default user
-			setProfileData({
-				'cnpj': '000', 'pass': '12345678', 'entry_date': new Date(), 'name': 'Hemocentro Unicamp', 'phone': '+5519998049566', 'city': 'Campinas 2', 'state': 'SP', 'country': 'BR', 'birth_date': new Date(), 'profile_link': null, '_id': '333',
-			})
-		}
 	}
 
 	/* When page loads */
 	useEffect(() => {
 		// console.log('mousse useEffect')
-		route.params.created = false;
-		getProfileData(route.params);
-		getCampaigns(route.params);
+
+		// route.params.created = false;
+		// getProfileData(route.params, true);
+
+		getProfileData(params, true);
+
+		// getCampaigns(route.params);
+		getCampaigns(params);
 	}, []);
 
 	// /* When page is focused */
@@ -101,7 +111,7 @@ export default function HomeScreen({ navigation, route }) {
 				setSnackbarText(route.params.message);
 				setVisible(true);
 				if (route.params.message === 'Dados atualizados com sucesso!') {
-					getProfileData(route.params, false); // !!!Remember to set debug to false!!!
+					getProfileData(route.params, true); // !!!Remember to set debug to false!!!
 					navigation.setParams({ ...route.params, message: undefined, created: false });
 				} else if (route.params.message === 'Campanha criada com sucesso!') {
 					getCampaigns(route.params);
@@ -144,6 +154,7 @@ export default function HomeScreen({ navigation, route }) {
 			<ScrollView style={styles.scrollView}>
 				<MainReport
 					campaigns={campaignData}
+					cnpj={profileData.cnpj}
 				/>
 			</ScrollView>
 		</SafeAreaView>;

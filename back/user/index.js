@@ -47,6 +47,10 @@ async function Post(context, req) {
 }
 
 async function Get(context, req) {
+	/*
+		idValue - Valor que será buscado na chave idName
+		idName - Nome do valor que se deseja buscar (doner_id, corp_cnpj, campaign_id)
+	*/
 	const collections = await connectDB(['Doner']);
 	const donerCollection = collections[0];
 

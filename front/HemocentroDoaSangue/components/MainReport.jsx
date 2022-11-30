@@ -16,7 +16,11 @@ export default function MainReport(props) {
   const [storageData, setStorageData] = useState(null);
   const [acumulatedWeekDonations, setAcumulatedWeekDonations] = useState(null);
   const [acumulatedMonthDonations, setAcumulatedMonthDonations] = useState(null);
-  const [perCampaignDonations, setPerCampaignDonations] = useState(null);
+  const [perCampaignDonations, setPerCampaignDonations] = useState(undefined);
+  const [apiData, setApiData] = useState(null);
+
+  // Date stuff
+  const wday2nwday = ['D', 'S', 'T', 'Q', 'Q', 'S', 'S'];
 
   /* Map variables */
   const [latitude, setLatitude] = useState(null);
@@ -76,42 +80,53 @@ export default function MainReport(props) {
   async function getWeekDonations() {
     /* Send today date and maybe consider using moment lib to get the date from 7 days before today */
     const data = {
-      labels: ["D", "S", "T", "Q", "Q", "S", "S"],
+      labels: [
+        wday2nwday[apiData['weekCount'][6]['weekDay']],
+        wday2nwday[apiData['weekCount'][5]['weekDay']],
+        wday2nwday[apiData['weekCount'][4]['weekDay']],
+        wday2nwday[apiData['weekCount'][3]['weekDay']],
+        wday2nwday[apiData['weekCount'][2]['weekDay']],
+        wday2nwday[apiData['weekCount'][1]['weekDay']],
+        wday2nwday[apiData['weekCount'][0]['weekDay']],
+      ],
       datasets: [
         {
           data: [
-            Math.round(Math.random() * 100),
-            Math.round(Math.random() * 100),
-            Math.round(Math.random() * 100),
-            Math.round(Math.random() * 100),
-            Math.round(Math.random() * 100),
-            Math.round(Math.random() * 100),
-            Math.round(Math.random() * 100)]
+            apiData['weekCount'][6]['count'],
+            apiData['weekCount'][5]['count'],
+            apiData['weekCount'][4]['count'],
+            apiData['weekCount'][3]['count'],
+            apiData['weekCount'][2]['count'],
+            apiData['weekCount'][1]['count'],
+            apiData['weekCount'][0]['count'],
+          ]
         }
       ]
     }
     // Set last 7 days daily donations
     setWeekChartData(data);
     // Set last 7 days donations
-    setAcumulatedWeekDonations(data['datasets'][0]['data'].reduce((partialSum, a) => partialSum + a, 0));
+    setAcumulatedWeekDonations(apiData['weekTotalCount']);
     // Set last 30 days donations
-    setAcumulatedMonthDonations(data['datasets'][0]['data'].reduce((partialSum, a) => partialSum + a, 0) * 4)
+    setAcumulatedMonthDonations(apiData['monthCount'])
+    // Set per campaign donations (last 30 days)
+    setPerCampaignDonations(`${Math.round(10 * (apiData['monthCount'] / props.campaigns.length)) / 10}`)
   }
 
-  async function getPerCampaignDonations() {
-    setPerCampaignDonations({
-      labels: ["Doa Mais", "Amigável", "Mousse"],
-      datasets: [
-        {
-          data: [
-            Math.round(Math.random() * 500),
-            Math.round(Math.random() * 500),
-            Math.round(Math.random() * 500),
-          ]
-        }
-      ]
-    });
-  }
+  // async function getPerCampaignDonations() {
+  //   setPerCampaignDonations({
+  //     labels: ["Doa Mais", "Amigável", "Mousse"],
+  //     datasets: [
+  //       {
+  //         data: [
+  //           Math.round(Math.random() * 500),
+  //           Math.round(Math.random() * 500),
+  //           Math.round(Math.random() * 500),
+  //         ]
+  //       }
+  //     ]
+  //   });
+  // }
 
   async function getProjectionDonations(period) {
     if (period === 'week') {
@@ -208,14 +223,56 @@ export default function MainReport(props) {
     setLongitudeDelta(Math.abs(hLongitude - lLongitude) * 1.33);
   }
 
+  async function apiCall() {
+    const data = {
+      idValue: props.cnpj,
+      idName: 'corp_cnpj',
+    }
+
+    // Get API data
+    try {
+      const response = await fetch(`${config.donation}?idValue=${data.idValue}&idName=${data.idName}`,
+        {
+          method: 'GET',
+        }
+      )
+      console.log(response.status);
+      if (response.status === 200) {
+        const json = await response.json();
+        setApiData(json)
+        console.log(JSON.stringify(json))
+      } else {
+        // Make an error appear for the user
+        try {
+          const json = await response.json();
+          console.log(JSON.stringify(json))
+        } catch (e) {
+          console.log(JSON.stringify(e))
+        }
+      }
+    } catch (e) {
+      // Make an error appear for the user
+      console.log(JSON.stringify(e));
+    }
+  }
+
   useEffect(() => {
-    getWeekDonations();
-    getPerCampaignDonations();
-    getProjectionDonations('week');
-    getStorage();
-    setLoaded(true);
-    setMapLocations(props.campaigns);
+    apiCall();
   }, []);
+
+  useEffect(() => {
+    if (apiData != null) {
+      getWeekDonations();
+      // getPerCampaignDonations();
+      getProjectionDonations('week');
+      getStorage();
+      setMapLocations(props.campaigns);
+      console.log(perCampaignDonations)
+      // true sendo definidos antes da hora?
+      setLoaded(true);
+      console.log(perCampaignDonations)
+    }
+  }, [apiData])
 
   return (
     <View style={styles.column}>
@@ -258,10 +315,10 @@ export default function MainReport(props) {
           </View>
           {/* ❓ Avarage donations per campaign (blue box) */}
           <View style={styles.box} >
-            <Text style={styles.boxHeader} >Doações por campanha</Text>
-            <Text style={styles.boxText} >{Math.round(Math.random() * 200)}</Text>
+            <Text style={styles.boxHeader} >Doações por campanha (último mês)</Text>
+            <Text style={styles.boxText} >{perCampaignDonations}</Text>
           </View>
-          {/* ❓ Top 3 or 5 campaigns in total donations */}
+          {/* ❓ Top 3 or 5 campaigns in total donations
           <View style={styles.row}>
             <Text style={styles.title}>Campanhas com mais doações</Text>
           </View>
@@ -277,7 +334,7 @@ export default function MainReport(props) {
               chartConfig={chartStyles.barChart}
             // verticalLabelRotation={0}
             />
-          </View>
+          </View> */}
           {/* ❓ Last 7 days donations (Line chart) */}
           <View style={styles.row}>
             <Text style={styles.title}>Doações dos últimos 7 dias</Text>

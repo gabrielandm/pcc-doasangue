@@ -32,6 +32,10 @@ async function Post(context, req) {
 	let blobResult = undefined;
 	if (image != null) {
 		blobResult = await saveBlob(image, undefined, image_type);
+	} else {
+		blobResult = {
+			'fileUrl': null, 
+		}
 	}
 	/* End of image stuff */
 

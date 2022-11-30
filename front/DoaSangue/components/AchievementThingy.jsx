@@ -5,12 +5,69 @@ import { ProgressBar } from 'react-native-paper';
 import { colors } from '../style/colors';
 
 export default function CampaignThingy(props) {
-  const data = props.data;
+  const [level, setLevel] = useState(0)
+  const [name, setName] = useState(0)
+  const [progress, setProgress] = useState(0)
+  const [badgeLink, setBadgeLink] = useState('')
+
+  const [loaded, setLoaded] = useState(false)
+  const [achievementDataT, setAchievementDataT] = useState(null)
+  const achievementData = props.achievementData;
+  const profileData = props.profileData;
+
+  useEffect(() => {
+    console.log("profileData")
+    console.log(profileData)
+    console.log("achievementData")
+    console.log(achievementData)
+    // Get achievement ID
+    let currentAchievementId = achievementData['_id'];
+    let currentProgress = 0
+    let currentLevel = 0
+    let currentName = ''
+    let goalProgress = 1
+    let badgeLink = ''
+    // Get Achievement Progress
+    for (var i = 0; i < profileData['achievements'].length; i++) {
+      if(profileData['achievements'][i]['id'] == currentAchievementId) {
+        currentProgress = profileData['achievements'][i]['progress']
+      }
+    }
+    for (var i = 0; i < achievementData['levels'].length; i++) {
+      if (currentProgress >= achievementData['levels'][i]['progress']) {
+        // setLevel(achievementData['levels'][i]['level_name'])
+        setName(`${achievementData.name} ${achievementData['levels'][i]['level_name']}`)
+        setLevel(i + 1)
+        currentName = `${achievementData.name} ${achievementData['levels'][i]['level_name']}`
+        currentLevel = i + 1
+        setBadgeLink(achievementData['levels'][i]['img_url'])
+        badgeLink = achievementData['levels'][i]['img_url']
+      }
+      if (i == currentLevel || achievementData['levels'].length == currentLevel) {
+        goalProgress = achievementData['levels'][i]['progress']
+        setProgress(currentProgress / goalProgress)
+      }
+    }
+    setAchievementDataT({
+      level: currentLevel,
+      name: currentName,
+      description: achievementData['description'],
+      current_progress: currentProgress,
+      progress_required: goalProgress,
+      badgeLink: badgeLink,
+    })
+  }, [])
+
+  useEffect(() => {
+    if (achievementDataT !== null) {
+      setLoaded(true)
+    }
+  }, [achievementDataT])
 
   function navigateToAchievement() {
     props.navigation.navigate('AchievementScreen',
       {
-        data: data
+        achievementDataT
       },
     );
   };
@@ -20,6 +77,8 @@ export default function CampaignThingy(props) {
       marginTop: 3,
       fontSize: 12,
       height: 20,
+      width: 53,
+      textAlign: 'center',
       paddingTop: 3,
       paddingBottom: 3,
       paddingLeft: 5,
@@ -28,11 +87,12 @@ export default function CampaignThingy(props) {
       backgroundColor: colors.lightGray,
       marginBottom: 33,
     };
-    switch (data.level) {
-      case 0:
+    switch (level) {
+      case 1:
         style.backgroundColor = colors.lightGray;
+        style.color = colors.white;
         break;
-      case 1: case 2: case 3:
+      case 2:
         style.backgroundColor = colors.lightRed;
         style.color = colors.white
         break;
@@ -44,13 +104,20 @@ export default function CampaignThingy(props) {
     return style;
   }
 
+
+
   return (
-    <Pressable onPress={() => props.navigateTo('AchievementsScreen', props.data)} style={styles.outerBox}>
-      <Image source={require('../images/no-level-bw.png')} style={styles.achievementIcon} />
-      <Text style={styles.title}>{data.base_name}</Text>
-      <ProgressBar style={styles.progressBar} progress={0.33} color={colors.lightRed} />
-      <Text style={setLevelColor()}>Nível {data.level}</Text>
-    </Pressable>
+    <View>
+      {loaded ?
+        <Pressable onPress={() => props.navigateTo('AchievementsScreen', achievementDataT)} style={styles.outerBox}>
+          <Image source={{ uri: badgeLink }} style={styles.achievementIcon} />
+          <Text style={styles.title}>{name}</Text>
+          <ProgressBar style={styles.progressBar} progress={progress} color={colors.lightRed} />
+          <Text style={setLevelColor()}>Nível {level}</Text>
+        </Pressable> :
+        null
+      }
+    </View>
   );
 }
 
@@ -58,6 +125,8 @@ const styles = StyleSheet.create({
   title: {
     // fontWeight: 'bold',
     // fontSize: 15,
+    width: 75,
+    textAlign: 'center',
   },
   outerBox: {
     alignItems: 'center',
@@ -66,7 +135,9 @@ const styles = StyleSheet.create({
   chipLike: {
     marginTop: 3,
     fontSize: 12,
+    textAlign: 'center',
     height: 20,
+    width: 75,
     paddingTop: 3,
     paddingBottom: 3,
     paddingLeft: 5,
@@ -77,11 +148,14 @@ const styles = StyleSheet.create({
   },
   achievementIcon: {
     margin: 3,
-    width: 75,
-    height: 75,
-    borderRadius: 75 / 2,
-    borderColor: colors.gray,
-    borderWidth: 1,
+    width: 293 / 7,
+    height: 550 / 7,
+    padding: 10,
+    // borderRadius: 75 / 2,
+    // borderColor: colors.gray,
+    // borderWidth: 1,
+    // transform: [{ scale: 0.55 }],
+
   },
   progressBar: {
     height: 6,
