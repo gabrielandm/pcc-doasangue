@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="./Campanha/css/Campanha.css">
+    <script type="text/javascript" src="Navigation.js"></script>
+    <script type="text/javascript" src="Campanha.js"></script>
+    <title>Nova Campanha</title>
+</head>
+<body>
+    
+    <div class="side">
+        <h1>
+            <img src="./images/cat-prof.jpg" alt="imagem logo">
+            <a href="login.html">DoaSangue</a>
+        </h1>
+
+        <ul>
+            <li><i class="fas fa-solid fa-circle-info"></i><a onclick="screenNavigation('InfoHemocentro')">Info Hemocentro</a></li>
+            <li class="active"><i class="fas fa-solid fa-circle-plus"></i>Criar Campanha</li>
+            <li><i class="fas fa-solid fa-share"></i><a onclick="screenNavigation('DivulgarCampanha')">Minhas Campanhas</a></li>
+            <li><i class="fas fa-duotone fa-chart-simple"></i><a onclick="screenNavigation('Dashboard')">Dashboard</a></li>
+        </ul>
+
+        <button id="toggleBtn">
+            <i class="fas fa-chevron-right"></i>
+            <i class="fas fa-chevron-left"></i>
+        </button>
+    </div>
+
+    <div class="main">
+
+        <div class="campanha">
+
+            <h1>Nova Campanha</h1>
+            <form method="post">
+                <div class="txt-field">
+                    <h3>Nome da campanha</h3>
+                    <input type="text" id="name" required>
+                    
+                    <label></label>
+                </div>
+                
+                <div >
+                <h3>Sangue preferencial</h3>
+                 </div>
+                
+                
+                <div class="check_options">
+                    <div>
+                        <input type="checkbox" id="sanguea+" name="sanguea+" value="tipoa+">
+                        <label for="sanguea+"> a+</label>
+                    </div>
+                    
+                    <div>
+                        <input type="checkbox" id="sanguea-" name="sanguea-" value="tipoa-">
+                        <label for="sanguea-"> a-</label>
+                    </div>
+
+                    <div>
+                        <input type="checkbox" id="sangueb+" name="sangueb+" value="tipob+">
+                        <label for="sangueb+"> b+</label>    
+                    </div>
+
+                    <div>
+                        <input type="checkbox" id="sangueb-" name="sangueb-" value="tipob-">
+                        <label for="sangueb-"> b-</label>
+                    </div>
+
+                    <div>
+                        <input type="checkbox" id="sangueab+" name="sangueab+" value="tipoab+">
+                        <label for="sangueab+"> ab+</label>
+                    </div>
+
+                    <div>
+                        <input type="checkbox" id="sangueab-" name="sangueab-" value="tipoab-">
+                        <label for="sangueab-"> ab-</label>
+                    </div>
+
+                    <div>
+                        <input type="checkbox" id="sangueo+" name="sangueo+" value="tipoo+">
+                        <label for="sangueo+"> o+</label>
+                    </div>
+
+                    <div>
+                        <input type="checkbox" id="sangueo-" name="sangueo-" value="tipoo-">
+                        <label for="sangueo-"> o-</label>
+                    </div>
+
+                </div>
+                
+    
+                <div class="txt-field">
+                    <h3>Data inicial</h3>
+                    <input type="date" id="start_date" required>
+                    
+                    <label></label>
+                </div>
+    
+                <div class="txt-field">
+                    <h3>Data final</h3>
+                    <input type="date" id="end_date"required>
+                   
+                    <label></label>
+                </div>
+                
+                <div class="txt-field">
+                    <h3>Cidade</h3>
+                    <input type="text" id="city" required>
+                    <label></label>
+                </div>
+
+                <div class="txt-field">
+                    <h3>Endereço</h3>
+                    <input type="text" id="address" required>
+                    <label></label>
+                </div>
+                
+                <div class="txt-field">
+                    <h3>Telefone</h3>
+                    <input type="number" id="phone" required>
+                    <label></label>
+                </div>
+
+                <div class="txt-field">
+                    <h3>Selecione a foto</h3>
+                    <label for="myfile"></label>
+                    <input type="file" id="myfile" name="myfile"> 
+                </div>
+    
+                <input type="submit" value="criar" onclick="createCampaign(); return false">
+                
+            </form>
+        </div>
+
+    </div>
+
+    <script>
+        var side = document.querySelector('.side')
+        var toggleBtn = document.getElementById('toggleBtn')
+        toggleBtn.addEventListener('click', () => {
+            side.classList.toggle('closed')
+        })
+    </script>
+
+
+
+
+</body>
+</html>
