@@ -130,9 +130,9 @@ async function Get(context, req) {
 	let monthData = 0;
 	if (foundDoc == null) {
 		monthData = 0;
+	} else {
+		monthData = foundDoc['count'];
 	}
-	console.log(foundDoc)
-	monthData = foundDoc['count'];
 
 	/* WEEKLY DATA */
 	let weekData = [];
@@ -194,8 +194,9 @@ async function Get(context, req) {
 	let weekTotalData = 0;
 	if (foundDoc == null) {
 		weekTotalData = 0;
+	} else {
+		weekTotalData = foundDoc['count'];
 	}
-	weekTotalData = foundDoc['count'];
 
 	context.res = {
 		status: 200,
