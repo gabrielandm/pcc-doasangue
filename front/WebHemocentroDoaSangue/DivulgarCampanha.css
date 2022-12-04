@@ -17,3 +17,13 @@
     display: flex;
 }
 
+.lastLine {
+    display: flex;
+    justify-content: space-between;
+    margin: 0;
+}
+
+.detalhes {
+    color: #F02;
+    font-weight: bold;
+}

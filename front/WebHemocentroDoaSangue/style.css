@@ -23,10 +23,29 @@ body {
     margin: 7px;
 }
 
+.main h2 {
+    text-align: center;
+    justify-self: center;
+    margin: 7px;
+}
+
+.linha {
+    display: flex;
+}
 .main p {
     line-height: 20px;
     letter-spacing: 0.7px;
     margin-bottom: 8px;
+}
+
+.userbox {
+    align-items: center;
+    cursor: pointer;
+    padding: 24px 32px;
+    letter-spacing: 1.5px;
+    background-image: linear-gradient(#dcdcdc, #dadada);
+    border-radius: 10px;
+    margin: 30px;
 }
 
 .side {

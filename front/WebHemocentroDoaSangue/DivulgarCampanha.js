@@ -22,7 +22,10 @@ window.onload =  async function get_Campanhas (){
                     `<li class="campanha">
                         <b>${campanha.name}</b>
                         <p>${start_date} - ${end_date}  (${campanha.open_time} - ${campanha.close_time})</p>
-                        <p>Endereço: ${campanha.address}</p>
+                        <div class="lastLine">
+                            <p>Endereço: ${campanha.address}</p>
+                            <a class="detalhes" href="./InfoCampanha.html?cnpj=${login}&_id=${campanha._id}">DETALHES</a>
+                        </div>
                     </li>`
                     return acumulator
                 },'')

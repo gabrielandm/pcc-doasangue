@@ -7,10 +7,10 @@ function screenNavigation (Page) {
         case 'DivulgarCampanha':
             window.location.href= `./DivulgarCampanha.html?cnpj=${login}`
             break;
-            case 'Dashboard':
+        case 'Dashboard':
             window.location.href= `./Dashboard.html?cnpj=${login}`
             break;
-            case 'InfoHemocentro':
+        case 'InfoHemocentro':
             window.location.href= `./InfoHemocentro.html?cnpj=${login}`
             break;
     }
