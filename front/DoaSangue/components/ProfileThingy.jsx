@@ -12,7 +12,8 @@ export default function ProfileThingy(props) {
   const [daysFromDonate, setDaysFromDonate] = useState(null);
   const [daysToDonate, setDaysToDonate] = useState(null);
   const [profileLink, setProfileLink] = useState(null);
-  const [apiData, setApiData] = useState(null)
+  const [apiData, setApiData] = useState(null);
+  const [loadStatus, setLoadStatus] = useState('');
   const options = { year: '2-digit', month: '2-digit', day: '2-digit' };
 
   /* Function to calculate difference between dates*/
@@ -91,15 +92,21 @@ export default function ProfileThingy(props) {
 
   useEffect(() => {
     apiCall();
+    setData({
+      ...data,
+      birth_date: new Date(data.birth_date),
+      last_donation: new Date(data.last_donation),
+    });
   }, [])
 
   useEffect(() => {
     if (apiData != null) {
-      setData({
-        ...data,
-        birth_date: new Date(data.birth_date),
-        last_donation: new Date(data.last_donation),
-      });
+      setLoadStatus('DATA LOADED')
+    }
+  }, [apiData]);
+
+  useEffect(() => {
+    if(loadStatus == 'DATA LOADED') {
       setUserAge(Math.abs(new Date(new Date() - data.birth_date).getUTCFullYear()) - 1970);
       const todayDate = new Date()
       let lastDonationTri = new Date(apiData['triData']);
@@ -109,9 +116,13 @@ export default function ProfileThingy(props) {
       setDaysFromDonate(Math.ceil((new Date() - data.last_donation) / (1000 * 60 * 60 * 24)));
       setDaysToDonate(data.gender == 0 ? 90 - fromQuadri : 60 - fromTri);
       setProfileLink(typeof data.profile_link == 'string' ? { uri: data.profile_link } : { uri: 'https://doasanguefiles.blob.core.windows.net/doasangueblob/default-profile-pic.png' });
+      setLoadStatus('EVERYTHING LOADED');
+    } else if(loadStatus == 'EVERYTHING LOADED') {
       setLoaded(true);
+    } else {
+      console.log(loadStatus, 'unknown')
     }
-  }, [apiData])
+  }, [loadStatus])
 
   return (
     <View style={styles.column}>

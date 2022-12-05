@@ -17,6 +17,7 @@ export default function QRCodeReader({ navigation, route }) {
   const [qrData, setQRData] = useState('Nenhum QR encontrado')
   const [validated, setValidated] = useState(false)
   const [error, setError] = useState(null);
+  const [statusInfo, setStatusInfo] = useState('');
 
   // Function to read the QR data and validate it
   function validateQRCode() {
@@ -53,16 +54,57 @@ export default function QRCodeReader({ navigation, route }) {
       )
       if (response.status == 201) {
         setError('A doação foi salva com sucesso!');
-        navigation.navigate({
-          name: 'HomeScreen',
-          params: {
-            created: true,
-            name: route.params.data.cnpj,
-            message: 'Campanha registrada com sucesso'
-          },
-          merge: true
-        });
+        // navigation.navigate({
+        //   name: 'HomeScreen',
+        //   params: {
+        //     created: true,
+        //     name: route.params.data.cnpj,
+        //     message: 'Campanha registrada com sucesso'
+        //   },
+        //   merge: true
+        // });
+        setStatusInfo("REGISTER ACHIEVEMENT");
         console.log('201')
+      } else if (response.status == 400) {
+        setError('QR Code inválido, verifique:\n\n - Se você ou o doador estão na mesma campanha correta.\n - Se o passo anterior não der certo, tente novamente.');
+        setValidated(false);
+        console.log('400 - Error registering donation');
+      } else {
+        setError('Um erro selvagem apareceu!');
+        setValidated(false);
+        console.log('500 - Error registering donation');
+      }
+    } catch (e) {
+      console.log(e);
+    }
+  }
+
+  async function registerAchievement() {
+    const data = {
+      type: "achievement",
+      userId: qrData.userId,
+      achievementId: '63737809cafa9d2bd737a15b',
+      increment: 1,
+    }
+      try {
+      const response = await fetch(config.user,
+        {
+          method: 'POST',
+          body: JSON.stringify(data),
+        }
+      )
+      if (response.status == 200) {
+        setError('Conquista atualizada com sucesso');
+        // navigation.navigate({
+        //   name: 'HomeScreen',
+        //   params: {
+        //     created: true,
+        //     name: route.params.data.cnpj,
+        //     message: 'Campanha registrada com sucesso'
+        //   },
+        //   merge: true
+        // });
+        console.log('200')
       } else if (response.status == 400) {
         setError('QR Code inválido, verifique:\n\n - Se você ou o doador estão na mesma campanha correta.\n - Se o passo anterior não der certo, tente novamente.');
         setValidated(false);
@@ -89,6 +131,13 @@ export default function QRCodeReader({ navigation, route }) {
   useEffect(() => {
     askForCameraPermission();
   }, []);
+
+  // Status based conditions
+  useEffect(() => {
+    if (statusInfo === 'REGISTER ACHIEVEMENT') {
+      registerAchievement();
+    }
+  }, [statusInfo]);
 
   // What happens when we scan the bar code
   const handleBarCodeScanned = ({ type, data }) => {

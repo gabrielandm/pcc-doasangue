@@ -1,3 +1,4 @@
+const { ObjectId } = require("mongodb");
 const { connectDB, saveBlob, deleteBlob, UpdateUser, header } = require("../functions/apiFunctions");
 
 async function Post(context, req) {
@@ -140,6 +141,7 @@ async function Put(context, req) {
 	const country = req.body.country;
 	const gender = req.body.gender;
 	const birth_date = new Date(req.body.birth_date);
+	const achievements = achievements;
 
 	const res = await donerCollection.find({ "email": email });
 	let user = await res.toArray();
@@ -163,7 +165,7 @@ async function Put(context, req) {
 	}
 	/* End of image stuff */
 	
-	result = UpdateUser(user, email, pass, validated, name, last_name, phone, blood_type, last_donation, city, state, country, gender, birth_date, blobResult);
+	result = UpdateUser(user, email, pass, validated, name, last_name, phone, blood_type, last_donation, city, state, country, gender, birth_date, blobResult, achievements);
 
 	if (result.isValid == true) {
 		await donerCollection.updateOne(
@@ -186,6 +188,53 @@ async function Put(context, req) {
 			headers: header
 		};
 	}
+}
+
+async function AchievementPut(context, req) {
+	const collections = await connectDB(['Doner']);
+	const donerCollection = collections[0];
+
+	const userId = req.body.userId;
+	const achievementId = req.body.achievementId;
+	// 63737809cafa9d2bd737a15b
+	const increment = req.body.increment;
+
+	const res = await donerCollection.find({ "_id": ObjectId(userId) });
+	let user = await res.toArray();
+	user = user[0];
+
+	for (let i = 0; i < user.achievements.length; i++) {
+		if (user.achievements[i].id == achievementId) {
+			user.achievements[i].progress += increment;
+			break;
+		}
+	}
+
+	console.log(user)
+
+	try {
+		await donerCollection.updateOne(
+			{ "_id": ObjectId(userId) },
+			{ $set: user }
+		);
+
+		context.res = {
+			body: {
+				status: "updated",
+			},
+			headers: header
+		};
+	} catch (e) {
+		context.res = {
+			status: 500,
+			body: {
+				status: `Failed to update -> ${e}`,
+			},
+			headers: header
+		};
+	}
+	
+
 }
 
 async function Delete(context, req) {
@@ -227,7 +276,12 @@ module.exports = async function (context, req) {
 			await Get(context, req);
 			break;
 		case "PUT":
-			await Put(context, req);
+			const type = req.body.type;
+			if (type == 'achievement') {
+				await AchievementPut(context, req);
+			} else {
+				await Put(context, req);
+			}
 			break;
 		case "DELETE":
 			await Delete(context, req);

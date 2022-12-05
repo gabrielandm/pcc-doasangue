@@ -6,6 +6,7 @@ import * as Location from 'expo-location';
 
 import { colors } from '../style/colors';
 import { config } from '../config/config';
+
 import CampaignThingy from '../components/CampaignThingy';
 import ProfileThingy from '../components/ProfileThingy';
 import AchievementThingy from '../components/AchievementThingy';
@@ -141,7 +142,6 @@ export default function HomeScreen({ navigation, route }) {
 			setLocation(location);
 		})();
 	}, []);
-
 
 	/* Views */
 	// Definir variável q vai ser uma bool e salva se os dados já foram coletados e só coletar se ainda não foram :)

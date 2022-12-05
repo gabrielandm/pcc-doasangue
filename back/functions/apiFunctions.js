@@ -83,7 +83,7 @@ const header = {
   "Connection": "keep-alive"
 }
 
-function UpdateUser(userData, email, pass, validated, name, last_name, phone, blood_type, last_donation, city, state, country, gender, birth_date, profile_link) {
+function UpdateUser(userData, email, pass, validated, name, last_name, phone, blood_type, last_donation, city, state, country, gender, birth_date, profile_link, achievements) {
   // Preparing data for validation
   userData = {
     ...userData,
@@ -221,6 +221,10 @@ function UpdateUser(userData, email, pass, validated, name, last_name, phone, bl
     } else {
       isValid = false;
     }
+  }
+  // Achievements validation
+  if (achievements !== undefined) { // Not yet changeable
+    userData.achievements = achievements;
   }
   // If no changes were made ✔️
   if (oldUserData === JSON.stringify(userData) && isValid) {
