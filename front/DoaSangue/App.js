@@ -25,7 +25,7 @@ function App() {
 
       <NavigationContainer>
         <Stack.Navigator>
-          {/* <Stack.Screen
+          <Stack.Screen
             name="LoginScreen"
             component={LoginScreen}
             options={{
@@ -49,7 +49,7 @@ function App() {
               title: 'Criar conta',
               headerShown: false,
             }}
-          /> */}
+          />
           <Stack.Screen
             name="HomeScreen"
             component={HomeScreen}

@@ -40,7 +40,9 @@ async function saveBlob(rawImage, fileName, imageType) {
   // Verify if the image has the same type
   if (imageType !== oldImageType) {
     // Delete old file
-    await blockBlobClient.delete();
+    try {
+      await blockBlobClient.delete();
+    } catch {}
     // Set new filename
     fileName = uuid.v4().toString() + '.' + imageType;
     // Create new file
@@ -95,12 +97,13 @@ function UpdateUser(userData, email, pass, validated, name, last_name, phone, bl
     city: userData.city.replace(/\s+/g, ' ').trim(),
     birth_date: new Date(userData.birth_date),
     last_donation: new Date(userData.last_donation),
-    profile_link: userData.profile_link !== undefined ? userData.profile_link.replace(/\s+/g, ' ').trim() : undefined,
+    // profile_link: userData.profile_link !== undefined ? userData.profile_link.replace(/\s+/g, ' ').trim() : undefined,
   }
   // Variable to check if some change was made
   const oldUserData = JSON.stringify(userData);
   // Validation check variable
   let isValid = true;
+  let notValidData = "";
   // Email validation
   if (email !== undefined && isValid) { // Not yet changeable
     userData.email = email;
@@ -108,24 +111,26 @@ function UpdateUser(userData, email, pass, validated, name, last_name, phone, bl
   // Password validation ✔️
   if (pass !== undefined && isValid) {
     // Check if pass has 8 digits with numbers and special characters and upper case letters
-    if (
-      pass.length > 8 &&
-      pass.match(/[0-9]/) &&
-      pass.match(/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/) &&
-      pass.match(/[A-Z]/)) {
+    // if (
+    //   pass.length > 8 &&
+    //   pass.match(/[0-9]/) &&
+    //   pass.match(/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/) &&
+    //   pass.match(/[A-Z]/)) {
       userData.pass = pass;
-    } else {
-      isValid = false;
-    }
+    // } else {
+    //   isValid = false;
+    //   notValidData = "pass"
+    // }
   }
   // Validated validation ✔️
   if (validated !== undefined && isValid) { // Not yet changeable
     // Check if validated is a boolean
-    if (typeof validated === 'boolean') {
+    // if (typeof validated === 'boolean') {
       userData.validated = validated;
-    } else {
-      isValid = false;
-    }
+    // } else {
+    //   isValid = false;
+    //   notValidData = "Validated";
+    // }
   }
   // Name validation ✔️
   if (name !== undefined && isValid) {
@@ -134,6 +139,7 @@ function UpdateUser(userData, email, pass, validated, name, last_name, phone, bl
       userData.name = name;
     } else {
       isValid = false;
+      notValidData = "name";
     }
   }
   // Last name validation ✔️
@@ -143,16 +149,17 @@ function UpdateUser(userData, email, pass, validated, name, last_name, phone, bl
       userData.last_name = last_name;
     } else {
       isValid = false;
+      notValidData = "last_name";
     }
   }
   // Phone validation ✔️
   if (phone !== undefined && isValid) {
     // Check if has 10 or 11 digits and if has only numbers
-    if ((phone.length === 10 || phone.length === 11) && phone.match(/^[0-9]+$/)) {
+    // if ((phone.length === 10 || phone.length === 11) && phone.match(/^[0-9]+$/)) {
       userData.phone = phone;
-    } else {
-      isValid = false;
-    }
+    // } else {
+    //   isValid = false;
+    // }
   }
   // Blood type validation ✔️
   if (blood_type !== undefined && isValid) {
@@ -161,6 +168,7 @@ function UpdateUser(userData, email, pass, validated, name, last_name, phone, bl
       userData.blood_type = blood_type;
     } else {
       isValid = false;
+      notValidData = "blood_type";
     }
   }
   // Last donation validation ✔️
@@ -171,6 +179,7 @@ function UpdateUser(userData, email, pass, validated, name, last_name, phone, bl
         userData.last_donation = last_donation;
       } else {
         isValid = false;
+        notValidData = "last_donation";
       }
       // if last_donation is Date
     } else if (last_donation instanceof Date && isValid) {
@@ -198,6 +207,7 @@ function UpdateUser(userData, email, pass, validated, name, last_name, phone, bl
       userData.gender = gender;
     } else {
       isValid = false;
+      notValidData = "gender";
     }
   }
   // Birth date validation ✔️
@@ -208,19 +218,23 @@ function UpdateUser(userData, email, pass, validated, name, last_name, phone, bl
         userData.birth_date = birth_date;
       } else {
         isValid = false;
+        notValidData = "birth_date";
       }
     } else {
       isValid = false;
+      notValidData = "birth_date";
     }
   }
   // Profile link validation
   if (profile_link !== undefined && isValid) {
+    console.log(profile_link.fileUrl)
     // Check if profile_link is a syting or null
-    if (profile_link === null || typeof profile_link === 'string') {
-      userData.profile_link = profile_link;
-    } else {
-      isValid = false;
-    }
+    // if (profile_link === null || typeof profile_link === 'string') {
+      userData.profile_link = profile_link.fileUrl;
+    // } else {
+    //   isValid = false;
+    //   notValidData = "profile_link";
+    // }
   }
   // Achievements validation
   if (achievements !== undefined) { // Not yet changeable
@@ -229,8 +243,9 @@ function UpdateUser(userData, email, pass, validated, name, last_name, phone, bl
   // If no changes were made ✔️
   if (oldUserData === JSON.stringify(userData) && isValid) {
     isValid = false;
+    notValidData = "são iguais";
   }
-  return { userData: userData, isValid: isValid };
+  return { userData: userData, isValid: isValid, notValidData: notValidData };
 }
 
 function UpdateCorp(corpData, cnpj, pass, name, country, city, address, coordinates, phone, email, state, subscription_type, subscription_start, subscription_end, profile_link) {
@@ -253,27 +268,27 @@ function UpdateCorp(corpData, cnpj, pass, name, country, city, address, coordina
   let notValidData = '';
   // cnpj validation ✔️
   if (cnpj !== undefined && isValid) {
-    // Check if cnpj follow cnpj rules
-    if (cnpj.match(/^[0-9]{2}\.?[0-9]{3}\.?[0-9]{3}\/?[0-9]{4}\-?[0-9]{2}$/) || cnpj === '000') {
+    // // Check if cnpj follow cnpj rules
+    // if (cnpj.match(/^[0-9]{2}\.?[0-9]{3}\.?[0-9]{3}\/?[0-9]{4}\-?[0-9]{2}$/) || cnpj === '000') {
       corpData.cnpj = cnpj;
-    } else {
-      isValid = false;
-      notValidData = 'cnpj';
-    }
+    // } else {
+    //   isValid = false;
+    //   notValidData = 'cnpj';
+    // }
   }
   // Pass validation ✔️
   if (pass !== undefined && isValid) {
     // Check if pass has 8 digits with numbers and special characters and upper case letters
-    if (
-      pass.length > 8 &&
-      pass.match(/[0-9]/) &&
-      pass.match(/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/) &&
-      pass.match(/[A-Z]/)) {
+    // if (
+    //   pass.length > 8 &&
+    //   pass.match(/[0-9]/) &&
+    //   pass.match(/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/) &&
+    //   pass.match(/[A-Z]/)) {
       userData.pass = pass;
-    } else {
-      isValid = false;
-      notValidData = 'pass';
-    }
+    // } else {
+    //   isValid = false;
+    //   notValidData = 'pass';
+    // }
   }
   // Name validation ✔️
   if (name !== undefined && isValid) {
@@ -313,13 +328,13 @@ function UpdateCorp(corpData, cnpj, pass, name, country, city, address, coordina
   }
   // Phone validation ✔️
   if (phone !== undefined && isValid) {
-    // Check if has 10 or 11 digits and if has only numbers
-    if (phone.length === 10 || phone.length === 11 && phone.match(/^[0-9]+$/)) {
+    // // Check if has 10 or 11 digits and if has only numbers
+    // if (phone.length === 10 || phone.length === 11 && phone.match(/^[0-9]+$/)) {
       corpData.phone = phone;
-    } else {
-      isValid = false;
-      notValidData = 'phone';
-    }
+    // } else {
+    //   isValid = false;
+    //   notValidData = 'phone';
+    // }
   }
   // Email validation
   if (email !== undefined && isValid) { // Not yet changeable
@@ -336,12 +351,12 @@ function UpdateCorp(corpData, cnpj, pass, name, country, city, address, coordina
       4 = Ultimate
       5 = Mousse
     */
-    if (typeof subscription_type === 'number' && subscription_type >= 0 && subscription_type <= 5) {
+    // if (typeof subscription_type === 'number' && subscription_type >= 0 && subscription_type <= 5) {
       corpData.subscription_type = subscription_type;
-    } else {
-      isValid = false;
-      notValidData = 'subscription_type';
-    }
+    // } else {
+    //   isValid = false;
+    //   notValidData = 'subscription_type';
+    // }
   }
   // Subscription start validation ✔️
   if (subscription_start !== undefined && isValid) {

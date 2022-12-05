@@ -89,7 +89,7 @@ export default function HomeScreen({ navigation, route }) {
 		// route.params.created = false;
 		// getProfileData(route.params, true);
 
-		getProfileData(params, true);
+		getProfileData(params, false);
 
 		// getCampaigns(route.params);
 		getCampaigns(params);

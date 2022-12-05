@@ -141,7 +141,7 @@ async function Put(context, req) {
 	const country = req.body.country;
 	const gender = req.body.gender;
 	const birth_date = new Date(req.body.birth_date);
-	const achievements = achievements;
+	const achievements = req.body.achievements;
 
 	const res = await donerCollection.find({ "email": email });
 	let user = await res.toArray();
@@ -161,10 +161,13 @@ async function Put(context, req) {
 	if (image != null && deleteImage === false) {
 		blobResult = await saveBlob(image, fileName, image_type);
 	} else if (deleteImage === true && fileName != null) {
-		blobResult = await deleteBlob(fileName);
+		try {
+			blobResult = await deleteBlob(fileName);
+		} catch {}
 	}
 	/* End of image stuff */
 	
+	console.log(blobResult)
 	result = UpdateUser(user, email, pass, validated, name, last_name, phone, blood_type, last_donation, city, state, country, gender, birth_date, blobResult, achievements);
 
 	if (result.isValid == true) {
@@ -183,7 +186,8 @@ async function Put(context, req) {
 		context.res = {
 			status: 400,
 			body: {
-				status: "not valid update"
+				status: "not valid update",
+				reason: result.notValidData,
 			},
 			headers: header
 		};

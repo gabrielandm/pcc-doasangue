@@ -77,11 +77,12 @@ async function Get(context, req) {
 	// Saving data
 	foundDoc = await foundDoc.toArray()
 	let triData = null;
-	if (foundDoc == null) {
+	if (foundDoc.length == 0) {
 		var temp = new Date('2005-06-12T03:33:00');
 		triData = temp.toISOString();
+	} else {
+		triData = foundDoc[0]['donation_date'];
 	}
-	triData = foundDoc[0]['donation_date'];
 
 	/* QUADRI DATA */
 	var currentDate = new Date();
@@ -92,11 +93,12 @@ async function Get(context, req) {
 	// Saving data
 	foundDoc = await foundDoc.toArray();
 	let quadriData = null;
-	if (foundDoc == null) {
+	if (foundDoc.length == 0) {
 		var temp = new Date('2005-06-12T03:33:00');
 		quadriData = temp.toISOString();
+	} else {
+		quadriData = foundDoc[0]['donation_date'];
 	}
-	quadriData = foundDoc[0]['donation_date'];
 
 	/* OVERALL DATA */
 	var foundDoc = null;
@@ -106,8 +108,9 @@ async function Get(context, req) {
 	let overallCount = null;
 	if (foundDoc == null) {
 		overallCount = 0
+	} else {
+		overallCount = foundDoc.length;
 	}
-	overallCount = foundDoc.length;
 
 	/* MONTHLY DATA */
 	var currentDate = new Date();

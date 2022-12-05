@@ -105,8 +105,8 @@ export default function HomeScreen({ navigation, route }) {
 
 	/* When page loads */
 	useEffect(() => {
-		getProfileData({email: 'login3'}, true); // !!!Remember to set debug to false!!!
-		// getProfileData(route.params, false); // !!!Remember to set debug to false!!!
+		// getProfileData({email: 'login3'}, true); // !!! WITHOUT LOGIN!!!
+		getProfileData(route.params, false); // !!! WITH LOGIN !!!
 		getCampaigns();
 		getAchievements();
 	}, []);
@@ -119,7 +119,7 @@ export default function HomeScreen({ navigation, route }) {
 				setSnackbarText(route.params.message);
 				setVisible(true);
 				if (route.params.message === 'Dados atualizados com sucesso!') {
-					getProfileData(route.params, false); // !!!Remember to set debug to false!!!
+					getProfileData(route.params, false); // !!! WITH LOGIN !!!
 					// getProfileData(route.params);
 					navigation.setParams({ ...route.params, message: undefined });
 				}

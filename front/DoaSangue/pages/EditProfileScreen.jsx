@@ -69,29 +69,18 @@ export default function ProfileThingy({ navigation, route }) {
 
   // Function to define the new type of blood
   function bloodSelected(index, willSetData = true) {
-    console.log("If doesn't work, it is because code is commented, please uncomment and change the setBloodTypes command to only save newBloodTypes")
     const newBloodTypes = new Array(bloodTypes.length).fill(false);
     if (index !== -1) {
       newBloodTypes[index] = !newBloodTypes[index];
-      // if (newBloodTypes.length == bloodTypesList.length) {
-      //   newBloodTypes.push(3);
-      // } else {
-      //   newBloodTypes.pop();
-      // }
       if (willSetData) {
         setData({ ...data, blood_type: bloodTypesList[index].value })
       }
     } else if (index === -1) {
-      // if (newBloodTypes.length == bloodTypesList.length) {
-      //   newBloodTypes.push(3);
-      // } else {
-      //   newBloodTypes.pop();
-      // }
       if (willSetData) {
         setData({ ...data, blood_type: null })
       }
     }
-    setBloodTypes(newBloodTypes => [...newBloodTypes]);
+    setBloodTypes([...newBloodTypes]);
   }
 
   // Function to handle image changes
@@ -107,6 +96,7 @@ export default function ProfileThingy({ navigation, route }) {
 
     if (!result.cancelled) {
       setImage(result.uri);
+      // console.log(result.uri)
       setImageBase64(result.base64);
     }
   };
@@ -233,9 +223,9 @@ export default function ProfileThingy({ navigation, route }) {
       ...status.data,
       delete_image: deleteImage,
       image: imageBase64,
-      // image_type: image.split('.')[image.split('.').length - 1],
+      image_type: image.split('.')[image.split('.').length - 1],
     };
-    // console.log(data)
+    console.log(data)
     if (status.validated) {
       try {
         const response = await fetch(config.user,
@@ -255,13 +245,17 @@ export default function ProfileThingy({ navigation, route }) {
             },
             merge: true,
           });
+        } else if (response.status === 400) {
+          const json = await response.json();
+          // console.log(json);
+          console.log(JSON.stringify(json));
         } else {
           // Make an error appear for the user
           console.log(response.status);
         }
       } catch (e) {
         // Make an error appear for the user
-        console.log(e);
+        console.log(JSON.stringify(e));
       }
     }
   }
