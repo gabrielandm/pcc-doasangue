@@ -18,7 +18,7 @@ async function createCampaign() {
       city: document.getElementById('city').value,
       address: document.getElementById('address').value,
       phone: document.getElementById('phone').value,
-      observation: '',
+      observation: document.getElementById('obs').value,
       banner_color: '#d01b1b',
       banner_link: null,
       open_time: '08:00' /*`${openTime.getHours() < 10 ? '0' + openTime.getHours() : openTime.getHours()}:${openTime.getMinutes() < 10 ? '0' + openTime.getMinutes() : openTime.getMinutes()}`*/,
@@ -29,7 +29,7 @@ async function createCampaign() {
 
     // POST request to Campaign collection and check if request was successful
     try {
-        console.log(JSON.stringify(campaignData))
+       // console.log(JSON.stringify(campaignData))
       const response = await fetch(`https://doasangue2.azurewebsites.net/api/campaign`,
         {
           method: 'POST',

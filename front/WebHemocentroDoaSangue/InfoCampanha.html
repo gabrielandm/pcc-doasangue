@@ -7,13 +7,11 @@
     <link href="https://fonts.googleapis.com/css2?family=Montserrat&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
     <link rel="stylesheet" href="./style.css">
-    <link rel="stylesheet" href="./DivulgarCampanha.css">
-    <script type="text/javascript" src="./DivulgarCampanha.js"></script>
     <script type="text/javascript" src="Navigation.js"></script>
-    <title>Minhas Campanhas</title>
+    <script type="text/javascript" src="InfoCampanha.js"></script>
+    <title>Informações da Campanha</title>
 </head>
 <body>
-    
     <div class="side">
         <h1>
             <img src="./images/adaptive-icon.png" alt="imagem logo">
@@ -21,9 +19,9 @@
         </h1>
 
         <ul>
-            <li><i class="fas fa-solid fa-circle-info"></i><a onclick="screenNavigation('InfoHemocentro')">Info Hemocentro</a></li>
+            <li><i class="fas fa-solid fa-circle-info"></i><a onclick="screenNavigation('InfoHemocentro')"></a>Info Hemocentro</li>
             <li><i class="fas fa-solid fa-circle-plus"></i><a onclick="screenNavigation('Campanha')">Criar Campanha</a></li>
-            <li class="active"><i class="fas fa-solid fa-share"></i>Minhas Campanhas</li>
+            <li class="active"><i class="fas fa-solid fa-share"></i><a onclick="screenNavigation('DivulgarCampanha')">Minhas Campanhas</a></li>
             <li><i class="fas fa-duotone fa-chart-simple"></i><a onclick="screenNavigation('Dashboard')">Dashboard</a></li>
         </ul>
 
@@ -34,10 +32,8 @@
     </div>
 
     <div class="main">
-
-        <h1>Minhas Campanhas</h1>
-        <ul data-js="campanha" class="listaCampanha">   </ul>
-
+        <h2>Informações da campanha</h2>
+        <div data-js="campaignInfo" class="userbox"></div>
     </div>
 
     <script>
@@ -47,6 +43,5 @@
             side.classList.toggle('closed')
         })
     </script>
-
 </body>
 </html>
