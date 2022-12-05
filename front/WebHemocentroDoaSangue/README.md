@@ -16,5 +16,3 @@
 
 
     Caso na hora de rodar apareça uma mensagem de erro ao usar o "Open With Live Server", segue um link que pode ajudar: https://www.freecodecamp.org/news/visual-studio-code-live-server-not-working/
-
-    
