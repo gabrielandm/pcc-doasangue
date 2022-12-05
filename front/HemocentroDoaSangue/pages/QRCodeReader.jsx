@@ -86,10 +86,11 @@ export default function QRCodeReader({ navigation, route }) {
       achievementId: '63737809cafa9d2bd737a15b',
       increment: 1,
     }
+    console.log(data)
       try {
       const response = await fetch(config.user,
         {
-          method: 'POST',
+          method: 'PUT',
           body: JSON.stringify(data),
         }
       )
@@ -109,10 +110,14 @@ export default function QRCodeReader({ navigation, route }) {
         setError('QR Code inválido, verifique:\n\n - Se você ou o doador estão na mesma campanha correta.\n - Se o passo anterior não der certo, tente novamente.');
         setValidated(false);
         console.log('400 - Error registering donation');
+      } else if (response.status == 500) {
+        console.log('500 - Error registering donation to user');
+        const json = await response.json()
+        console.log(JSON.stringify(json))
       } else {
         setError('Um erro selvagem apareceu!');
         setValidated(false);
-        console.log('500 - Error registering donation');
+        console.log(response.status);
       }
     } catch (e) {
       console.log(e);
